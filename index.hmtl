@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mística AI 2026</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- FontAwesome para los iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- React y Babel (Standalone) -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 12s linear infinite;
+        }
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        /* Utilidad para simular las clases de 'lucide-react' con fontawesome */
+        .icon { display: inline-flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body class="bg-black text-white font-sans selection:bg-purple-500/30">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const App = () => {
+            const [activeView, setActiveView] = useState('home'); 
+            const [loading, setLoading] = useState(false);
+            
+            // Estados para Horóscopo
+            const [selectedSign, setSelectedSign] = useState(null);
+            const [prediction, setPrediction] = useState('');
+            const [planetaryDebug, setPlanetaryDebug] = useState(null); 
+
+            // Estados para Tarot
+            const [tarotState, setTarotState] = useState('deck'); 
+            const [drawnCard, setDrawnCard] = useState(null);
+
+            // Estados para Oráculo
+            const [oracleInput, setOracleInput] = useState('');
+            const [oracleHistory, setOracleHistory] = useState([
+                { type: 'bot', text: 'Soy el Oráculo Neural v4.0. Haz una pregunta de "Sí" o "No", o pide un consejo sobre tu destino.' }
+            ]);
+
+            // --- ESTADOS PARA VIDEO ---
+            const playlist = [
+                { id: 'v1', title: 'Visión del Día', author: 'Oráculo Neural v4.0', src: 'hf_20260219_024541_71c7417b-1451-494a-899f-0117d1abda4c.mp4', desc: '"La alineación planetaria actual marca un antes y un después..."' },
+                { id: 'v2', title: 'Presentación Formador (Femenino)', author: 'Pedro Guirao', src: 'hf_20260219_130132_d7e6aebe-fb3d-4e62-8107-15ff03ef3d27.mp4', desc: '"Hola, soy Pedro Guirao, soy formador y voy a enseñarte cómo he hecho esto..."' },
+                { id: 'v3', title: 'Presentación Formador (Masculino)', author: 'Pedro Guirao', src: 'WIN_20260219_13_57_07_Pro.mp4', desc: '"Hola, soy Pedro Guirao, soy formador y voy a enseñarte cómo he hecho esto..."' }
+            ];
+            const [currentVideo, setCurrentVideo] = useState(playlist[0]);
+
+            // --- CONFIGURACIÓN DE IA ---
+            const aiKnowledgeBase = {
+                planets: [
+                    { name: "Marte", quality: "impulsivo", area: "la acción" },
+                    { name: "Venus", quality: "armónico", area: "las relaciones" },
+                    { name: "Mercurio", quality: "comunicativo", area: "el intelecto" },
+                    { name: "Júpiter", quality: "expansivo", area: "la suerte" },
+                    { name: "Saturno", quality: "restrictivo", area: "la disciplina" },
+                    { name: "Urano", quality: "disruptivo", area: "el cambio" },
+                    { name: "Neptuno", quality: "soñador", area: "la intuición" },
+                    { name: "Plutón", quality: "transformador", area: "el poder interior" }
+                ],
+                aspects: [
+                    "formando una cuadratura tensa con tu regente,",
+                    "entrando en tránsito directo sobre tu casa solar,",
+                    "en alineación armónica con la Luna,",
+                    "retrogradando sutilmente en tu sector opuesto,",
+                    "potenciando la energía vibracional de",
+                ],
+                connectors: [
+                    "esto sugiere que", "lo cual indica que", "por lo tanto,", "desencadenando que", "obligándote a ver que"
+                ],
+                outcomes: [
+                    "debes tener cuidado con las palabras impulsivas.",
+                    "se abrirá una puerta inesperada en lo profesional.",
+                    "es un momento ideal para firmar contratos.",
+                    "una vieja amistad podría retornar con un mensaje.",
+                    "tu energía física necesita recargarse urgentemente.",
+                    "las finanzas requieren una revisión meticulosa hoy.",
+                    "el amor tomará un matiz mucho más serio y profundo."
+                ],
+                advice: [
+                    "Consejo del algoritmo: Medita 10 minutos antes de decidir.",
+                    "Estrategia sugerida: No reveles tus planes todavía.",
+                    "Acción recomendada: Viste algo de color rojo para potenciarte.",
+                    "Advertencia IA: Evita las discusiones por temas de dinero.",
+                    "Guía cósmica: Confía en tu primera impresión hoy."
+                ]
+            };
+
+            const zodiacSigns = [
+                { name: 'Aries', icon: '♈', element: 'Fuego' }, { name: 'Tauro', icon: '♉', element: 'Tierra' }, 
+                { name: 'Géminis', icon: '♊', element: 'Aire' }, { name: 'Cáncer', icon: '♋', element: 'Agua' }, 
+                { name: 'Leo', icon: '♌', element: 'Fuego' }, { name: 'Virgo', icon: '♍', element: 'Tierra' },
+                { name: 'Libra', icon: '♎', element: 'Aire' }, { name: 'Escorpio', icon: '♏', element: 'Agua' }, 
+                { name: 'Sagitario', icon: '♐', element: 'Fuego' }, { name: 'Capricornio', icon: '♑', element: 'Tierra' }, 
+                { name: 'Acuario', icon: '♒', element: 'Aire' }, { name: 'Piscis', icon: '♓', element: 'Agua' }
+            ];
+
+            const tarotDeck = [
+                { name: 'El Loco', meaning: 'Nuevos comienzos, espontaneidad, fe ciega.', type: 'Arcano Mayor' },
+                { name: 'La Muerte', meaning: 'Transformación, final de un ciclo, cambio profundo.', type: 'Arcano Mayor' },
+                { name: 'El Sol', meaning: 'Alegría, éxito, vitalidad, claridad.', type: 'Arcano Mayor' },
+                { name: 'La Torre', meaning: 'Cambio repentino, revelación, despertar.', type: 'Arcano Mayor' },
+                { name: 'La Estrella', meaning: 'Esperanza, inspiración, serenidad.', type: 'Arcano Mayor' }
+            ];
+
+            const oracleAnswers = [
+                "Las estrellas indican un rotundo SÍ.", "La energía está bloqueada, intenta de nuevo mañana.",
+                "Todo depende de tu próxima acción.", "Cuidado con las ilusiones, busca la verdad oculta.",
+                "El universo conspira a tu favor.", "No es el momento adecuado."
+            ];
+
+            // --- MOTOR DE GENERACIÓN DETERMINISTA ---
+            const seededRandom = (seed) => {
+                let h = 0x811c9dc5;
+                for (let i = 0; i < seed.length; i++) {
+                    h ^= seed.charCodeAt(i);
+                    h = Math.imul(h, 0x01000193);
+                }
+                h >>>= 0;
+                return () => {
+                    h = Math.imul(h ^ (h >>> 16), 2246822507);
+                    h = Math.imul(h ^ (h >>> 13), 3266489909);
+                    return (h >>> 0) / 4294967296;
+                }
+            };
+
+            const generateAIPrediction = (sign) => {
+                setLoading(true);
+                setSelectedSign(sign);
+                
+                const todayDate = new Date().toISOString().split('T')[0];
+                const seedString = `${todayDate}-${sign.name}`;
+                const rng = seededRandom(seedString); 
+
+                const planetIndex = Math.floor(rng() * aiKnowledgeBase.planets.length);
+                const aspectIndex = Math.floor(rng() * aiKnowledgeBase.aspects.length);
+                const connectorIndex = Math.floor(rng() * aiKnowledgeBase.connectors.length);
+                const outcomeIndex = Math.floor(rng() * aiKnowledgeBase.outcomes.length);
+                const adviceIndex = Math.floor(rng() * aiKnowledgeBase.advice.length);
+                
+                const planet = aiKnowledgeBase.planets[planetIndex];
+                
+                const generatedText = `Hoy, la energía de ${planet.name} (${planet.quality}) está ${aiKnowledgeBase.aspects[aspectIndex]} ${aiKnowledgeBase.connectors[connectorIndex]} ${aiKnowledgeBase.outcomes[outcomeIndex]} ${aiKnowledgeBase.advice[adviceIndex]}`;
+
+                const debugData = {
+                    seed: seedString,
+                    planet: planet.name,
+                    aspect: "Cuadratura 90°",
+                    confidence: (rng() * 15 + 85).toFixed(1) + "%"
+                };
+
+                setTimeout(() => {
+                    setPrediction(generatedText);
+                    setPlanetaryDebug(debugData);
+                    setLoading(false);
+                }, 1500); 
+            };
+
+            const drawTarotCard = () => {
+                setTarotState('shuffling');
+                setTimeout(() => {
+                    const randomCard = tarotDeck[Math.floor(Math.random() * tarotDeck.length)];
+                    setDrawnCard(randomCard);
+                    setTarotState('revealed');
+                }, 2000);
+            };
+
+            const askOracle = (e) => {
+                e.preventDefault();
+                if (!oracleInput.trim()) return;
+                const userMsg = { type: 'user', text: oracleInput };
+                setOracleHistory(prev => [...prev, userMsg]);
+                setOracleInput('');
+                setLoading(true);
+                setTimeout(() => {
+                    const randomAnswer = oracleAnswers[Math.floor(Math.random() * oracleAnswers.length)];
+                    setOracleHistory(prev => [...prev, { type: 'bot', text: randomAnswer }]);
+                    setLoading(false);
+                }, 1200);
+            };
+
+            const resetView = () => {
+                setActiveView('home');
+                setSelectedSign(null);
+                setPrediction('');
+                setPlanetaryDebug(null);
+                setTarotState('deck');
+                setDrawnCard(null);
+                setOracleHistory([{ type: 'bot', text: 'Soy el Oráculo Neural v4.0. Haz una pregunta de "Sí" o "No", o pide un consejo sobre tu destino.' }]);
+            };
+
+            // --- VISTAS ---
+            const renderHoroscopeView = () => (
+                <div className="animate-in fade-in zoom-in duration-300">
+                    <button onClick={resetView} className="mb-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                        <i className="fa-solid fa-chevron-left"></i> Volver al inicio
+                    </button>
+                    <h2 className="text-3xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-yellow-400 to-orange-500">
+                        Horóscopo Diario Generativo
+                    </h2>
+                    
+                    {!prediction ? (
+                        <div className="grid grid-cols-3 md:grid-cols-4 gap-4 relative">
+                            {zodiacSigns.map((sign) => (
+                                <button 
+                                    key={sign.name}
+                                    onClick={() => generateAIPrediction(sign)}
+                                    className="p-6 bg-gray-900/50 border border-white/10 rounded-xl hover:bg-white/10 hover:border-yellow-500/50 transition-all flex flex-col items-center gap-2 group"
+                                >
+                                    <span className="text-4xl group-hover:scale-125 transition-transform">{sign.icon}</span>
+                                    <span className="font-medium text-sm text-gray-300">{sign.name}</span>
+                                </button>
+                            ))}
+                            {loading && (
+                                <div className="absolute inset-0 bg-black/90 flex items-center justify-center z-50 backdrop-blur-md rounded-xl">
+                                    <div className="max-w-md w-full p-6 bg-gray-900 border border-white/10 rounded-2xl flex flex-col items-center">
+                                        <i className="fa-solid fa-microchip text-purple-500 text-5xl animate-pulse mb-4"></i>
+                                        <h3 className="text-xl font-bold text-white mb-2">Procesando Datos Astrales</h3>
+                                        <div className="w-full bg-gray-800 rounded-full h-2 mb-4 overflow-hidden">
+                                            <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-full w-2/3 animate-pulse"></div>
+                                        </div>
+                                        <p className="text-gray-400 font-mono text-xs text-center leading-relaxed">
+                                            Cargando efemérides 2026... <br/>
+                                            Analizando tránsitos planetarios... <br/>
+                                            Generando predicción con NLP...
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="max-w-2xl mx-auto space-y-6">
+                            <div className="bg-gray-900/80 border border-white/10 p-4 rounded-xl flex justify-between items-center text-xs font-mono text-gray-400">
+                                <div className="flex items-center gap-2">
+                                    <i className="fa-solid fa-database text-blue-500"></i>
+                                    <span>SEED: {planetaryDebug?.seed}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                    <span>CONFIDENCE: {planetaryDebug?.confidence}</span>
+                                </div>
+                            </div>
+
+                            <div className="bg-gradient-to-br from-gray-900 to-gray-800 border border-yellow-500/30 p-8 rounded-2xl relative overflow-hidden shadow-2xl">
+                                <div className="absolute top-0 right-0 p-4 opacity-10 text-9xl select-none">{selectedSign.icon}</div>
+                                
+                                <div className="flex items-center gap-3 mb-6">
+                                    <span className="text-4xl">{selectedSign.icon}</span>
+                                    <div>
+                                        <h3 className="text-2xl font-bold text-white">{selectedSign.name}</h3>
+                                        <p className="text-yellow-500 text-xs uppercase tracking-widest font-bold">Elemento: {selectedSign.element}</p>
+                                    </div>
+                                </div>
+
+                                <div className="prose prose-invert max-w-none">
+                                    <p className="text-lg text-gray-200 leading-relaxed font-light">
+                                        {prediction}
+                                    </p>
+                                </div>
+
+                                <div className="mt-8 pt-6 border-t border-white/10 flex justify-between items-end">
+                                    <div className="text-xs text-gray-500">
+                                        <p>Modelo: Mystica-LLM-v4</p>
+                                        <p>Fecha de Generación: {new Date().toLocaleDateString()}</p>
+                                    </div>
+                                    <button onClick={() => setPrediction('')} className="bg-white/10 hover:bg-white/20 px-6 py-2 rounded-lg text-sm font-bold transition-colors">
+                                        Consultar otro signo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+
+            const renderTarotView = () => (
+                <div className="flex flex-col items-center animate-in fade-in duration-500 min-h-[60vh]">
+                    <button onClick={resetView} className="self-start mb-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                        <i className="fa-solid fa-chevron-left"></i> Volver al inicio
+                    </button>
+                    <h2 className="text-3xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
+                        Tarot Cuántico
+                    </h2>
+                    <p className="text-gray-400 mb-10">Concéntrate en tu energía y selecciona una carta</p>
+
+                    <div className="relative w-64 h-96 perspective-1000 cursor-pointer" onClick={tarotState === 'deck' ? drawTarotCard : null}>
+                        {tarotState === 'deck' && (
+                            <div className="w-full h-full bg-gradient-to-br from-indigo-900 to-purple-900 rounded-2xl border-2 border-blue-400/30 flex items-center justify-center shadow-2xl shadow-blue-900/50 hover:scale-105 transition-transform">
+                                <div className="text-center">
+                                    <i className="fa-solid fa-moon text-blue-400 text-5xl mb-4 block"></i>
+                                    <span className="text-xs font-bold tracking-widest text-blue-300">TOCA PARA BARAJAR</span>
+                                </div>
+                            </div>
+                        )}
+
+                        {tarotState === 'shuffling' && (
+                            <div className="w-full h-full relative">
+                                <div className="absolute inset-0 bg-indigo-900 rounded-2xl border border-blue-500 animate-ping opacity-20"></div>
+                                <div className="w-full h-full bg-indigo-950 rounded-2xl border border-blue-500 flex items-center justify-center">
+                                    <i className="fa-solid fa-arrows-rotate text-blue-500 text-5xl animate-spin"></i>
+                                </div>
+                            </div>
+                        )}
+
+                        {tarotState === 'revealed' && drawnCard && (
+                            <div className="w-full h-full bg-black rounded-2xl border-2 border-white/20 flex flex-col items-center justify-between p-6 animate-in flip-in-y duration-700">
+                                <div className="text-xs uppercase text-gray-500">{drawnCard.type}</div>
+                                <div className="text-center">
+                                    <h3 className="text-2xl font-bold text-white mb-2">{drawnCard.name}</h3>
+                                    <div className="w-16 h-1 bg-blue-500 mx-auto rounded-full mb-4"></div>
+                                    <p className="text-sm text-gray-300">{drawnCard.meaning}</p>
+                                </div>
+                                <button onClick={() => setTarotState('deck')} className="text-xs text-blue-400 hover:text-white mt-4">
+                                    Volver a barajar
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+
+            const renderOracleView = () => (
+                <div className="max-w-2xl mx-auto h-[70vh] flex flex-col bg-gray-900/50 border border-white/10 rounded-2xl overflow-hidden animate-in slide-in-from-bottom duration-500">
+                    <div className="p-4 border-b border-white/10 flex justify-between items-center bg-gray-900">
+                        <h3 className="font-bold flex items-center gap-2"><i className="fa-solid fa-robot text-pink-500"></i> Oráculo IA</h3>
+                        <button onClick={resetView}><i className="fa-solid fa-xmark text-gray-500 hover:text-white text-xl"></i></button>
+                    </div>
+                    
+                    <div className="flex-1 p-4 overflow-y-auto space-y-4">
+                        {oracleHistory.map((msg, idx) => (
+                            <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.type === 'user' ? 'bg-pink-600 text-white rounded-br-none' : 'bg-gray-800 text-gray-200 rounded-bl-none border border-white/10'}`}>
+                                    {msg.text}
+                                </div>
+                            </div>
+                        ))}
+                        {loading && (
+                            <div className="flex justify-start">
+                                <div className="bg-gray-800 p-3 rounded-2xl rounded-bl-none border border-white/10 flex gap-1">
+                                    <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce"></span>
+                                    <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{animationDelay: '100ms'}}></span>
+                                    <span className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{animationDelay: '200ms'}}></span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <form onSubmit={askOracle} className="p-4 bg-gray-900 border-t border-white/10 flex gap-2">
+                        <input 
+                            type="text" 
+                            value={oracleInput}
+                            onChange={(e) => setOracleInput(e.target.value)}
+                            placeholder="Pregunta al universo..."
+                            className="flex-1 bg-black border border-white/20 rounded-xl px-4 py-3 text-white focus:border-pink-500 outline-none"
+                        />
+                        <button type="submit" disabled={!oracleInput.trim() || loading} className="bg-pink-600 hover:bg-pink-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-3 rounded-xl transition-colors">
+                            <i className="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            );
+
+            const renderPremiumForm = () => (
+                <div className="max-w-2xl mx-auto py-6 animate-in slide-in-from-bottom duration-500">
+                    <button onClick={resetView} className="mb-6 flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+                        <i className="fa-solid fa-chevron-left"></i> Cancelar
+                    </button>
+                    <h2 className="text-3xl font-bold mb-6 text-center">Configura tu Perfil Místico</h2>
+                    <div className="bg-gray-900 border border-white/10 p-8 rounded-2xl space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-2">Nombre Completo</label>
+                                <input type="text" className="w-full bg-black border border-white/20 rounded-lg p-3 text-white focus:border-purple-500 outline-none" placeholder="Ej: Pedro Pérez" />
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-2">Fecha de Nacimiento</label>
+                                <input type="date" className="w-full bg-black border border-white/20 rounded-lg p-3 text-white focus:border-purple-500 outline-none" />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-2">Hora de Nacimiento (Opcional)</label>
+                                <input type="time" className="w-full bg-black border border-white/20 rounded-lg p-3 text-white focus:border-purple-500 outline-none" />
+                            </div>
+                            <div>
+                                <label className="block text-sm text-gray-400 mb-2">Lugar de Nacimiento</label>
+                                <input type="text" className="w-full bg-black border border-white/20 rounded-lg p-3 text-white focus:border-purple-500 outline-none" placeholder="Ciudad, País" />
+                            </div>
+                        </div>
+                        <div className="pt-6 border-t border-white/10">
+                            <div className="flex justify-between items-center mb-6">
+                                <span className="text-xl font-bold">Total: $29.99</span>
+                                <div className="flex gap-2 items-center">
+                                    <i className="fa-solid fa-credit-card text-gray-400"></i>
+                                    <span className="text-sm text-gray-400">Pago seguro</span>
+                                </div>
+                            </div>
+                            <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-4 rounded-xl font-bold text-lg hover:shadow-lg hover:shadow-purple-500/20 transition-all">
+                                Generar mi Reporte IA 360°
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderHome = () => (
+                <div className="space-y-8 animate-in fade-in duration-700">
+                    <header className="text-center py-4">
+                        <h1 className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 mb-4">
+                            Mística AI 2026
+                        </h1>
+                        <p className="text-gray-400 text-lg">Tu destino escrito en las estrellas, interpretado por Inteligencia Artificial.</p>
+                    </header>
+
+                    {/* GALERÍA DE VIDEO */}
+                    <section className="max-w-4xl mx-auto mb-10">
+                        <div className="relative bg-gray-900 rounded-3xl overflow-hidden border border-purple-500/30 shadow-2xl shadow-purple-900/40">
+                            <div className="absolute top-4 left-4 z-20 flex gap-2">
+                                <span className="bg-red-600/90 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 backdrop-blur-md">
+                                    <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span> EN VIVO
+                                </span>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-5">
+                                <div className="md:col-span-3 relative aspect-[9/16] md:aspect-video bg-black flex items-center justify-center">
+                                    <video 
+                                        key={currentVideo.id}
+                                        className="w-full h-full object-contain" 
+                                        controls 
+                                        autoPlay
+                                        playsInline
+                                        src={currentVideo.src}
+                                    >
+                                        Tu navegador no soporta el video.
+                                    </video>
+                                </div>
+                                <div className="md:col-span-2 p-6 flex flex-col justify-between bg-gradient-to-br from-gray-900 to-purple-900/20 border-l border-white/10">
+                                    <div>
+                                        <h3 className="text-2xl font-bold mb-2 text-white leading-tight">{currentVideo.title}</h3>
+                                        <p className="text-purple-300 text-sm font-medium mb-4">Mensaje en curso</p>
+                                        <p className="text-gray-400 text-sm mb-6 leading-relaxed italic">
+                                            {currentVideo.desc}
+                                        </p>
+                                        <div className="flex items-center gap-3 p-3 bg-white/5 rounded-xl border border-white/10 mb-6">
+                                            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-pink-500 flex items-center justify-center shrink-0">
+                                                <i className="fa-solid fa-robot text-white"></i>
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="text-xs text-gray-400">Canalizado por</p>
+                                                <p className="text-sm font-bold text-white truncate">{currentVideo.author}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="space-y-2 mt-4 border-t border-white/10 pt-4">
+                                        <p className="text-xs text-gray-500 font-bold uppercase mb-2">Siguientes transmisiones</p>
+                                        {playlist.map((video) => (
+                                            <button 
+                                                key={video.id}
+                                                onClick={() => setCurrentVideo(video)}
+                                                className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-colors flex items-center gap-3 ${currentVideo.id === video.id ? 'bg-purple-600/50 border border-purple-500/50 text-white' : 'bg-white/5 border border-transparent text-gray-400 hover:bg-white/10'}`}
+                                            >
+                                                <i className={`fa-solid fa-play shrink-0 ${currentVideo.id === video.id ? "text-purple-300" : "text-gray-500"}`}></i>
+                                                <span className="truncate">{video.title}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* DASHBOARD */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div onClick={() => setActiveView('horoscope')} className="bg-gray-900/50 p-6 rounded-2xl border border-purple-500/30 backdrop-blur-sm hover:border-purple-500/60 transition-all cursor-pointer group hover:-translate-y-1">
+                            <i className="fa-solid fa-sun text-yellow-500 text-3xl mb-4 group-hover:scale-110 transition-transform block"></i>
+                            <h3 className="text-xl font-bold mb-2">Horóscopo Diario</h3>
+                            <p className="text-gray-400 text-sm mb-4">Predicciones gratuitas basadas en tu signo solar y tránsitos actuales.</p>
+                            <div className="text-purple-400 font-semibold flex items-center gap-2 group-hover:text-purple-300 transition-colors">
+                                Leer ahora <i className="fa-solid fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div onClick={() => setActiveView('tarot')} className="bg-gray-900/50 p-6 rounded-2xl border border-blue-500/30 backdrop-blur-sm hover:border-blue-500/60 transition-all cursor-pointer group hover:-translate-y-1">
+                            <i className="fa-solid fa-moon text-blue-400 text-3xl mb-4 group-hover:scale-110 transition-transform block"></i>
+                            <h3 className="text-xl font-bold mb-2">Lectura de Tarot</h3>
+                            <p className="text-gray-400 text-sm mb-4">Extrae una carta del mazo digital para guiar tu energía hoy.</p>
+                            <div className="text-blue-400 font-semibold flex items-center gap-2 group-hover:text-blue-300 transition-colors">
+                                Barajar cartas <i className="fa-solid fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div onClick={() => setActiveView('oracle')} className="bg-gray-900/50 p-6 rounded-2xl border border-pink-500/30 backdrop-blur-sm hover:border-pink-500/60 transition-all cursor-pointer group hover:-translate-y-1">
+                            <i className="fa-solid fa-wand-magic-sparkles text-pink-500 text-3xl mb-4 group-hover:scale-110 transition-transform block"></i>
+                            <h3 className="text-xl font-bold mb-2">Oráculo IA</h3>
+                            <p className="text-gray-400 text-sm mb-4">Pregunta al oráculo sobre amor, dinero o salud con IA avanzada.</p>
+                            <div className="text-pink-400 font-semibold flex items-center gap-2 group-hover:text-pink-300 transition-colors">
+                                Consultar <i className="fa-solid fa-arrow-right"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <section className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 p-8 rounded-3xl border border-white/10 mt-8">
+                        <div className="flex flex-col md:flex-row items-center gap-8">
+                            <div className="flex-1">
+                                <span className="bg-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Premium</span>
+                                <h2 className="text-3xl font-bold mt-4 mb-4">Análisis Cósmico 360°</h2>
+                                <p className="text-gray-300 mb-6">
+                                    Nuestra IA cruza tu **Zodiaco Natal**, **Horóscopo Chino**, **Numerología** y **Diseño Humano** para entregarte el reporte más completo jamás creado.
+                                </p>
+                                <button onClick={() => setActiveView('premium')} className="bg-white text-black px-8 py-3 rounded-xl font-bold hover:bg-gray-200 transition-transform active:scale-95">
+                                    Obtener mi reporte personalizado
+                                </button>
+                            </div>
+                            <div className="w-64 h-64 relative flex items-center justify-center">
+                                <div className="absolute inset-0 bg-purple-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+                                <i className="fa-solid fa-compass text-white/20 text-9xl animate-spin-slow"></i>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    <nav className="border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+                        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+                            <div className="flex items-center gap-2 cursor-pointer" onClick={resetView}>
+                                <i className="fa-solid fa-wand-magic-sparkles text-purple-500 text-xl"></i>
+                                <span className="font-bold text-xl tracking-tighter">MÍSTICA.AI</span>
+                            </div>
+                            <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
+                                <button onClick={() => setActiveView('home')} className={`hover:text-white transition-colors ${activeView === 'home' ? 'text-white' : ''}`}>Inicio</button>
+                                <button onClick={() => setActiveView('tarot')} className={`hover:text-white transition-colors ${activeView === 'tarot' ? 'text-white' : ''}`}>Tarot</button>
+                                <button onClick={() => setActiveView('oracle')} className={`hover:text-white transition-colors ${activeView === 'oracle' ? 'text-white' : ''}`}>Oráculo</button>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <button onClick={() => setActiveView('premium')} className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-full text-xs font-bold transition-all">
+                                    PERFIL PREMIUM
+                                </button>
+                                <i className="fa-solid fa-user text-gray-400 cursor-pointer hover:text-white text-xl"></i>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <main className="flex-1 max-w-6xl w-full mx-auto px-4 pb-20 pt-6">
+                        {activeView === 'home' && renderHome()}
+                        {activeView === 'premium' && renderPremiumForm()}
+                        {activeView === 'horoscope' && renderHoroscopeView()}
+                        {activeView === 'tarot' && renderTarotView()}
+                        {activeView === 'oracle' && renderOracleView()}
+                    </main>
+
+                    <footer className="border-t border-white/5 py-10 bg-gray-900/20">
+                        <div className="max-w-6xl mx-auto px-4 text-center">
+                            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500 text-xs">
+                                <p>© 2026 Mística AI Platform.</p>
+                                <div className="flex items-center gap-4">
+                                    <span>Estado del Sistema: <span className="text-green-500">Online</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
