@@ -225,28 +225,22 @@
                         </div>
                     </section>
 
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div onClick={() => setActiveView('tarot')} className="bg-gray-900 p-6 rounded-2xl border border-blue-500/30 cursor-pointer hover:border-blue-500 transition-all text-center group">
-                            <i className="fa-solid fa-layer-group text-blue-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                            <h3 className="font-bold">Tarot</h3>
-                        </div>
-                        <div onClick={() => setActiveView('astral')} className="bg-gray-900 p-6 rounded-2xl border border-purple-500/30 cursor-pointer hover:border-purple-500 transition-all text-center group">
-                            <i className="fa-solid fa-star-and-crescent text-purple-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                            <h3 className="font-bold">Carta Astral</h3>
-                        </div>
-                        <div onClick={() => setActiveView('iching')} className="bg-gray-900 p-6 rounded-2xl border border-red-500/30 cursor-pointer hover:border-red-500 transition-all text-center group">
-                            <i className="fa-solid fa-yin-yang text-red-500 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                            <h3 className="font-bold">I Ching</h3>
-                        </div>
-                        <div onClick={() => setActiveView('oracle')} className="bg-gray-900 p-6 rounded-2xl border border-pink-500/30 cursor-pointer hover:border-pink-500 transition-all text-center group">
-                            <i className="fa-solid fa-robot text-pink-500 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                            <h3 className="font-bold">Oráculo</h3>
-                        </div>
-                        <div onClick={() => setActiveView('aidancing')} className="bg-gray-900 p-6 rounded-2xl border border-green-500/30 cursor-pointer hover:border-green-500 transition-all text-center group">
-                            <i className="fa-solid fa-video text-green-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                            <h3 className="font-bold">AI Dancing</h3>
-                        </div>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {group.files.map((file, idx) => (
+        <div key={idx} className="bg-black rounded-xl overflow-hidden border border-white/5 relative shadow-lg">
+            <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-gray-300 pointer-events-none truncate max-w-[90%] font-mono">
+                {file}
+            </div>
+            {/* Clases actualizadas: aspect-[9/16] para formato vertical y object-contain para evitar recortes */}
+            <video
+                className="ai-dance-video w-full aspect-[9/16] object-contain bg-black"
+                src={`./${file}`}
+                controls
+                playsInline
+            />
+        </div>
+    ))}
+</div>
                     
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                         {zodiacSigns.map(s => (
@@ -436,4 +430,5 @@
     </script>
 </body>
 </html>
+
 
