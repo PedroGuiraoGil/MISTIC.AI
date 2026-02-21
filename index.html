@@ -178,6 +178,14 @@
                 vids.forEach((vid) => vid.pause());
             };
 
+            const playSequence = (groupId) => {
+                const vids = document.querySelectorAll(`.video-group-${groupId}`);
+                vids.forEach((vid, index) => {
+                    vid.muted = (index !== 0); // Silenciar todos excepto el primero de este grupo en concreto
+                    vid.play().catch(e => console.log("Se requiere interacción previa", e));
+                });
+            };
+
             const resetView = () => {
                 setActiveView('home');
                 setPrediction('');
@@ -276,22 +284,49 @@
                                         <div key={group.id} className="bg-gray-900 p-6 rounded-3xl border border-green-500/20">
                                             <h3 className="text-xl font-bold mb-4 text-green-400 border-b border-green-500/20 pb-2">Secuencia {group.id}</h3>
                                             
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                {group.files.map((file, idx) => (
-                                                    <div key={idx} className="bg-black rounded-xl overflow-hidden border border-white/5 relative shadow-lg">
+                                            {/* Nuevo Grid: Columna izq, Auto para el botón, Columna der */}
+                                            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-center">
+                                                
+                                                {/* Primer vídeo del par */}
+                                                {group.files[0] && (
+                                                    <div className="bg-black rounded-xl overflow-hidden border border-white/5 relative shadow-lg">
                                                         <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-gray-300 pointer-events-none truncate max-w-[90%] font-mono">
-                                                            {file}
+                                                            {group.files[0]}
                                                         </div>
                                                         <video
-                                                            className="ai-dance-video w-full aspect-[9/16] object-contain bg-black"
-                                                            src={`./${file}`}
+                                                            className={`ai-dance-video video-group-${group.id} w-full aspect-[9/16] object-contain bg-black`}
+                                                            src={`./${group.files[0]}`}
                                                             controls
                                                             playsInline
                                                         />
                                                     </div>
-                                                ))}
-                                            </div>
+                                                )}
 
+                                                {/* Botón de reproducción del par, situado entre los vídeos */}
+                                                <div className="flex justify-center my-2 md:my-0">
+                                                    <button onClick={() => playSequence(group.id)} className="bg-green-600 hover:bg-green-500 rounded-full w-14 h-14 flex items-center justify-center shadow-[0_0_15px_rgba(22,163,74,0.4)] transition-transform hover:scale-110 z-10">
+                                                        <i className="fa-solid fa-play text-xl ml-1 text-white"></i>
+                                                    </button>
+                                                </div>
+
+                                                {/* Segundo vídeo del par (si existe) */}
+                                                {group.files[1] ? (
+                                                    <div className="bg-black rounded-xl overflow-hidden border border-white/5 relative shadow-lg">
+                                                        <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-gray-300 pointer-events-none truncate max-w-[90%] font-mono">
+                                                            {group.files[1]}
+                                                        </div>
+                                                        <video
+                                                            className={`ai-dance-video video-group-${group.id} w-full aspect-[9/16] object-contain bg-black`}
+                                                            src={`./${group.files[1]}`}
+                                                            controls
+                                                            playsInline
+                                                        />
+                                                    </div>
+                                                ) : (
+                                                    <div className="hidden md:block"></div>
+                                                )}
+                                                
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
