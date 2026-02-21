@@ -6,7 +6,6 @@
     <title>Mística AI 2026</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -18,7 +17,6 @@
         .animate-spin-slow { animation: spin-slow 12s linear infinite; }
         .perspective-1000 { perspective: 1000px; }
         
-        /* Estilos para las líneas del I Ching */
         .yin-line { height: 12px; display: flex; justify-content: space-between; margin-bottom: 6px; }
         .yin-line div { width: 45%; background-color: white; border-radius: 2px; }
         .yang-line { height: 12px; width: 100%; background-color: white; border-radius: 2px; margin-bottom: 6px; }
@@ -34,11 +32,9 @@
             const [activeView, setActiveView] = useState('home'); 
             const [loading, setLoading] = useState(false);
             
-            // --- ESTADOS HORÓSCOPO ---
             const [selectedSign, setSelectedSign] = useState(null);
             const [prediction, setPrediction] = useState('');
 
-            // --- ESTADOS TAROT (Tirada 3 cartas) ---
             const [tarotState, setTarotState] = useState('deck'); 
             const [drawnCards, setDrawnCards] = useState([]);
             const [tarotSynthesis, setTarotSynthesis] = useState('');
@@ -46,21 +42,17 @@
             const [tarotChatInput, setTarotChatInput] = useState('');
             const [tarotChatHistory, setTarotChatHistory] = useState([]);
 
-            // --- ESTADOS I CHING ---
             const [hexagram, setHexagram] = useState([]); 
             const [ichingState, setIchingState] = useState('start');
 
-            // --- ESTADOS CARTA ASTRAL ---
             const [astralData, setAstralData] = useState({ name: '', date: '', time: '', location: '' });
             const [astralChart, setAstralChart] = useState(null);
 
-            // --- ESTADOS ORÁCULO ---
             const [oracleInput, setOracleInput] = useState('');
             const [oracleHistory, setOracleHistory] = useState([
                 { type: 'bot', text: 'Soy el Oráculo Neural v4.0. ¿Qué inquietud nubla tu mente hoy?' }
             ]);
 
-            // --- VIDEOS ---
             const playlist = [
                 { id: 'v1', title: 'Visión del Día', author: 'Oráculo Neural v4.0', src: './hf_20260219_024541_71c7417b-1451-494a-899f-0117d1abda4c.mp4', desc: '"La alineación planetaria actual marca un antes y un después..."' },
                 { id: 'v2', title: 'Presentación Formador (F)', author: 'Pedro Guirao', src: './hf_20260219_130132_d7e6aebe-fb3d-4e62-8107-15ff03ef3d27.mp4', desc: '"Hola, soy Pedro Guirao, soy formador..."' },
@@ -68,7 +60,6 @@
             ];
             const [currentVideo, setCurrentVideo] = useState(playlist[0]);
 
-            // --- DATOS MAESTROS ---
             const zodiacSigns = [
                 { name: 'Aries', icon: '♈' }, { name: 'Tauro', icon: '♉' }, { name: 'Géminis', icon: '♊' }, 
                 { name: 'Cáncer', icon: '♋' }, { name: 'Leo', icon: '♌' }, { name: 'Virgo', icon: '♍' },
@@ -83,7 +74,6 @@
                 { name: 'La Estrella', meaning: 'Esperanza, guía' }, { name: 'El Mundo', meaning: 'Culminación' }
             ];
 
-            // --- DATOS VIDEO AI DANCING ---
             const aiVideos = [
                 { id: 2, files: ['2.mp4', '2.real.mp4'] },
                 { id: 3, files: ['3 KARMA.mp4', '3 REAL.mp4'] },
@@ -96,8 +86,6 @@
                 { id: 10, files: ['10 LINDA.mp4', '10 REAL.mp4'] },
                 { id: 11, files: ['11 IMAN.mp4'] }
             ];
-
-            // --- LÓGICA DE HERRAMIENTAS ---
 
             const generateHoroscope = (sign) => {
                 setLoading(true);
@@ -177,11 +165,9 @@
                 }, 1200);
             };
 
-            // Controles globales para Video AI Dancing
             const playAllAIVideos = () => {
                 const vids = document.querySelectorAll('.ai-dance-video');
                 vids.forEach((vid, index) => {
-                    // Silenciar todos excepto el primero de la lista (índice 0)
                     vid.muted = (index !== 0);
                     vid.play().catch(e => console.log("La reproducción automática requiere interacción previa", e));
                 });
@@ -199,8 +185,6 @@
                 setIchingState('start');
                 setAstralChart(null);
             };
-
-            // --- RENDERIZADO DE VISTAS ---
 
             const renderHome = () => (
                 <div className="space-y-8 animate-in fade-in duration-700">
@@ -224,23 +208,29 @@
                             </div>
                         </div>
                     </section>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    {group.files.map((file, idx) => (
-        <div key={idx} className="bg-black rounded-xl overflow-hidden border border-white/5 relative shadow-lg">
-            <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-gray-300 pointer-events-none truncate max-w-[90%] font-mono">
-                {file}
-            </div>
-            {/* Clases actualizadas: aspect-[9/16] para formato vertical y object-contain para evitar recortes */}
-            <video
-                className="ai-dance-video w-full aspect-[9/16] object-contain bg-black"
-                src={`./${file}`}
-                controls
-                playsInline
-            />
-        </div>
-    ))}
-</div>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div onClick={() => setActiveView('tarot')} className="bg-gray-900 p-6 rounded-2xl border border-blue-500/30 cursor-pointer hover:border-blue-500 transition-all text-center group">
+                            <i className="fa-solid fa-layer-group text-blue-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <h3 className="font-bold">Tarot</h3>
+                        </div>
+                        <div onClick={() => setActiveView('astral')} className="bg-gray-900 p-6 rounded-2xl border border-purple-500/30 cursor-pointer hover:border-purple-500 transition-all text-center group">
+                            <i className="fa-solid fa-star-and-crescent text-purple-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <h3 className="font-bold">Carta Astral</h3>
+                        </div>
+                        <div onClick={() => setActiveView('iching')} className="bg-gray-900 p-6 rounded-2xl border border-red-500/30 cursor-pointer hover:border-red-500 transition-all text-center group">
+                            <i className="fa-solid fa-yin-yang text-red-500 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <h3 className="font-bold">I Ching</h3>
+                        </div>
+                        <div onClick={() => setActiveView('oracle')} className="bg-gray-900 p-6 rounded-2xl border border-pink-500/30 cursor-pointer hover:border-pink-500 transition-all text-center group">
+                            <i className="fa-solid fa-robot text-pink-500 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <h3 className="font-bold">Oráculo</h3>
+                        </div>
+                        <div onClick={() => setActiveView('aidancing')} className="bg-gray-900 p-6 rounded-2xl border border-green-500/30 cursor-pointer hover:border-green-500 transition-all text-center group">
+                            <i className="fa-solid fa-video text-green-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <h3 className="font-bold">AI Dancing</h3>
+                        </div>
+                    </div>
                     
                     <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
                         {zodiacSigns.map(s => (
@@ -285,6 +275,7 @@
                                     {aiVideos.map((group) => (
                                         <div key={group.id} className="bg-gray-900 p-6 rounded-3xl border border-green-500/20">
                                             <h3 className="text-xl font-bold mb-4 text-green-400 border-b border-green-500/20 pb-2">Secuencia {group.id}</h3>
+                                            
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 {group.files.map((file, idx) => (
                                                     <div key={idx} className="bg-black rounded-xl overflow-hidden border border-white/5 relative shadow-lg">
@@ -292,7 +283,7 @@
                                                             {file}
                                                         </div>
                                                         <video
-                                                            className="ai-dance-video w-full aspect-video object-cover"
+                                                            className="ai-dance-video w-full aspect-[9/16] object-contain bg-black"
                                                             src={`./${file}`}
                                                             controls
                                                             playsInline
@@ -300,6 +291,7 @@
                                                     </div>
                                                 ))}
                                             </div>
+
                                         </div>
                                     ))}
                                 </div>
@@ -430,5 +422,3 @@
     </script>
 </body>
 </html>
-
-
