@@ -53,6 +53,9 @@
                 { type: 'bot', text: 'Soy el Oráculo Neural v4.0. ¿Qué inquietud nubla tu mente hoy?' }
             ]);
 
+            // Nuevo estado para controlar la visibilidad de los vídeos Karma
+            const [showKarma, setShowKarma] = useState(false);
+
             const playlist = [
                 { id: 'v1', title: 'Visión del Día', author: 'Oráculo Neural v4.0', src: './hf_20260219_024541_71c7417b-1451-494a-899f-0117d1abda4c.mp4', desc: '"La alineación planetaria actual marca un antes y un después..."' },
                 { id: 'v2', title: 'Presentación Formador (F)', author: 'Pedro Guirao', src: './hf_20260219_130132_d7e6aebe-fb3d-4e62-8107-15ff03ef3d27.mp4', desc: '"Hola, soy Pedro Guirao, soy formador..."' },
@@ -74,7 +77,6 @@
                 { name: 'La Estrella', meaning: 'Esperanza, guía' }, { name: 'El Mundo', meaning: 'Culminación' }
             ];
 
-            // Orden invertido y extensiones corregidas
             const aiVideos = [
                 { id: 12, files: ['12 KARMA.mp4', '12 REAL.mp4'] },
                 { id: 11, files: ['11 IMAN.mp4', '11 REAL.mp4'] },
@@ -194,6 +196,7 @@
                 setTarotState('deck');
                 setIchingState('start');
                 setAstralChart(null);
+                setShowKarma(false); // Resetea el estado al salir de la vista
             };
 
             const renderHome = () => (
@@ -328,6 +331,36 @@
                                         </div>
                                     ))}
                                 </div>
+
+                                {/* NUEVA SECCIÓN: KARMA */}
+                                <div className="mt-12 pt-8 border-t border-white/10 text-center space-y-8">
+                                    <button 
+                                        onClick={() => setShowKarma(!showKarma)} 
+                                        className="bg-gradient-to-r from-purple-700 to-pink-600 hover:from-purple-600 hover:to-pink-500 px-16 py-4 rounded-full font-black text-2xl shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-transform hover:scale-105 uppercase tracking-widest text-white"
+                                    >
+                                        {showKarma ? 'OCULTAR KARMA' : 'KARMA'}
+                                    </button>
+                                    
+                                    {showKarma && (
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom duration-500 text-left">
+                                            {['K1.mp4', 'K2.mp4', 'K3.mp4', 'K4.mp4'].map((kvid, idx) => (
+                                                <div key={idx} className="bg-black rounded-xl overflow-hidden border border-purple-500/40 relative shadow-lg">
+                                                    <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-purple-300 pointer-events-none font-mono tracking-widest">
+                                                        {kvid}
+                                                    </div>
+                                                    <video
+                                                        className="ai-dance-video w-full aspect-[9/16] object-contain bg-black"
+                                                        src={`./${kvid}`}
+                                                        controls
+                                                        playsInline
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                                {/* FIN SECCIÓN KARMA */}
+
                             </div>
                         )}
 
