@@ -401,110 +401,135 @@
         };
 
         // =============================================
-        // COMPONENTE FRASES CÉLEBRES
+        // COMPONENTE FRASES CÉLEBRES — APIs reales
+        // quotable.io: +1700 frases, búsqueda por autor y keyword
+        // zenquotes.io: frase del día y random
         // =============================================
         const FrasesView = ({ onBack }) => {
-            const [modo, setModo] = useState('dia'); // 'dia' | 'personaje' | 'palabra' | 'azar'
+            const [modo, setModo] = useState('dia');
             const [inputValor, setInputValor] = useState('');
             const [frase, setFrase] = useState(null);
+            const [multiples, setMultiples] = useState([]);
             const [cargando, setCargando] = useState(false);
             const [error, setError] = useState('');
 
-            const BANCO_FRASES = [
-                { frase: "La imaginación es más importante que el conocimiento.", autor: "Albert Einstein", contexto: "Einstein creía que la creatividad superaba al saber acumulado.", tags: ["einstein","ciencia","imaginación","conocimiento","creatividad"] },
-                { frase: "La vida es lo que pasa mientras estás ocupado haciendo otros planes.", autor: "John Lennon", contexto: "Lennon lo escribió en la canción 'Beautiful Boy' en 1980.", tags: ["lennon","vida","tiempo","planes","música"] },
-                { frase: "El éxito es la suma de pequeños esfuerzos repetidos día tras día.", autor: "Robert Collier", contexto: "Collier fue un influyente escritor de autoayuda del siglo XX.", tags: ["éxito","esfuerzo","trabajo","constancia","motivación"] },
-                { frase: "En medio de la dificultad yace la oportunidad.", autor: "Albert Einstein", contexto: "Einstein aplicó esta filosofía durante sus años de investigación más duros.", tags: ["einstein","dificultad","oportunidad","retos","superación"] },
-                { frase: "No llores porque terminó, sonríe porque sucedió.", autor: "Gabriel García Márquez", contexto: "Reflexión del Nobel colombiano sobre el valor de los momentos vividos.", tags: ["garcia marquez","amor","vida","felicidad","recuerdos"] },
-                { frase: "El único modo de hacer un gran trabajo es amar lo que haces.", autor: "Steve Jobs", contexto: "Jobs lo dijo en su famoso discurso de Stanford en 2005.", tags: ["jobs","trabajo","pasión","apple","motivación"] },
-                { frase: "Sé el cambio que quieres ver en el mundo.", autor: "Mahatma Gandhi", contexto: "Gandhi vivió esta frase liderando la independencia de India sin violencia.", tags: ["gandhi","cambio","mundo","paz","liderazgo"] },
-                { frase: "La libertad no es algo que se da; es algo que se conquista.", autor: "Malcolm X", contexto: "Malcolm X defendió los derechos civiles con esta convicción.", tags: ["malcolm x","libertad","derechos","lucha","conquista"] },
-                { frase: "El arte es la mentira que nos permite conocer la verdad.", autor: "Pablo Picasso", contexto: "Picasso reflexionaba así sobre la esencia del arte y la realidad.", tags: ["picasso","arte","verdad","creatividad","pintura"] },
-                { frase: "No basta saber, se debe también aplicar. No es suficiente querer, se debe también hacer.", autor: "Johann Wolfgang von Goethe", contexto: "Goethe sintetizó en esta frase su filosofía de vida activa.", tags: ["goethe","acción","conocimiento","voluntad","filosofía"] },
-                { frase: "La peor soledad es no estar cómodo con uno mismo.", autor: "Mark Twain", contexto: "Twain exploró la soledad y la identidad en muchas de sus obras.", tags: ["twain","soledad","identidad","autoconocimiento","comodidad"] },
-                { frase: "Primero te ignoran, luego se ríen de ti, luego te atacan, luego ganas.", autor: "Mahatma Gandhi", contexto: "Gandhi describía así el proceso de todo cambio social genuino.", tags: ["gandhi","perseverancia","victoria","cambio","resistencia"] },
-                { frase: "Un libro es un sueño que sostienes en tus manos.", autor: "Neil Gaiman", contexto: "Gaiman, autor de Sandman y Coraline, es un gran defensor de la lectura.", tags: ["gaiman","libro","lectura","sueño","literatura"] },
-                { frase: "La vida sin música sería un error.", autor: "Friedrich Nietzsche", contexto: "Nietzsche, gran aficionado a Wagner, consideraba la música esencial.", tags: ["nietzsche","música","vida","filosofía","arte"] },
-                { frase: "El secreto de la felicidad no es hacer siempre lo que se quiere, sino querer siempre lo que se hace.", autor: "Leo Tolstoi", contexto: "Tolstoi exploró esta idea en Anna Karenina y Guerra y Paz.", tags: ["tolstoi","felicidad","querer","voluntad","literatura"] },
-                { frase: "No hay camino para la paz; la paz es el camino.", autor: "Mahatma Gandhi", contexto: "Gandhi resumió su filosofía noviolenta en esta célebre frase.", tags: ["gandhi","paz","camino","noviolencia","filosofía"] },
-                { frase: "La creatividad es la inteligencia divirtiéndose.", autor: "Albert Einstein", contexto: "Einstein defendía el juego y la curiosidad como motores del genio.", tags: ["einstein","creatividad","inteligencia","juego","diversión"] },
-                { frase: "Prefiero morir de pie que vivir de rodillas.", autor: "Emiliano Zapata", contexto: "Zapata lideró la Revolución Mexicana con esta convicción inquebrantable.", tags: ["zapata","dignidad","libertad","revolución","valentía"] },
-                { frase: "El tiempo es el recurso más valioso que tenemos.", autor: "Carl Sandburg", contexto: "El poeta americano reflexionó sobre el tiempo en innumerables obras.", tags: ["sandburg","tiempo","recurso","valor","vida"] },
-                { frase: "Si quieres ir rápido, ve solo. Si quieres llegar lejos, ve acompañado.", autor: "Proverbio africano", contexto: "Sabiduría popular del continente africano sobre el poder de la comunidad.", tags: ["proverbio","equipo","comunidad","colaboración","viaje"] },
-                { frase: "El mayor riesgo es no correr ningún riesgo.", autor: "Mark Zuckerberg", contexto: "Zuckerberg lo dijo en la presentación de Facebook a inversores en 2012.", tags: ["zuckerberg","riesgo","valentía","emprendimiento","éxito"] },
-                { frase: "Lo que no te mata te hace más fuerte.", autor: "Friedrich Nietzsche", contexto: "Nietzsche lo escribió en El crepúsculo de los ídolos en 1888.", tags: ["nietzsche","fortaleza","adversidad","superación","filosofía"] },
-                { frase: "La esperanza es el sueño del hombre despierto.", autor: "Aristóteles", contexto: "Aristóteles, filósofo de la Antigua Grecia, reflexionó sobre la esperanza como fuerza vital.", tags: ["aristoteles","esperanza","sueño","filosofía","antigua grecia"] },
-                { frase: "Elige un trabajo que ames y no tendrás que trabajar ni un día de tu vida.", autor: "Confucio", contexto: "El sabio chino Confucio enseñó este principio hace más de 2500 años.", tags: ["confucio","trabajo","amor","vocación","felicidad"] },
-                { frase: "Dos cosas son infinitas: el universo y la estupidez humana. Y del universo no estoy seguro.", autor: "Albert Einstein", contexto: "Esta es una de las frases más humorísticas y célebres del genio alemán.", tags: ["einstein","universo","humor","infinito","humanidad"] },
-                { frase: "No dejes que el ruido de las opiniones ajenas ahogue tu propia voz interior.", autor: "Steve Jobs", contexto: "Jobs lo dijo en su mítico discurso de graduación en Stanford, 2005.", tags: ["jobs","opinión","voz","interior","stanford"] },
-                { frase: "La educación es el arma más poderosa para cambiar el mundo.", autor: "Nelson Mandela", contexto: "Mandela luchó por la educación como herramienta de liberación en Sudáfrica.", tags: ["mandela","educación","cambio","mundo","sudáfrica"] },
-                { frase: "Soy suficientemente grande para contener contradicciones.", autor: "Walt Whitman", contexto: "Whitman lo escribió en Hojas de hierba, su obra maestra poética.", tags: ["whitman","contradicción","identidad","poesía","literatura"] },
-                { frase: "El amor es la única fuerza capaz de transformar a un enemigo en amigo.", autor: "Martin Luther King Jr.", contexto: "King predicó esta filosofía durante el movimiento por los derechos civiles.", tags: ["luther king","amor","paz","transformación","derechos civiles"] },
-                { frase: "Dime y lo olvido, enséñame y lo recuerdo, involúcrame y lo aprendo.", autor: "Benjamin Franklin", contexto: "Franklin, polímata y Padre Fundador de EE.UU., aplicó esto en su vida entera.", tags: ["franklin","aprendizaje","educación","memoria","enseñanza"] },
-            ];
-
-            const fraseAleatoria = () => BANCO_FRASES[Math.floor(Math.random() * BANCO_FRASES.length)];
-
-            const frasePorDia = () => {
-                const idx = new Date().getDate() % BANCO_FRASES.length;
-                return BANCO_FRASES[idx];
-            };
-
-            const frasePorTermino = (termino) => {
-                const t = termino.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                const encontrada = BANCO_FRASES.find(f =>
-                    f.autor.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(t) ||
-                    f.tags.some(tag => tag.includes(t)) ||
-                    f.frase.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(t)
-                );
-                return encontrada || null;
-            };
-
-            const mostrarFrase = (f, contextoExtra) => {
-                setCargando(true);
-                setTimeout(() => {
-                    setFrase({ ...f, contexto: contextoExtra || f.contexto });
-                    setCargando(false);
-                }, 600);
-            };
-
-            const obtenerFraseDia = () => {
-                setError(''); setFrase(null);
-                const hoy = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-                const f = frasePorDia();
-                mostrarFrase(f, `Frase seleccionada para este ${hoy}.`);
-            };
-
-            const buscarPorPersonaje = () => {
-                setError(''); setFrase(null);
-                if (!inputValor.trim()) {
-                    // Sin input: frase aleatoria de un personaje famoso
-                    mostrarFrase(fraseAleatoria());
-                } else {
-                    const f = frasePorTermino(inputValor);
-                    if (f) { mostrarFrase(f); }
-                    else { setError(`No tenemos frases de "${inputValor}". Prueba: Einstein, Gandhi, Picasso, Mandela, Jobs, Lennon...`); }
+            // Normaliza la respuesta de cualquier API al mismo formato interno
+            const normalizar = (raw, fuente) => {
+                if (fuente === 'quotable') {
+                    return {
+                        frase: raw.content,
+                        autor: raw.author,
+                        contexto: raw.tags?.length ? `Etiquetas: ${raw.tags.join(', ')}` : '',
+                    };
                 }
+                if (fuente === 'zenquotes') {
+                    return { frase: raw.q, autor: raw.a, contexto: '' };
+                }
+                return raw;
             };
 
-            const buscarPorPalabra = () => {
-                setError(''); setFrase(null);
-                if (!inputValor.trim()) {
-                    // Sin input: frase aleatoria sobre cualquier tema
-                    mostrarFrase(fraseAleatoria());
-                } else {
-                    const f = frasePorTermino(inputValor);
-                    if (f) { mostrarFrase(f, `Frase relacionada con "${inputValor}".`); }
-                    else {
-                        const aleatoria = fraseAleatoria();
-                        mostrarFrase(aleatoria, `No encontramos "${inputValor}" exacto, pero aquí va una gran frase.`);
+            // --- FRASE DEL DÍA via zenquotes (tiene endpoint "today") ---
+            const obtenerFraseDia = async () => {
+                setCargando(true); setError(''); setFrase(null); setMultiples([]);
+                try {
+                    // zenquotes /today devuelve la frase del día real
+                    const res = await fetch('https://zenquotes.io/api/today');
+                    if (!res.ok) throw new Error();
+                    const data = await res.json();
+                    setFrase(normalizar(data[0], 'zenquotes'));
+                } catch {
+                    // Fallback: quotable random
+                    try {
+                        const res2 = await fetch('https://api.quotable.io/quotes/random?limit=1');
+                        const data2 = await res2.json();
+                        setFrase(normalizar(data2[0], 'quotable'));
+                    } catch { setError('No se pudo obtener la frase del día. Comprueba tu conexión.'); }
+                } finally { setCargando(false); }
+            };
+
+            // --- AL AZAR via quotable random ---
+            const obtenerAlAzar = async () => {
+                setCargando(true); setError(''); setFrase(null); setMultiples([]);
+                try {
+                    const res = await fetch('https://api.quotable.io/quotes/random?limit=1');
+                    if (!res.ok) throw new Error();
+                    const data = await res.json();
+                    setFrase(normalizar(data[0], 'quotable'));
+                } catch { setError('No se pudo obtener una frase. Comprueba tu conexión.'); }
+                finally { setCargando(false); }
+            };
+
+            // --- POR PERSONAJE via quotable /search/quotes?author= ---
+            const buscarPorPersonaje = async () => {
+                setCargando(true); setError(''); setFrase(null); setMultiples([]);
+                try {
+                    const query = inputValor.trim();
+                    // Sin texto: frase aleatoria de un autor aleatorio
+                    if (!query) {
+                        const res = await fetch('https://api.quotable.io/quotes/random?limit=1');
+                        const data = await res.json();
+                        setFrase(normalizar(data[0], 'quotable'));
+                    } else {
+                        // Buscar autor exacto primero, luego búsqueda libre
+                        const res = await fetch(`https://api.quotable.io/quotes?author=${encodeURIComponent(query)}&limit=5`);
+                        if (!res.ok) throw new Error();
+                        const data = await res.json();
+                        if (data.results?.length > 0) {
+                            // Mostrar varias si hay más de una
+                            if (data.results.length === 1) {
+                                setFrase(normalizar(data.results[0], 'quotable'));
+                            } else {
+                                setMultiples(data.results.map(r => normalizar(r, 'quotable')));
+                                setFrase(normalizar(data.results[0], 'quotable'));
+                            }
+                        } else {
+                            // Intentar búsqueda por texto libre
+                            const res2 = await fetch(`https://api.quotable.io/search/quotes?query=${encodeURIComponent(query)}&limit=5`);
+                            const data2 = await res2.json();
+                            if (data2.results?.length > 0) {
+                                setMultiples(data2.results.map(r => normalizar(r, 'quotable')));
+                                setFrase(normalizar(data2.results[0], 'quotable'));
+                            } else {
+                                setError(`No encontramos frases de "${query}". Prueba en inglés: Einstein, Gandhi, Twain, Picasso...`);
+                            }
+                        }
                     }
-                }
+                } catch { setError('Error al buscar. Comprueba tu conexión.'); }
+                finally { setCargando(false); }
             };
 
-            const obtenerAlAzar = () => {
-                setError(''); setFrase(null);
-                mostrarFrase(fraseAleatoria());
+            // --- POR PALABRA/TEMA via quotable /search/quotes?query= ---
+            const buscarPorPalabra = async () => {
+                setCargando(true); setError(''); setFrase(null); setMultiples([]);
+                try {
+                    const query = inputValor.trim();
+                    if (!query) {
+                        // Sin texto: random
+                        const res = await fetch('https://api.quotable.io/quotes/random?limit=1');
+                        const data = await res.json();
+                        setFrase(normalizar(data[0], 'quotable'));
+                    } else {
+                        // Búsqueda semántica full-text en quotable
+                        const res = await fetch(`https://api.quotable.io/search/quotes?query=${encodeURIComponent(query)}&limit=8`);
+                        if (!res.ok) throw new Error();
+                        const data = await res.json();
+                        if (data.results?.length > 0) {
+                            setMultiples(data.results.map(r => normalizar(r, 'quotable')));
+                            setFrase(normalizar(data.results[0], 'quotable'));
+                        } else {
+                            // Fallback: buscar por tag
+                            const res2 = await fetch(`https://api.quotable.io/quotes?tags=${encodeURIComponent(query)}&limit=5`);
+                            const data2 = await res2.json();
+                            if (data2.results?.length > 0) {
+                                setMultiples(data2.results.map(r => normalizar(r, 'quotable')));
+                                setFrase(normalizar(data2.results[0], 'quotable'));
+                            } else {
+                                setError(`No encontramos frases sobre "${query}". Prueba en inglés: love, fear, life, success, freedom...`);
+                            }
+                        }
+                    }
+                } catch { setError('Error al buscar. Comprueba tu conexión.'); }
+                finally { setCargando(false); }
             };
 
             const acciones = {
@@ -515,17 +540,17 @@
             };
 
             const modos = [
-                { id: 'dia',       icon: 'fa-sun',        label: 'Frase del Día',   color: 'amber' },
-                { id: 'personaje', icon: 'fa-user',        label: 'Por Personaje',   color: 'purple' },
-                { id: 'palabra',   icon: 'fa-magnifying-glass', label: 'Por Palabra', color: 'blue' },
-                { id: 'azar',      icon: 'fa-shuffle',    label: 'Al Azar',         color: 'green' },
+                { id: 'dia',       icon: 'fa-sun',              label: 'Frase del Día',  color: 'amber'  },
+                { id: 'personaje', icon: 'fa-user',             label: 'Por Personaje',  color: 'purple' },
+                { id: 'palabra',   icon: 'fa-magnifying-glass', label: 'Por Palabra',    color: 'blue'   },
+                { id: 'azar',      icon: 'fa-shuffle',          label: 'Al Azar',        color: 'green'  },
             ];
 
             const colorMap = {
-                amber:  { border: 'border-amber-500',  bg: 'bg-amber-500',   text: 'text-amber-400',  activeBg: 'bg-amber-600'  },
-                purple: { border: 'border-purple-500', bg: 'bg-purple-500',  text: 'text-purple-400', activeBg: 'bg-purple-600' },
-                blue:   { border: 'border-blue-500',   bg: 'bg-blue-500',    text: 'text-blue-400',   activeBg: 'bg-blue-600'   },
-                green:  { border: 'border-green-500',  bg: 'bg-green-500',   text: 'text-green-400',  activeBg: 'bg-green-600'  },
+                amber:  { border: 'border-amber-500',  text: 'text-amber-400',  activeBg: 'bg-amber-600'  },
+                purple: { border: 'border-purple-500', text: 'text-purple-400', activeBg: 'bg-purple-600' },
+                blue:   { border: 'border-blue-500',   text: 'text-blue-400',   activeBg: 'bg-blue-600'   },
+                green:  { border: 'border-green-500',  text: 'text-green-400',  activeBg: 'bg-green-600'  },
             };
 
             const modoActual = modos.find(m => m.id === modo);
@@ -534,14 +559,17 @@
             return (
                 <div className="animate-in fade-in duration-500 space-y-6 max-w-2xl mx-auto">
                     {/* Cabecera */}
-                    <div className="flex items-center gap-3">
-                        <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
-                            <i className="fa-solid fa-arrow-left"></i>
-                        </button>
-                        <h2 className="text-2xl font-bold flex items-center gap-2">
-                            <i className={`fa-solid fa-quote-left text-amber-400`}></i>
-                            Frases Célebres
-                        </h2>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
+                                <i className="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <h2 className="text-2xl font-bold flex items-center gap-2">
+                                <i className="fa-solid fa-quote-left text-amber-400"></i>
+                                Frases Célebres
+                            </h2>
+                        </div>
+                        <span className="text-[10px] text-gray-600 font-mono">quotable.io · zenquotes.io</span>
                     </div>
 
                     {/* Selector de modo */}
@@ -552,7 +580,7 @@
                             return (
                                 <button
                                     key={m.id}
-                                    onClick={() => { setModo(m.id); setFrase(null); setError(''); setInputValor(''); }}
+                                    onClick={() => { setModo(m.id); setFrase(null); setMultiples([]); setError(''); setInputValor(''); }}
                                     className={`p-3 rounded-xl border transition-all text-center text-xs font-bold flex flex-col items-center gap-1.5 ${activo ? `${mc.activeBg} border-transparent text-white` : `bg-gray-900 ${mc.border}/30 hover:${mc.border} text-gray-400`}`}
                                 >
                                     <i className={`fa-solid ${m.icon} text-lg ${activo ? 'text-white' : mc.text}`}></i>
@@ -562,18 +590,6 @@
                         })}
                     </div>
 
-                    {/* Botón de acción — funciona para todos los modos */}
-                    <button
-                        onClick={acciones[modo]}
-                        className={`w-full ${c.activeBg} hover:opacity-90 py-4 rounded-xl font-bold text-white transition-opacity flex items-center justify-center gap-2 text-lg`}
-                    >
-                        <i className={`fa-solid ${modoActual.icon}`}></i>
-                        {modo === 'dia'       && 'Ver Frase del Día'}
-                        {modo === 'azar'      && 'Dame una frase al azar'}
-                        {modo === 'personaje' && (inputValor.trim() ? `Buscar frases de "${inputValor}"` : 'Dame una frase de un personaje famoso')}
-                        {modo === 'palabra'   && (inputValor.trim() ? `Buscar frases sobre "${inputValor}"` : 'Dame una frase sobre un tema al azar')}
-                    </button>
-
                     {/* Input opcional para personaje y palabra */}
                     {(modo === 'personaje' || modo === 'palabra') && (
                         <div className="flex gap-3">
@@ -581,27 +597,34 @@
                                 value={inputValor}
                                 onChange={e => setInputValor(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && acciones[modo]()}
-                                placeholder={modo === 'personaje' ? 'O escribe un nombre: Einstein, Gandhi...' : 'O escribe un tema: amor, libertad...'}
-                                className={`flex-1 bg-gray-900 border ${c.border}/30 focus:outline-none focus:border-opacity-100 rounded-xl px-4 py-2.5 text-sm text-gray-300 placeholder-gray-600 transition-colors`}
+                                placeholder={modo === 'personaje' ? 'Ej: Einstein, Gandhi, Twain... (en inglés)' : 'Ej: love, fear, success, freedom... (en inglés)'}
+                                className={`flex-1 bg-gray-900 border ${c.border}/30 rounded-xl px-4 py-2.5 text-sm text-gray-300 placeholder-gray-600 outline-none transition-colors`}
                             />
                             {inputValor.trim() && (
-                                <button
-                                    onClick={() => { setInputValor(''); setFrase(null); setError(''); }}
-                                    className="bg-gray-800 hover:bg-gray-700 px-3 rounded-xl text-gray-500 hover:text-white transition-colors text-sm"
-                                >
-                                    <i className="fa-solid fa-xmark"></i>
+                                <button onClick={() => { setInputValor(''); setFrase(null); setMultiples([]); setError(''); }}
+                                    className="bg-gray-800 hover:bg-gray-700 px-3 rounded-xl text-gray-500 hover:text-white transition-colors">
+                                    <i className="fa-solid fa-xmark text-sm"></i>
                                 </button>
                             )}
                         </div>
                     )}
 
-                    {/* Estado de carga */}
-                    {cargando && (
-                        <div className="flex flex-col items-center justify-center py-16 gap-4">
-                            <i className="fa-solid fa-quote-left text-5xl text-amber-400/30 animate-pulse"></i>
-                            <p className="text-gray-500 text-sm">Buscando la frase perfecta...</p>
-                        </div>
-                    )}
+                    {/* Botón de acción principal */}
+                    <button
+                        onClick={acciones[modo]}
+                        disabled={cargando}
+                        className={`w-full ${c.activeBg} hover:opacity-90 disabled:opacity-50 py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 text-lg`}
+                    >
+                        {cargando
+                            ? <><i className="fa-solid fa-spinner animate-spin"></i> Buscando...</>
+                            : <><i className={`fa-solid ${modoActual.icon}`}></i>
+                                {modo === 'dia'       && 'Ver Frase del Día'}
+                                {modo === 'azar'      && 'Dame una frase al azar'}
+                                {modo === 'personaje' && (inputValor.trim() ? `Buscar frases de "${inputValor}"` : 'Frase de un personaje famoso')}
+                                {modo === 'palabra'   && (inputValor.trim() ? `Buscar frases sobre "${inputValor}"` : 'Frase sobre cualquier tema')}
+                            </>
+                        }
+                    </button>
 
                     {/* Error */}
                     {error && !cargando && (
@@ -610,12 +633,10 @@
                         </div>
                     )}
 
-                    {/* Resultado */}
+                    {/* Resultado principal */}
                     {frase && !cargando && (
                         <div className={`bg-gray-900 border ${c.border}/30 rounded-3xl p-8 relative overflow-hidden`}>
-                            {/* Comilla decorativa */}
                             <span className="absolute top-4 left-5 text-7xl font-black text-white/5 leading-none select-none">"</span>
-
                             <blockquote className="relative z-10">
                                 <p className={`text-xl md:text-2xl italic ${c.text} leading-relaxed mb-6`}>
                                     "{frase.frase}"
@@ -623,12 +644,10 @@
                                 <footer className="border-t border-white/10 pt-4">
                                     <p className="font-bold text-white text-lg">— {frase.autor}</p>
                                     {frase.contexto && (
-                                        <p className="text-gray-500 text-sm mt-2 leading-relaxed">{frase.contexto}</p>
+                                        <p className="text-gray-600 text-xs mt-2">{frase.contexto}</p>
                                     )}
                                 </footer>
                             </blockquote>
-
-                            {/* Botón copiar */}
                             <button
                                 onClick={() => navigator.clipboard.writeText(`"${frase.frase}" — ${frase.autor}`)}
                                 className="absolute top-4 right-4 bg-white/5 hover:bg-white/10 p-2 rounded-lg transition-colors text-gray-500 hover:text-white"
@@ -636,6 +655,22 @@
                             >
                                 <i className="fa-solid fa-copy text-xs"></i>
                             </button>
+                        </div>
+                    )}
+
+                    {/* Más resultados si hay varios */}
+                    {multiples.length > 1 && !cargando && (
+                        <div className="space-y-2">
+                            <p className="text-xs text-gray-600 font-mono uppercase tracking-widest">{multiples.length} resultados encontrados — pulsa para ver</p>
+                            <div className="space-y-2 max-h-64 overflow-y-auto tv-scroll pr-1">
+                                {multiples.map((q, i) => (
+                                    <button key={i} onClick={() => setFrase(q)}
+                                        className={`w-full text-left p-3 rounded-xl border transition-all text-sm ${frase?.frase === q.frase ? `${c.border} bg-white/5` : 'border-white/5 bg-white/5 hover:bg-white/10'}`}>
+                                        <span className="italic text-gray-300 line-clamp-2">"{q.frase}"</span>
+                                        <span className={`block mt-1 text-xs font-bold ${c.text}`}>— {q.autor}</span>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
