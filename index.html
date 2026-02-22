@@ -626,6 +626,7 @@
             ]);
             const [showKarma, setShowKarma] = useState(false);
             const [showDimision, setShowDimision] = useState(false);
+            const [showTrump, setShowTrump] = useState(false);
 
             const playlist = [
                 { id: 'v1', title: 'Visión del Día', author: 'Oráculo Neural v4.0', src: './hf_20260219_024541_71c7417b-1451-494a-899f-0117d1abda4c.mp4', desc: '"La alineación planetaria actual marca un antes y un después..."' },
@@ -768,6 +769,7 @@
                 setAstralChart(null);
                 setShowKarma(false);
                 setShowDimision(false);
+                setShowTrump(false);
             };
 
             const renderHome = () => (
@@ -928,6 +930,26 @@
                                         <button onClick={() => setShowDimision(!showDimision)} className="bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-600 hover:to-orange-500 px-12 py-4 rounded-full font-black text-xl shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-transform hover:scale-105 uppercase tracking-widest text-white w-full md:w-auto">
                                             {showDimision ? 'OCULTAR DIMISIÓN' : 'DIMISIÓN'}
                                         </button>
+                                        <button
+                                            onClick={() => {
+                                                const next = !showTrump;
+                                                setShowTrump(next);
+                                                if (next) {
+                                                    setTimeout(() => {
+                                                        const trumpVids = document.querySelectorAll('.trump-dancing-video');
+                                                        trumpVids.forEach((vid, idx) => {
+                                                            vid.muted = idx !== 0;
+                                                            vid.play().catch(() => {});
+                                                        });
+                                                    }, 100);
+                                                } else {
+                                                    document.querySelectorAll('.trump-dancing-video').forEach(v => { v.pause(); v.currentTime = 0; });
+                                                }
+                                            }}
+                                            className="bg-gradient-to-r from-blue-800 to-red-700 hover:from-blue-700 hover:to-red-600 px-12 py-4 rounded-full font-black text-xl shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-transform hover:scale-105 uppercase tracking-widest text-white w-full md:w-auto flex items-center justify-center gap-3"
+                                        >
+                                            🇺🇸 {showTrump ? 'OCULTAR TRUMP' : 'DANCING TRUMP'}
+                                        </button>
                                     </div>
                                     {showKarma && (
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom duration-500 text-left">
@@ -944,6 +966,38 @@
                                             <div className="bg-black rounded-xl overflow-hidden border border-red-500/40 relative shadow-lg max-w-sm w-full">
                                                 <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-red-300 pointer-events-none font-mono tracking-widest">DIMISION tiktok.mp4</div>
                                                 <video className="ai-dance-video w-full aspect-[9/16] object-contain bg-black" src="./DIMISION tiktok.mp4" controls playsInline preload={isMobile ? "none" : "metadata"} />
+                                            </div>
+                                        </div>
+                                    )}
+                                    {showTrump && (
+                                        <div className="animate-in slide-in-from-bottom duration-500">
+                                            <div className="flex items-center gap-2 justify-center mb-4">
+                                                <span className="text-2xl">🇺🇸</span>
+                                                <h4 className="font-black text-xl uppercase tracking-widest text-blue-400">Dancing Trump</h4>
+                                                <span className="text-2xl">🇺🇸</span>
+                                            </div>
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                                {[
+                                                    { src: 'TRUMP DANCING.mp4',        label: 'TRUMP DANCING',        muted: false, border: 'border-blue-500/60',   badge: 'text-blue-300'   },
+                                                    { src: 'SILVIA TRUMP DANCING.mp4',  label: 'SILVIA TRUMP DANCING', muted: true,  border: 'border-red-500/40',    badge: 'text-red-300'    },
+                                                    { src: 'MESI TRUMP DANCING.mp4',    label: 'MESI TRUMP DANCING',   muted: true,  border: 'border-yellow-500/40', badge: 'text-yellow-300' },
+                                                    { src: 'SANCHEZ TRUMP DANCING.mp4', label: 'SANCHEZ TRUMP DANCING',muted: true,  border: 'border-purple-500/40', badge: 'text-purple-300' },
+                                                ].map((v, idx) => (
+                                                    <div key={idx} className={`bg-black rounded-xl overflow-hidden border ${v.border} relative shadow-lg`}>
+                                                        <div className={`absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[9px] z-10 ${v.badge} pointer-events-none font-mono tracking-widest truncate max-w-[90%]`}>
+                                                            {v.label}
+                                                            {idx === 0 && <span className="ml-1 text-blue-400">🔊</span>}
+                                                        </div>
+                                                        <video
+                                                            className="trump-dancing-video w-full aspect-[9/16] object-contain bg-black"
+                                                            src={`./${v.src}`}
+                                                            controls
+                                                            playsInline
+                                                            muted={v.muted}
+                                                            preload={isMobile ? "none" : "metadata"}
+                                                        />
+                                                    </div>
+                                                ))}
                                             </div>
                                         </div>
                                     )}
