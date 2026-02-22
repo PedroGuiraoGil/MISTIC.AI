@@ -11,6 +11,8 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide-react@latest"></script>
 
     <script async src="https://js.stripe.com/v3/buy-button.js"></script>
 
@@ -18,58 +20,65 @@
         @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .animate-spin-slow { animation: spin-slow 12s linear infinite; }
         .perspective-1000 { perspective: 1000px; }
-        
         .yin-line { height: 12px; display: flex; justify-content: space-between; margin-bottom: 6px; }
         .yin-line div { width: 45%; background-color: white; border-radius: 2px; }
         .yang-line { height: 12px; width: 100%; background-color: white; border-radius: 2px; margin-bottom: 6px; }
+        .tv-scroll::-webkit-scrollbar { height: 8px; }
+        .tv-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        .tv-scroll::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-black text-white font-sans selection:bg-purple-500/30">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
+        const { MonitorPlay, Quote, User, Sparkles, RefreshCw, Clock, ArrowLeft, ArrowRight, Brain, Send, X } = LucideReact;
 
         const App = () => {
             const [activeView, setActiveView] = useState('home'); 
             const [loading, setLoading] = useState(false);
-            
             const [isMobile, setIsMobile] = useState(false);
+            const [ahora, setAhora] = useState(new Date());
 
-            useEffect(() => {
-                const checkDevice = () => {
-                    const isNarrowScreen = window.innerWidth < 768;
-                    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-                    const isMobileOS = /android|ipad|iphone|ipod/i.test(userAgent.toLowerCase());
-                    setIsMobile(isNarrowScreen || isMobileOS);
-                };
+            // --- DATA: TV 2026 ---
+            const canalesTV = [
+                "Movistar Plus+", "Movistar LaLiga", "DAZN LaLiga", "Teledeporte", 
+                "Esport3", "Canal Historia", "DMAX", "Odisea", 
+                "Eurosport 1", "National Geographic", "Vamos", "Deportes",
+                "Hollywood", "Cosmo", "Discovery", "AMC"
+            ];
+            const eventosTV = [
+                { id: 1, time: "16:15", event: "FC Barcelona - Levante UD", channel: "Movistar LaLiga" },
+                { id: 2, time: "21:00", event: "Villarreal CF - Valencia CF", channel: "Movistar LaLiga" },
+                { id: 3, time: "22:40", event: "Gol a Gol", channel: "Esport3" },
+                { id: 4, time: "22:00", event: "Alienígenas Ancestrales", channel: "DMAX" },
+                { id: 5, time: "21:30", event: "Euroliga: Real Madrid - Efes", channel: "Deportes" }
+            ];
 
-                checkDevice();
-                window.addEventListener('resize', checkDevice);
-                return () => window.removeEventListener('resize', checkDevice);
-            }, []);
-            
+            // --- DATA: FRASES ---
+            const frasesDB = [
+                { texto: "La inteligencia sin ambición es un pájaro sin alas.", autor: "Salvador Dalí", palabra: "Ambición" },
+                { texto: "El misterio es la cosa más bella que podemos experimentar.", autor: "Albert Einstein", palabra: "Misterio" },
+                { texto: "La mejor forma de predecir el futuro es inventándolo.", autor: "Alan Kay", palabra: "Invención" },
+                { texto: "No hay barrera que puedas imponer a la libertad de mi mente.", autor: "Virginia Woolf", palabra: "Libertad" }
+            ];
+            const [fraseActual, setFraseActual] = useState(frasesDB[0]);
+
+            // --- DATA ORIGINAL (index 6) ---
             const [selectedSign, setSelectedSign] = useState(null);
             const [prediction, setPrediction] = useState('');
-
             const [tarotState, setTarotState] = useState('deck'); 
             const [drawnCards, setDrawnCards] = useState([]);
             const [tarotSynthesis, setTarotSynthesis] = useState('');
             const [isSynthesizing, setIsSynthesizing] = useState(false);
             const [tarotChatInput, setTarotChatInput] = useState('');
             const [tarotChatHistory, setTarotChatHistory] = useState([]);
-
             const [hexagram, setHexagram] = useState([]); 
             const [ichingState, setIchingState] = useState('start');
-
-            const [astralData, setAstralData] = useState({ name: '', date: '', time: '', location: '' });
             const [astralChart, setAstralChart] = useState(null);
-
             const [oracleInput, setOracleInput] = useState('');
-            const [oracleHistory, setOracleHistory] = useState([
-                { type: 'bot', text: 'Soy el Oráculo Neural v4.0. ¿Qué inquietud nubla tu mente hoy?' }
-            ]);
-
+            const [oracleHistory, setOracleHistory] = useState([{ type: 'bot', text: 'Soy el Oráculo Neural v4.0. ¿Qué inquietud nubla tu mente hoy?' }]);
             const [showKarma, setShowKarma] = useState(false);
             const [showDimision, setShowDimision] = useState(false);
 
@@ -108,31 +117,46 @@
                 { id: 2, files: ['2.mp4', '2.real.mp4'] }
             ];
 
+            // --- FUNCIONES LÓGICAS ---
+            useEffect(() => {
+                const checkDevice = () => {
+                    const isNarrowScreen = window.innerWidth < 768;
+                    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                    const isMobileOS = /android|ipad|iphone|ipod/i.test(userAgent.toLowerCase());
+                    setIsMobile(isNarrowScreen || isMobileOS);
+                };
+                checkDevice();
+                window.addEventListener('resize', checkDevice);
+                const timer = setInterval(() => setAhora(new Date()), 60000);
+                return () => {
+                    window.removeEventListener('resize', checkDevice);
+                    clearInterval(timer);
+                };
+            }, []);
+
+            const isEnDirecto = (h) => {
+                const [hrs, mins] = h.split(':').map(Number);
+                const evDate = new Date(ahora); evDate.setHours(hrs, mins, 0);
+                const diff = ahora.getTime() - evDate.getTime();
+                return diff >= 0 && diff <= 7200000;
+            };
+
             const generateHoroscope = (sign) => {
-                setLoading(true);
-                setSelectedSign(sign);
+                setLoading(true); setSelectedSign(sign);
                 setTimeout(() => {
-                    setPrediction(`La energía de hoy para ${sign.name} indica una fuerte presencia de planetas en tu casa solar, sugiriendo que es momento de actuar en proyectos postergados.`);
+                    setPrediction(`La energía de hoy para ${sign.name} indica una fuerte presencia de planetas en tu casa solar.`);
                     setLoading(false);
                 }, 1500);
             };
 
             const drawTarotSpread = () => {
-                setTarotState('shuffling');
-                setTarotSynthesis('');
-                setTarotChatHistory([]);
+                setTarotState('shuffling'); setTarotSynthesis(''); setTarotChatHistory([]);
                 setTimeout(() => {
                     let shuffled = [...tarotDeck].sort(() => 0.5 - Math.random());
-                    const drawn = [
-                        { pos: 'PASADO', ...shuffled[0] },
-                        { pos: 'PRESENTE', ...shuffled[1] },
-                        { pos: 'FUTURO', ...shuffled[2] }
-                    ];
-                    setDrawnCards(drawn);
-                    setTarotState('revealed');
-                    setIsSynthesizing(true);
+                    const drawn = [{ pos: 'PASADO', ...shuffled[0] }, { pos: 'PRESENTE', ...shuffled[1] }, { pos: 'FUTURO', ...shuffled[2] }];
+                    setDrawnCards(drawn); setTarotState('revealed'); setIsSynthesizing(true);
                     setTimeout(() => {
-                        setTarotSynthesis(`El flujo cronológico indica que vienes de un periodo marcado por ${drawn[0].meaning.toLowerCase()}. Actualmente, ${drawn[1].name} rige tu presente. La transición hacia ${drawn[2].name} en el futuro sugiere que el éxito dependerá de tu capacidad de adaptación.`);
+                        setTarotSynthesis(`El flujo indica que vienes de ${drawn[0].meaning.toLowerCase()}.`);
                         setIsSynthesizing(false);
                     }, 2500);
                 }, 2000);
@@ -141,143 +165,112 @@
             const askTarotChat = (e) => {
                 e.preventDefault();
                 if (!tarotChatInput.trim() || tarotChatHistory.filter(m => m.type === 'user').length >= 3) return;
-                const userMsg = { type: 'user', text: tarotChatInput };
-                setTarotChatHistory(prev => [...prev, userMsg]);
+                setTarotChatHistory(prev => [...prev, { type: 'user', text: tarotChatInput }]);
                 setTarotChatInput('');
                 setTimeout(() => {
-                    const response = `Basado en la presencia de ${drawnCards[1].name} en tu tirada, la respuesta a tu duda es que debes enfocarte en tu ${drawnCards[1].meaning.toLowerCase()}.`;
-                    setTarotChatHistory(prev => [...prev, { type: 'bot', text: response }]);
+                    setTarotChatHistory(prev => [...prev, { type: 'bot', text: `Enfócate en tu ${drawnCards[1].meaning.toLowerCase()}.` }]);
                 }, 1000);
             };
 
             const throwIChing = () => {
                 setIchingState('throwing');
                 setTimeout(() => {
-                    let lines = [];
-                    for(let i=0; i<6; i++) lines.push(Math.random() > 0.5 ? 'yang' : 'yin');
-                    setHexagram(lines);
-                    setIchingState('result');
+                    let lines = []; for(let i=0; i<6; i++) lines.push(Math.random() > 0.5 ? 'yang' : 'yin');
+                    setHexagram(lines); setIchingState('result');
                 }, 2000);
             };
 
             const calculateAstral = (e) => {
-                e.preventDefault();
-                setLoading(true);
+                e.preventDefault(); setLoading(true);
                 setTimeout(() => {
-                    setAstralChart({
-                        sun: zodiacSigns[Math.floor(Math.random() * 12)],
-                        moon: zodiacSigns[Math.floor(Math.random() * 12)],
-                        asc: zodiacSigns[Math.floor(Math.random() * 12)]
-                    });
+                    setAstralChart({ sun: zodiacSigns[0], moon: zodiacSigns[1], asc: zodiacSigns[2] });
                     setLoading(false);
                 }, 2000);
             };
 
             const askOracle = (e) => {
-                e.preventDefault();
-                if (!oracleInput.trim()) return;
+                e.preventDefault(); if (!oracleInput.trim()) return;
                 setOracleHistory(prev => [...prev, { type: 'user', text: oracleInput }]);
-                setOracleInput('');
-                setLoading(true);
+                setOracleInput(''); setLoading(true);
                 setTimeout(() => {
-                    const answers = ["Las estrellas dicen que sí.", "No es el momento adecuado.", "La energía está bloqueada, medita primero.", "El éxito es inminente."];
-                    setOracleHistory(prev => [...prev, { type: 'bot', text: answers[Math.floor(Math.random() * answers.length)] }]);
+                    setOracleHistory(prev => [...prev, { type: 'bot', text: "Las estrellas dicen que sí." }]);
                     setLoading(false);
                 }, 1200);
             };
 
-            const playAllAIVideos = () => {
-                const vids = document.querySelectorAll('.ai-dance-video');
-                vids.forEach((vid) => {
-                    vid.muted = true;
-                    vid.play().catch(e => console.log("Se requiere interacción previa", e));
-                });
-            };
-
-            const pauseAllAIVideos = () => {
-                const vids = document.querySelectorAll('.ai-dance-video');
-                vids.forEach((vid) => vid.pause());
-            };
-
-            const playSequence = (groupId) => {
-                const vids = document.querySelectorAll(`.video-group-${groupId}`);
-                vids.forEach((vid, index) => {
-                    vid.muted = (index !== 0); 
-                    vid.play().catch(e => console.log("Se requiere interacción previa", e));
-                });
-            };
-
-            const stopSequence = (groupId) => {
-                const vids = document.querySelectorAll(`.video-group-${groupId}`);
-                vids.forEach((vid) => {
-                    vid.pause();
-                    vid.currentTime = 0; 
-                });
-            };
+            const playAllAIVideos = () => { document.querySelectorAll('.ai-dance-video').forEach(vid => { vid.muted = true; vid.play(); }); };
+            const pauseAllAIVideos = () => { document.querySelectorAll('.ai-dance-video').forEach(vid => vid.pause()); };
+            const playSequence = (groupId) => { document.querySelectorAll(`.video-group-${groupId}`).forEach((vid, i) => { vid.muted = (i !== 0); vid.play(); }); };
+            const stopSequence = (groupId) => { document.querySelectorAll(`.video-group-${groupId}`).forEach(vid => { vid.pause(); vid.currentTime = 0; }); };
 
             const resetView = () => {
-                setActiveView('home');
-                setPrediction('');
-                setTarotState('deck');
-                setIchingState('start');
-                setAstralChart(null);
-                setShowKarma(false);
-                setShowDimision(false);
+                setActiveView('home'); setPrediction(''); setTarotState('deck');
+                setIchingState('start'); setAstralChart(null); setShowKarma(false); setShowDimision(false);
             };
-
+            // --- RENDERIZADO DE VISTAS ---
             const renderHome = () => (
                 <div className="space-y-8 animate-in fade-in duration-700">
-                    <header className="text-center py-6">
-                        <h1 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 uppercase">Mística AI 2026</h1>
+                    <header className="text-center py-4">
+                        <h1 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 uppercase tracking-tighter">Mística AI 2026</h1>
                     </header>
 
-                    <section className="bg-gray-900 rounded-3xl overflow-hidden border border-purple-500/30 grid grid-cols-1 md:grid-cols-5">
+                    <section className="bg-gray-900 rounded-3xl overflow-hidden border border-purple-500/30 grid grid-cols-1 md:grid-cols-5 shadow-2xl">
                         <div className="md:col-span-3 aspect-video bg-black">
                             <video key={currentVideo.id} src={currentVideo.src} controls autoPlay muted playsInline className="w-full h-full object-contain" />
                         </div>
-                        <div className="md:col-span-2 p-6 flex flex-col justify-between">
-                            <div>
-                                <h3 className="text-xl font-bold mb-2">{currentVideo.title}</h3>
-                                <p className="text-gray-400 text-sm mb-4">{currentVideo.desc}</p>
-                            </div>
-                            <div className="space-y-2">
-                                {playlist.map(v => (
-                                    <button key={v.id} onClick={() => setCurrentVideo(v)} className={`w-full text-left p-3 rounded-xl text-xs transition-colors ${currentVideo.id === v.id ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}>{v.title}</button>
-                                ))}
-                            </div>
+                        <div className="md:col-span-2 p-6 flex flex-col justify-center space-y-3">
+                            {playlist.map(v => (
+                                <button key={v.id} onClick={() => setCurrentVideo(v)} className={`w-full text-left p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${currentVideo.id === v.id ? 'bg-purple-600 shadow-lg' : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}>
+                                    {v.title}
+                                </button>
+                            ))}
                         </div>
                     </section>
-                    
+
                     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div onClick={() => setActiveView('tarot')} className="bg-gray-900 p-6 rounded-2xl border border-blue-500/30 cursor-pointer hover:border-blue-500 transition-all text-center group">
-                            <i className="fa-solid fa-layer-group text-blue-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                            <h3 className="font-bold">Tarot</h3>
+                        <div onClick={() => setActiveView('tv')} className="bg-gray-900 p-6 rounded-2xl border border-blue-500/30 cursor-pointer hover:border-blue-500 transition-all text-center group">
+                            <MonitorPlay className="mx-auto text-blue-400 w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
+                            <h3 className="font-bold uppercase text-[10px] tracking-widest">TV 2026</h3>
                         </div>
-                        <div onClick={() => setActiveView('astral')} className="bg-gray-900 p-6 rounded-2xl border border-purple-500/30 cursor-pointer hover:border-purple-500 transition-all text-center group">
-                            <i className="fa-solid fa-star-and-crescent text-purple-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                            <h3 className="font-bold">Carta Astral</h3>
+                        <div onClick={() => { setActiveView('quote'); setFraseActual(frasesDB[Math.floor(Math.random()*frasesDB.length)]); }} className="bg-gray-900 p-6 rounded-2xl border border-yellow-500/30 cursor-pointer hover:border-yellow-500 transition-all text-center group">
+                            <Quote className="mx-auto text-yellow-400 w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
+                            <h3 className="font-bold uppercase text-[10px] tracking-widest">Frase</h3>
                         </div>
-                        <div onClick={() => setActiveView('iching')} className="bg-gray-900 p-6 rounded-2xl border border-red-500/30 cursor-pointer hover:border-red-500 transition-all text-center group">
-                            <i className="fa-solid fa-yin-yang text-red-500 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                            <h3 className="font-bold">I Ching</h3>
-                        </div>
-                        <div onClick={() => setActiveView('oracle')} className="bg-gray-900 p-6 rounded-2xl border border-pink-500/30 cursor-pointer hover:border-pink-500 transition-all text-center group">
-                            <i className="fa-solid fa-robot text-pink-500 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                            <h3 className="font-bold">Oráculo</h3>
+                        <div onClick={() => setActiveView('tarot')} className="bg-gray-900 p-6 rounded-2xl border border-purple-500/30 cursor-pointer hover:border-purple-500 transition-all text-center group">
+                            <i className="fa-solid fa-layer-group text-purple-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <h3 className="font-bold uppercase text-[10px] tracking-widest">Tarot</h3>
                         </div>
                         <div onClick={() => setActiveView('aidancing')} className="bg-gray-900 p-6 rounded-2xl border border-green-500/30 cursor-pointer hover:border-green-500 transition-all text-center group">
                             <i className="fa-solid fa-video text-green-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
-                            <h3 className="font-bold">AI Dancing</h3>
+                            <h3 className="font-bold uppercase text-[10px] tracking-widest">AI Dancing</h3>
+                        </div>
+                        <div onClick={() => setActiveView('oracle')} className="bg-gray-900 p-6 rounded-2xl border border-pink-500/30 cursor-pointer hover:border-pink-500 transition-all text-center group">
+                            <Brain className="mx-auto text-pink-400 w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
+                            <h3 className="font-bold uppercase text-[10px] tracking-widest">Oráculo</h3>
                         </div>
                     </div>
-                    
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+
+                    <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2">
                         {zodiacSigns.map(s => (
-                            <button key={s.name} onClick={() => {setActiveView('horoscope'); generateHoroscope(s);}} className="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-yellow-500 transition-all text-center">
-                                <span className="text-2xl block">{s.icon}</span>
-                                <span className="text-[10px] text-gray-500 uppercase font-bold">{s.name}</span>
+                            <button key={s.name} onClick={() => {setActiveView('horoscope'); generateHoroscope(s);}} className="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-yellow-500 transition-all text-center group">
+                                <span className="text-2xl block group-hover:scale-110 transition-transform">{s.icon}</span>
+                                <span className="text-[9px] text-gray-500 uppercase font-black">{s.name}</span>
                             </button>
                         ))}
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div onClick={() => setActiveView('iching')} className="bg-white/5 p-6 rounded-2xl border border-red-500/20 cursor-pointer hover:border-red-500 transition-all text-center">
+                            <i className="fa-solid fa-yin-yang text-red-500 text-2xl mb-1"></i>
+                            <h3 className="text-[9px] font-black uppercase">I Ching</h3>
+                        </div>
+                        <div onClick={() => setActiveView('astral')} className="bg-white/5 p-6 rounded-2xl border border-blue-500/20 cursor-pointer hover:border-blue-500 transition-all text-center">
+                            <i className="fa-solid fa-star-and-crescent text-blue-400 text-2xl mb-1"></i>
+                            <h3 className="text-[9px] font-black uppercase">Carta Astral</h3>
+                        </div>
+                        <div className="bg-white/5 p-6 rounded-2xl border border-white/5 flex items-center justify-center">
+                            <span className="text-[9px] text-gray-600 uppercase font-black tracking-[0.2em]">Mística AI v4.0</span>
+                        </div>
                     </div>
                 </div>
             );
@@ -287,195 +280,102 @@
                     <nav className="border-b border-white/10 p-4 sticky top-0 bg-black/80 backdrop-blur-md z-50 flex justify-between items-center">
                         <div className="flex items-center gap-2 cursor-pointer" onClick={resetView}>
                             <i className="fa-solid fa-wand-magic-sparkles text-purple-500"></i>
-                            <span className="font-bold">MÍSTICA.AI</span>
+                            <span className="font-black tracking-tighter uppercase text-xs">Mística.AI</span>
                         </div>
+                        <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{ahora.toLocaleTimeString()}</div>
                     </nav>
 
-                    <main className="flex-1 max-w-4xl w-full mx-auto p-4 py-8">
+                    <main className="flex-1 max-w-6xl w-full mx-auto p-4 py-8">
                         {activeView === 'home' && renderHome()}
 
-                        {activeView === 'aidancing' && (
-                            <div className="animate-in fade-in duration-500 space-y-8">
-                                
-                                {isMobile && (
-                                    <div className="bg-yellow-900/40 border border-yellow-600/50 p-4 rounded-xl text-yellow-200 text-sm text-center flex items-center justify-center gap-3">
-                                        <i className="fa-solid fa-mobile-screen-button text-xl"></i>
-                                        <span>Modo móvil detectado. La función "Reproducir Todos" se ha desactivado para proteger el rendimiento de tu dispositivo y tu plan de datos.</span>
+                        {activeView === 'tv' && (
+                            <div className="animate-in fade-in duration-500 space-y-6">
+                                <button onClick={resetView} className="text-gray-500 flex items-center gap-2 hover:text-white uppercase text-[10px] font-black"><ArrowLeft size={14} /> Volver</button>
+                                <div className="bg-gray-900 rounded-3xl border border-blue-500/20 overflow-hidden shadow-2xl">
+                                    <div className="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
+                                        <h2 className="text-xl font-black text-blue-400 flex items-center gap-2 uppercase tracking-tighter"><MonitorPlay /> Parrilla TV Febrero 2026</h2>
+                                        <div className="bg-blue-900/30 px-3 py-1.5 rounded-lg text-[10px] font-black text-blue-300 border border-blue-500/30 uppercase">{ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}</div>
                                     </div>
-                                )}
-
-                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                                    <button onClick={resetView} className="text-gray-500 flex items-center gap-2 hover:text-white transition-colors">
-                                        <i className="fa-solid fa-arrow-left"></i> Volver
-                                    </button>
-                                    <div className="flex gap-4 w-full md:w-auto">
-                                        {!isMobile && (
-                                            <button onClick={playAllAIVideos} className="flex-1 md:flex-none bg-green-600 hover:bg-green-500 px-6 py-3 rounded-xl font-bold shadow-lg shadow-green-900/20 text-sm transition-colors flex items-center justify-center gap-2">
-                                                <i className="fa-solid fa-play"></i> REPRODUCIR TODOS (SIN SONIDO)
-                                            </button>
-                                        )}
-                                        <button onClick={pauseAllAIVideos} className="flex-1 md:flex-none bg-red-600 hover:bg-red-500 px-6 py-3 rounded-xl font-bold shadow-lg shadow-red-900/20 text-sm transition-colors flex items-center justify-center gap-2">
-                                            <i className="fa-solid fa-pause"></i> PAUSAR TODOS
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className="space-y-10">
-                                    {aiVideos.map((group) => (
-                                        <div key={group.id} className="bg-gray-900 p-6 rounded-3xl border border-green-500/20">
-                                            <h3 className="text-xl font-bold mb-4 text-green-400 border-b border-green-500/20 pb-2">Secuencia {group.id}</h3>
-                                            
-                                            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-center">
-                                                
-                                                {group.files[0] && (
-                                                    <div className="bg-black rounded-xl overflow-hidden border border-white/5 relative shadow-lg">
-                                                        <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-gray-300 pointer-events-none truncate max-w-[90%] font-mono">
-                                                            {group.files[0]}
+                                    <div ref={tvScrollRef} className="tv-scroll flex overflow-x-auto p-6 gap-4 custom-scrollbar">
+                                        {canalesTV.map(canal => (
+                                            <div key={canal} className="flex-shrink-0 w-64 bg-black/40 rounded-2xl border border-white/5 p-4 flex flex-col gap-4">
+                                                <div className="font-black text-[9px] uppercase tracking-[0.2em] text-gray-500 border-b border-white/10 pb-2">{canal}</div>
+                                                <div className="space-y-3">
+                                                    {eventosTV.filter(e => e.channel === canal).map(ev => (
+                                                        <div key={ev.id} className={`p-3 rounded-xl border-2 transition-all ${isEnDirecto(ev.time) ? 'border-red-500 bg-red-500/10' : 'border-white/5 bg-white/5'}`}>
+                                                            <div className="flex justify-between items-start mb-1">
+                                                                <span className="text-[9px] font-black text-gray-400">{ev.time}</span>
+                                                                {isEnDirecto(ev.time) && <span className="text-[8px] font-black text-red-500 animate-pulse bg-red-500/20 px-1.5 py-0.5 rounded uppercase">Directo</span>}
+                                                            </div>
+                                                            <div className="text-[11px] font-bold leading-tight">{ev.event}</div>
                                                         </div>
-                                                        <video
-                                                            className={`ai-dance-video video-group-${group.id} w-full aspect-[9/16] object-contain bg-black`}
-                                                            src={`./${group.files[0]}`}
-                                                            controls
-                                                            playsInline
-                                                            preload={isMobile ? "none" : "metadata"}
-                                                        />
-                                                    </div>
-                                                )}
-
-                                                <div className="flex flex-col justify-center items-center gap-4 my-2 md:my-0">
-                                                    <button onClick={() => playSequence(group.id)} className="bg-green-600 hover:bg-green-500 rounded-full w-14 h-14 flex items-center justify-center shadow-[0_0_15px_rgba(22,163,74,0.4)] transition-transform hover:scale-110 z-10" title="Reproducir Par">
-                                                        <i className="fa-solid fa-play text-xl ml-1 text-white"></i>
-                                                    </button>
-                                                    <button onClick={() => stopSequence(group.id)} className="bg-red-600 hover:bg-red-500 rounded-full w-12 h-12 flex items-center justify-center shadow-[0_0_15px_rgba(239,68,68,0.4)] transition-transform hover:scale-110 z-10" title="Detener y Reiniciar">
-                                                        <i className="fa-solid fa-stop text-lg text-white"></i>
-                                                    </button>
+                                                    ))}
                                                 </div>
-
-                                                {group.files[1] ? (
-                                                    <div className="bg-black rounded-xl overflow-hidden border border-white/5 relative shadow-lg">
-                                                        <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-gray-300 pointer-events-none truncate max-w-[90%] font-mono">
-                                                            {group.files[1]}
-                                                        </div>
-                                                        <video
-                                                            className={`ai-dance-video video-group-${group.id} w-full aspect-[9/16] object-contain bg-black`}
-                                                            src={`./${group.files[1]}`}
-                                                            controls
-                                                            playsInline
-                                                            preload={isMobile ? "none" : "metadata"}
-                                                        />
-                                                    </div>
-                                                ) : (
-                                                    <div className="hidden md:block"></div>
-                                                )}
-                                                
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="mt-12 pt-8 border-t border-white/10 text-center space-y-8">
-                                    <div className="flex flex-col md:flex-row justify-center items-center gap-6">
-                                        <button 
-                                            onClick={() => setShowKarma(!showKarma)} 
-                                            className="bg-gradient-to-r from-purple-700 to-pink-600 hover:from-purple-600 hover:to-pink-500 px-12 py-4 rounded-full font-black text-xl shadow-[0_0_20px_rgba(168,85,247,0.4)] transition-transform hover:scale-105 uppercase tracking-widest text-white w-full md:w-auto"
-                                        >
-                                            {showKarma ? 'OCULTAR KARMA' : 'KARMA'}
-                                        </button>
-                                        <button 
-                                            onClick={() => setShowDimision(!showDimision)} 
-                                            className="bg-gradient-to-r from-red-700 to-orange-600 hover:from-red-600 hover:to-orange-500 px-12 py-4 rounded-full font-black text-xl shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-transform hover:scale-105 uppercase tracking-widest text-white w-full md:w-auto"
-                                        >
-                                            {showDimision ? 'OCULTAR DIMISIÓN' : 'DIMISIÓN'}
-                                        </button>
+                                        ))}
                                     </div>
-                                    
-                                    {showKarma && (
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom duration-500 text-left">
-                                            {['k1.mp4', 'k2.mp4', 'k3.mp4', 'k4.mp4'].map((kvid, idx) => (
-                                                <div key={idx} className="bg-black rounded-xl overflow-hidden border border-purple-500/40 relative shadow-lg">
-                                                    <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-purple-300 pointer-events-none font-mono tracking-widest">
-                                                        {kvid}
-                                                    </div>
-                                                    <video
-                                                        className="ai-dance-video w-full aspect-[9/16] object-contain bg-black"
-                                                        src={`./${kvid}`}
-                                                        controls
-                                                        playsInline
-                                                        preload={isMobile ? "none" : "metadata"}
-                                                    />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-
-                                    {showDimision && (
-                                        <div className="flex justify-center animate-in slide-in-from-bottom duration-500 text-left">
-                                            <div className="bg-black rounded-xl overflow-hidden border border-red-500/40 relative shadow-lg max-w-sm w-full">
-                                                <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-red-300 pointer-events-none font-mono tracking-widest">
-                                                    DIMISION tiktok.mp4
-                                                </div>
-                                                <video
-                                                    className="ai-dance-video w-full aspect-[9/16] object-contain bg-black"
-                                                    src="./DIMISION tiktok.mp4"
-                                                    controls
-                                                    playsInline
-                                                    preload={isMobile ? "none" : "metadata"}
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
                             </div>
                         )}
 
-                        {activeView === 'horoscope' && (
-                            <div className="animate-in zoom-in duration-300">
-                                <button onClick={resetView} className="text-gray-500 mb-6 flex items-center gap-2"><i className="fa-solid fa-arrow-left"></i> Volver</button>
-                                {loading ? <div className="text-center py-20"><i className="fa-solid fa-spinner animate-spin text-4xl text-purple-500"></i></div> : (
-                                    <div className="bg-gray-900 p-8 rounded-3xl border border-purple-500/30 text-center">
-                                        <span className="text-6xl mb-4 block">{selectedSign?.icon}</span>
-                                        <h2 className="text-2xl font-bold mb-4">{selectedSign?.name}</h2>
-                                        <p className="text-gray-300 leading-relaxed">{prediction}</p>
+                        {activeView === 'quote' && (
+                            <div className="max-w-xl mx-auto animate-in zoom-in duration-300 space-y-6">
+                                <button onClick={resetView} className="text-gray-500 flex items-center gap-2 hover:text-white uppercase text-[10px] font-black"><ArrowLeft size={14} /> Volver</button>
+                                <div className="bg-gray-900 p-10 rounded-3xl border border-yellow-500/30 shadow-2xl relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none"><Quote size={120} /></div>
+                                    <div className="space-y-8 relative z-10">
+                                        <div className="space-y-2">
+                                            <span className="text-yellow-500 text-[10px] font-black tracking-widest flex items-center gap-2 uppercase"><Sparkles size={14} /> Descubre</span>
+                                            <p className="text-3xl font-serif italic leading-tight text-white">"{fraseActual.texto}"</p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
+                                            <div>
+                                                <span className="text-gray-500 text-[9px] uppercase font-black flex items-center gap-1 mb-1"><User size={12} /> Persona</span>
+                                                <p className="font-bold text-lg text-yellow-100">{fraseActual.autor}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-gray-500 text-[9px] uppercase font-black flex items-center gap-1 mb-1"><i className="fa-solid fa-font text-[9px]"></i> Palabra</span>
+                                                <p className="font-bold text-lg text-yellow-100">{fraseActual.palabra}</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => setFraseActual(frasesDB[Math.floor(Math.random() * frasesDB.length)])} className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-black py-5 rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-xl uppercase text-[10px] tracking-widest"><RefreshCw size={18} /> Nueva Revelación</button>
                                     </div>
-                                )}
+                                </div>
                             </div>
                         )}
 
                         {activeView === 'tarot' && (
                             <div className="animate-in slide-in-from-bottom duration-500 space-y-6">
-                                <button onClick={resetView} className="text-gray-500 flex items-center gap-2"><i className="fa-solid fa-arrow-left"></i> Volver</button>
-                                {tarotState === 'deck' && <div className="flex justify-center py-10"><button onClick={drawTarotSpread} className="bg-blue-600 hover:bg-blue-500 px-10 py-20 rounded-2xl font-bold text-xl shadow-2xl shadow-blue-900/40">INICIAR TIRADA DE 3 CARTAS</button></div>}
-                                {tarotState === 'shuffling' && <div className="text-center py-20"><i className="fa-solid fa-spinner animate-spin text-5xl text-blue-500"></i></div>}
+                                <button onClick={resetView} className="text-gray-500 flex items-center gap-2 uppercase text-[10px] font-black"><ArrowLeft size={14} /> Volver</button>
+                                {tarotState === 'deck' && <div className="flex justify-center py-10"><button onClick={drawTarotSpread} className="bg-purple-600 hover:bg-purple-500 px-10 py-20 rounded-2xl font-black text-xl shadow-2xl border-4 border-white/10 uppercase tracking-widest">Iniciar Tirada Cuántica</button></div>}
+                                {tarotState === 'shuffling' && <div className="text-center py-20"><RefreshCw className="animate-spin mx-auto w-12 h-12 text-purple-500" /></div>}
                                 {tarotState === 'revealed' && (
                                     <div className="space-y-6">
                                         <div className="grid grid-cols-3 gap-4">
                                             {drawnCards.map((c, i) => (
                                                 <div key={i} className="bg-gray-900 p-6 rounded-2xl border border-white/10 text-center shadow-xl">
-                                                    <div className="text-[10px] text-blue-400 font-bold mb-2 tracking-widest">{c.pos}</div>
-                                                    <div className="text-xl font-bold mb-2">{c.name}</div>
-                                                    <div className="text-[10px] text-gray-500">{c.meaning}</div>
+                                                    <div className="text-[10px] text-purple-400 font-black mb-2 tracking-widest uppercase">{c.pos}</div>
+                                                    <div className="text-xl font-black mb-2 uppercase">{c.name}</div>
+                                                    <div className="text-[10px] text-gray-500 uppercase">{c.meaning}</div>
                                                 </div>
                                             ))}
                                         </div>
-                                        <div className="bg-blue-900/20 p-6 rounded-2xl border border-blue-500/30">
-                                            <h4 className="font-bold text-blue-300 mb-2 flex items-center gap-2"><i className="fa-solid fa-brain"></i> Síntesis Analítica</h4>
-                                            <p className="text-sm text-gray-300">{isSynthesizing ? 'Procesando matriz relacional...' : tarotSynthesis}</p>
-                                        </div>
-                                        <div className="bg-gray-900 rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-                                            <div className="p-3 bg-black/40 text-[10px] flex justify-between font-bold">
-                                                <span>INTERROGATORIO DE LA TIRADA</span>
-                                                <span>{tarotChatHistory.filter(m=>m.type==='user').length}/3 PREGUNTAS</span>
+                                        <div className="bg-purple-900/20 p-6 rounded-2xl border border-purple-500/30 text-sm italic">{tarotSynthesis}</div>
+                                        <div className="bg-gray-900 rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+                                            <div className="p-3 bg-black/40 text-[10px] flex justify-between font-black uppercase tracking-widest">
+                                                <span>Interrogatorio</span>
+                                                <span>{tarotChatHistory.filter(m=>m.type==='user').length}/3 Preguntas</span>
                                             </div>
-                                            <div className="p-4 h-48 overflow-y-auto space-y-3 text-sm">
+                                            <div className="p-4 h-40 overflow-y-auto space-y-2 custom-scrollbar">
                                                 {tarotChatHistory.map((m, i) => (
                                                     <div key={i} className={`flex ${m.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                                        <div className={`max-w-[80%] p-3 rounded-xl ${m.type === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-300'}`}>{m.text}</div>
+                                                        <div className={`p-3 rounded-xl text-xs font-bold ${m.type === 'user' ? 'bg-purple-600 shadow-lg' : 'bg-gray-800'}`}>{m.text}</div>
                                                     </div>
                                                 ))}
                                             </div>
                                             <form onSubmit={askTarotChat} className="p-3 border-t border-white/5 flex gap-2 bg-black/20">
-                                                <input value={tarotChatInput} onChange={e=>setTarotChatInput(e.target.value)} disabled={tarotChatHistory.filter(m=>m.type==='user').length>=3} className="flex-1 bg-transparent outline-none text-sm px-2" placeholder="Haz una pregunta específica sobre estas cartas..." />
-                                                <button className="text-blue-500 p-2"><i className="fa-solid fa-paper-plane"></i></button>
+                                                <input value={tarotChatInput} onChange={e=>setTarotChatInput(e.target.value)} disabled={tarotChatHistory.filter(m=>m.type==='user').length>=3} className="flex-1 bg-transparent outline-none text-xs font-black uppercase" placeholder="Tu pregunta..." />
+                                                <button className="text-purple-500 hover:scale-110 transition-transform"><Send size={18}/></button>
                                             </form>
                                         </div>
                                     </div>
@@ -483,21 +383,84 @@
                             </div>
                         )}
 
+                        {activeView === 'aidancing' && (
+                            <div className="animate-in fade-in duration-500 space-y-8">
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                                    <button onClick={resetView} className="text-gray-500 flex items-center gap-2 hover:text-white uppercase text-[10px] font-black"><ArrowLeft size={14} /> Volver</button>
+                                    <div className="flex gap-4 w-full md:w-auto">
+                                        {!isMobile && <button onClick={playAllAIVideos} className="flex-1 bg-green-600 px-6 py-3 rounded-xl font-black text-[10px] uppercase shadow-lg shadow-green-900/20">Reproducir Todos</button>}
+                                        <button onClick={pauseAllAIVideos} className="flex-1 bg-red-600 px-6 py-3 rounded-xl font-black text-[10px] uppercase shadow-lg shadow-red-900/20">Pausar Todos</button>
+                                    </div>
+                                </div>
+                                <div className="space-y-12">
+                                    {aiVideos.map(group => (
+                                        <div key={group.id} className="bg-gray-900 p-6 rounded-3xl border border-white/5">
+                                            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-center">
+                                                <div className="bg-black rounded-xl overflow-hidden border border-white/5 shadow-2xl relative aspect-[9/16]">
+                                                    <video className={`ai-dance-video video-group-${group.id} w-full h-full object-contain`} src={`./${group.files[0]}`} controls playsInline preload="none" />
+                                                </div>
+                                                <div className="flex flex-col gap-4 items-center">
+                                                    <button onClick={() => playSequence(group.id)} className="bg-green-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"><i className="fa-solid fa-play"></i></button>
+                                                    <button onClick={() => stopSequence(group.id)} className="bg-red-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"><i className="fa-solid fa-stop"></i></button>
+                                                </div>
+                                                <div className="bg-black rounded-xl overflow-hidden border border-white/5 shadow-2xl relative aspect-[9/16]">
+                                                    <video className={`ai-dance-video video-group-${group.id} w-full h-full object-contain`} src={`./${group.files[1]}`} controls playsInline preload="none" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex justify-center gap-4 py-10 border-t border-white/10">
+                                    <button onClick={() => setShowKarma(!showKarma)} className="bg-purple-900/40 border border-purple-500 px-10 py-4 rounded-full font-black uppercase tracking-widest text-[10px] hover:bg-purple-900/60 transition-all">KARMA</button>
+                                    <button onClick={() => setShowDimision(!showDimision)} className="bg-red-900/40 border border-red-500 px-10 py-4 rounded-full font-black uppercase tracking-widest text-[10px] hover:bg-red-900/60 transition-all">DIMISIÓN</button>
+                                </div>
+                                {showKarma && <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom">{['k1.mp4', 'k2.mp4', 'k3.mp4', 'k4.mp4'].map(k => <video key={k} src={`./${k}`} controls className="rounded-xl border border-purple-500/20 aspect-[9/16] object-contain bg-black" />)}</div>}
+                                {showDimision && <video src="./DIMISION tiktok.mp4" controls className="mx-auto max-w-sm rounded-xl border border-red-500/20 shadow-2xl aspect-[9/16] object-contain bg-black" />}
+                            </div>
+                        )}
+
+                        {activeView === 'oracle' && (
+                            <div className="max-w-xl mx-auto h-[60vh] flex flex-col bg-gray-900 border border-pink-500/30 rounded-3xl overflow-hidden animate-in slide-in-from-bottom">
+                                <div className="p-4 bg-black/40 flex justify-between items-center shadow-lg"><span className="font-black text-[10px] flex items-center gap-2 uppercase tracking-widest"><i className="fa-solid fa-robot text-pink-500"></i> Oráculo Neural</span><button onClick={resetView} className="text-gray-500"><X size={16}/></button></div>
+                                <div className="flex-1 p-4 overflow-y-auto space-y-4 text-[10px] custom-scrollbar">
+                                    {oracleHistory.map((m, i) => <div key={i} className={`flex ${m.type === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[80%] p-4 rounded-2xl font-black ${m.type === 'user' ? 'bg-pink-600 shadow-lg text-white' : 'bg-gray-800 text-gray-300 shadow-lg border border-white/5'}`}>{m.text}</div></div>)}
+                                    {loading && <div className="text-pink-500 animate-pulse font-black uppercase tracking-widest">Calculando vectores...</div>}
+                                </div>
+                                <form onSubmit={askOracle} className="p-4 border-t border-white/5 flex gap-2 bg-black/30">
+                                    <input value={oracleInput} onChange={e=>setOracleInput(e.target.value)} placeholder="Pregunta algo sobre tu destino..." className="flex-1 bg-transparent outline-none text-[10px] font-black uppercase px-2" />
+                                    <button className="text-pink-500 hover:scale-125 transition-transform"><Send size={18}/></button>
+                                </form>
+                            </div>
+                        )}
+
+                        {activeView === 'horoscope' && (
+                            <div className="animate-in zoom-in duration-300">
+                                <button onClick={resetView} className="text-gray-500 mb-6 flex items-center gap-2 uppercase text-[10px] font-black"><ArrowLeft size={14}/> Volver</button>
+                                {loading ? <div className="text-center py-20"><RefreshCw className="animate-spin mx-auto w-12 h-12 text-yellow-500" /></div> : (
+                                    <div className="bg-gray-900 p-10 rounded-3xl border border-yellow-500/30 text-center shadow-2xl max-w-2xl mx-auto">
+                                        <span className="text-7xl mb-6 block drop-shadow-lg">{selectedSign?.icon}</span>
+                                        <h2 className="text-3xl font-black mb-6 uppercase tracking-tighter text-yellow-500">{selectedSign?.name}</h2>
+                                        <p className="text-gray-300 leading-relaxed font-bold uppercase text-xs tracking-widest">{prediction}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
                         {activeView === 'iching' && (
-                            <div className="animate-in fade-in duration-500 text-center space-y-6">
-                                <button onClick={resetView} className="self-start text-gray-500 flex items-center gap-2"><i className="fa-solid fa-arrow-left"></i> Volver</button>
-                                <h2 className="text-2xl font-bold text-red-500">I Ching: Monedas Cuánticas</h2>
-                                {ichingState === 'start' && <button onClick={throwIChing} className="bg-red-900/30 border border-red-500/50 p-20 rounded-full hover:bg-red-900/50 transition-all"><i className="fa-solid fa-coins text-4xl"></i></button>}
-                                {ichingState === 'throwing' && <div className="py-10"><i className="fa-solid fa-yin-yang text-6xl text-red-500 animate-spin"></i></div>}
+                            <div className="animate-in fade-in duration-500 text-center space-y-8">
+                                <button onClick={resetView} className="text-gray-500 flex items-center gap-2 uppercase text-[10px] font-black"><ArrowLeft size={14}/> Volver</button>
+                                <h2 className="text-2xl font-black text-red-500 uppercase tracking-widest">I Ching: Mutación Digital</h2>
+                                {ichingState === 'start' && <button onClick={throwIChing} className="bg-red-900/30 border-4 border-red-500/40 p-20 rounded-full hover:bg-red-900/50 transition-all hover:scale-110 shadow-2xl shadow-red-900/40"><i className="fa-solid fa-yin-yang text-6xl text-red-500 animate-spin-slow"></i></button>}
+                                {ichingState === 'throwing' && <div className="py-10 animate-pulse text-red-500 font-black uppercase tracking-widest">Consultando el oráculo...</div>}
                                 {ichingState === 'result' && (
-                                    <div className="bg-gray-900 p-8 rounded-3xl border border-red-500/30 flex flex-col md:flex-row gap-8 items-center max-w-2xl mx-auto">
+                                    <div className="bg-gray-900 p-8 rounded-3xl border border-red-500/30 flex flex-col md:flex-row gap-8 items-center max-w-2xl mx-auto shadow-2xl">
                                         <div className="w-24">
                                             {hexagram.map((l, i) => <div key={i}>{l === 'yang' ? <div className="yang-line"></div> : <div className="yin-line"><div></div><div></div></div>}</div>)}
                                         </div>
-                                        <div className="flex-1 text-left">
-                                            <h4 className="font-bold text-red-400 mb-2 uppercase text-xs tracking-widest">Hexagrama Resultante</h4>
-                                            <p className="text-gray-300 text-sm">El oráculo indica que las fuerzas creativas están en equilibrio. Es un momento de receptividad absoluta. No fuerces la situación; deja que el flujo natural de los eventos te guíe.</p>
-                                            <button onClick={() => setIchingState('start')} className="mt-4 text-xs text-red-500 font-bold border-b border-red-500 pb-1">NUEVA CONSULTA</button>
+                                        <div className="flex-1 text-left space-y-4">
+                                            <h4 className="font-black text-red-400 uppercase text-[10px] tracking-widest">Hexagrama Resultante</h4>
+                                            <p className="text-gray-300 text-xs font-bold uppercase leading-relaxed">El flujo indica receptividad absoluta. No fuerces los eventos; la respuesta está en el vacío creativo.</p>
+                                            <button onClick={() => setIchingState('start')} className="text-[10px] text-red-500 font-black border-b-2 border-red-500 pb-1 uppercase tracking-widest">Nueva consulta</button>
                                         </div>
                                     </div>
                                 )}
@@ -506,75 +469,376 @@
 
                         {activeView === 'astral' && (
                             <div className="animate-in fade-in duration-500">
-                                <button onClick={resetView} className="text-gray-500 mb-6 flex items-center gap-2"><i className="fa-solid fa-arrow-left"></i> Volver</button>
+                                <button onClick={resetView} className="text-gray-500 mb-6 flex items-center gap-2 uppercase text-[10px] font-black"><ArrowLeft size={14}/> Volver</button>
                                 {!astralChart ? (
-                                    <form onSubmit={calculateAstral} className="bg-gray-900 p-8 rounded-3xl border border-purple-500/30 space-y-4 max-w-lg mx-auto">
-                                        <h3 className="text-xl font-bold mb-6 text-center">Generador de Mapa Natal</h3>
-                                        <input required type="text" placeholder="Nombre" className="w-full bg-black p-4 rounded-xl border border-white/10 outline-none focus:border-purple-500" />
+                                    <form onSubmit={calculateAstral} className="bg-gray-900 p-8 rounded-3xl border border-purple-500/30 space-y-4 max-w-lg mx-auto shadow-2xl">
+                                        <h3 className="text-xl font-black text-center uppercase tracking-tighter">Mapa Natal v4.0</h3>
+                                        <input required type="text" placeholder="Nombre" className="w-full bg-black p-4 rounded-xl border border-white/10 outline-none focus:border-purple-500 uppercase text-[10px] font-black" />
                                         <div className="grid grid-cols-2 gap-2">
-                                            <input required type="date" className="bg-black p-4 rounded-xl border border-white/10 outline-none" />
-                                            <input required type="time" className="bg-black p-4 rounded-xl border border-white/10 outline-none" />
+                                            <input required type="date" className="bg-black p-4 rounded-xl border border-white/10 outline-none text-[10px] font-black" />
+                                            <input required type="time" className="bg-black p-4 rounded-xl border border-white/10 outline-none text-[10px] font-black" />
                                         </div>
-                                        <input required type="text" placeholder="Lugar de Nacimiento" className="w-full bg-black p-4 rounded-xl border border-white/10 outline-none focus:border-purple-500" />
-                                        <button className="w-full bg-purple-600 py-4 rounded-xl font-bold hover:bg-purple-500 transition-colors">CALCULAR EFEMÉRIDES</button>
+                                        <input required type="text" placeholder="Lugar de Nacimiento" className="w-full bg-black p-4 rounded-xl border border-white/10 outline-none focus:border-purple-500 uppercase text-[10px] font-black" />
+                                        <button className="w-full bg-purple-600 py-4 rounded-xl font-black text-[10px] hover:bg-purple-500 transition-colors uppercase tracking-widest">Calcular Efemérides</button>
                                     </form>
                                 ) : (
-                                    <div className="bg-gray-900 p-8 rounded-3xl border border-purple-500/30 grid grid-cols-3 gap-4 text-center">
-                                        <div className="bg-black p-6 rounded-2xl border border-white/5"><span className="text-xs text-yellow-500 block mb-2 font-bold">SOL</span><span className="text-4xl block mb-2">{astralChart.sun.icon}</span><span className="font-bold">{astralChart.sun.name}</span></div>
-                                        <div className="bg-black p-6 rounded-2xl border border-white/5"><span className="text-xs text-blue-400 block mb-2 font-bold">LUNA</span><span className="text-4xl block mb-2">{astralChart.moon.icon}</span><span className="font-bold">{astralChart.moon.name}</span></div>
-                                        <div className="bg-black p-6 rounded-2xl border border-white/5"><span className="text-xs text-pink-500 block mb-2 font-bold">ASC</span><span className="text-4xl block mb-2">{astralChart.asc.icon}</span><span className="font-bold">{astralChart.asc.name}</span></div>
-                                        <div className="col-span-3 p-4 bg-purple-900/20 text-xs text-gray-400 mt-4 italic">Esta configuración sugiere una personalidad con gran empuje creativo pero que necesita estabilidad emocional para no dispersarse.</div>
+                                    <div className="bg-gray-900 p-8 rounded-3xl border border-purple-500/30 grid grid-cols-3 gap-4 text-center shadow-2xl max-w-2xl mx-auto">
+                                        <div className="bg-black p-6 rounded-2xl border border-white/5"><span className="text-[9px] text-yellow-500 block mb-2 font-black uppercase">Sol</span><span className="text-4xl block mb-2 drop-shadow-md">{astralChart.sun.icon}</span><span className="font-black text-xs">{astralChart.sun.name}</span></div>
+                                        <div className="bg-black p-6 rounded-2xl border border-white/5"><span className="text-[9px] text-blue-400 block mb-2 font-black uppercase">Luna</span><span className="text-4xl block mb-2 drop-shadow-md">{astralChart.moon.icon}</span><span className="font-black text-xs">{astralChart.moon.name}</span></div>
+                                        <div className="bg-black p-6 rounded-2xl border border-white/5"><span className="text-[9px] text-pink-500 block mb-2 font-black uppercase">Asc</span><span className="text-4xl block mb-2 drop-shadow-md">{astralChart.asc.icon}</span><span className="font-black text-xs">{astralChart.asc.name}</span></div>
+                                        <div className="col-span-3 p-6 bg-purple-900/20 text-[10px] text-gray-400 mt-4 italic font-bold border border-purple-500/20 rounded-xl">Configuración astral cargada. Tu camino hacia el 2026 requiere equilibrio emocional y determinación creativa.</div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </main>
+
+                    <footer className="mt-auto border-t border-white/10 bg-black/80 backdrop-blur-md py-10 px-6 text-center shadow-2xl">
+                        <div className="flex flex-col md:flex-row justify-center items-center gap-10 mb-8">
+                            <a href="mailto:pedro.guirao@gmail.com" className="text-gray-400 text-[10px] font-black tracking-widest hover:text-purple-400 transition-colors flex items-center gap-2 uppercase">
+                                <i className="fa-solid fa-envelope"></i> pedro.guirao@gmail.com
+                            </a>
+                            <a href="https://pedroguiraogil.github.io/CURSOS/" target="_blank" className="text-gray-400 text-[10px] font-black tracking-widest hover:text-pink-400 transition-colors flex items-center gap-2 uppercase">
+                                <i className="fa-solid fa-graduation-cap"></i> Acceso Cursos
+                            </a>
+                            {/* BOTÓN DE STRIPE ESCALADO AL 75% */}
+                            <div className="transform scale-[0.75] origin-center hover:scale-[0.80] transition-transform shadow-2xl rounded-xl overflow-hidden">
+                                <stripe-buy-button buy-button-id="buy_btn_1Szc9xLMuCf9ela0GVyNo0PD" publishable-key="pk_live_51SzbaxLMuCf9ela0lFnv8OpenuCoG02c4crjmSRW1oq85DdwAaEhmMmIS0gYMH9wYbGr6AVXxzbJf7IdA6sptgxy00dKGPgVSc" />
+                            </div>
+                        </div>
+                        <div className="flex justify-center items-center gap-3 text-[10px] text-gray-500 font-black tracking-[0.3em] uppercase">
+                            <span>Vistas Totales:</span>
+                            <img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpedroguiraogil.github.io%2FCURSOS&label=VISITAS&countColor=%239333ea&labelColor=%23000000" className="h-4 rounded shadow-lg shadow-purple-900/40" />
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
+// --- RENDERIZADO DE LA INTERFAZ (UI) ---
+            const renderHome = () => (
+                <div className="space-y-8 animate-in fade-in duration-700">
+                    <header className="text-center py-6">
+                        <h1 className="text-4xl font-black bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-600 uppercase tracking-tighter">Mística AI 2026</h1>
+                    </header>
+
+                    {/* VIDEOPLAYLIST PRINCIPAL */}
+                    <section className="bg-gray-900 rounded-3xl overflow-hidden border border-purple-500/30 grid grid-cols-1 md:grid-cols-5 shadow-2xl">
+                        <div className="md:col-span-3 aspect-video bg-black">
+                            <video key={currentVideo.id} src={currentVideo.src} controls autoPlay muted playsInline className="w-full h-full object-contain" />
+                        </div>
+                        <div className="md:col-span-2 p-6 flex flex-col justify-center space-y-3">
+                            {playlist.map(v => (
+                                <button key={v.id} onClick={() => setCurrentVideo(v)} className={`w-full text-left p-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${currentVideo.id === v.id ? 'bg-purple-600 shadow-lg text-white' : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}>
+                                    {v.title}
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+
+                    {/* MENÚ DE MÓDULOS */}
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div onClick={() => setActiveView('tv')} className="bg-gray-900 p-6 rounded-2xl border border-blue-500/30 cursor-pointer hover:border-blue-500 transition-all text-center group">
+                            <MonitorPlay className="mx-auto text-blue-400 w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
+                            <h3 className="font-bold uppercase text-[10px] tracking-widest">TV 2026</h3>
+                        </div>
+                        <div onClick={() => { setActiveView('quote'); setFraseActual(frasesDB[Math.floor(Math.random()*frasesDB.length)]); }} className="bg-gray-900 p-6 rounded-2xl border border-yellow-500/30 cursor-pointer hover:border-yellow-500 transition-all text-center group">
+                            <Quote className="mx-auto text-yellow-400 w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
+                            <h3 className="font-bold uppercase text-[10px] tracking-widest">Frase</h3>
+                        </div>
+                        <div onClick={() => setActiveView('tarot')} className="bg-gray-900 p-6 rounded-2xl border border-purple-500/30 cursor-pointer hover:border-purple-500 transition-all text-center group">
+                            <i className="fa-solid fa-layer-group text-purple-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <h3 className="font-bold uppercase text-[10px] tracking-widest">Tarot</h3>
+                        </div>
+                        <div onClick={() => setActiveView('aidancing')} className="bg-gray-900 p-6 rounded-2xl border border-green-500/30 cursor-pointer hover:border-green-500 transition-all text-center group">
+                            <i className="fa-solid fa-video text-green-400 text-3xl mb-2 group-hover:scale-110 transition-transform"></i>
+                            <h3 className="font-bold uppercase text-[10px] tracking-widest">AI Dancing</h3>
+                        </div>
+                        <div onClick={() => setActiveView('oracle')} className="bg-gray-900 p-6 rounded-2xl border border-pink-500/30 cursor-pointer hover:border-pink-500 transition-all text-center group">
+                            <Brain className="mx-auto text-pink-400 w-8 h-8 mb-2 group-hover:scale-110 transition-transform" />
+                            <h3 className="font-bold uppercase text-[10px] tracking-widest">Oráculo</h3>
+                        </div>
+                    </div>
+
+                    {/* SELECTOR ZODIACAL RÁPIDO */}
+                    <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-2 pt-4">
+                        {zodiacSigns.map(s => (
+                            <button key={s.name} onClick={() => {setActiveView('horoscope'); generateHoroscope(s);}} className="bg-white/5 p-4 rounded-xl border border-white/10 hover:border-yellow-500 transition-all text-center group">
+                                <span className="text-2xl block group-hover:scale-110 transition-transform">{s.icon}</span>
+                                <span className="text-[9px] text-gray-500 uppercase font-black">{s.name}</span>
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div onClick={() => setActiveView('iching')} className="bg-white/5 p-6 rounded-2xl border border-red-500/20 cursor-pointer hover:border-red-500 transition-all text-center flex items-center justify-center gap-3">
+                            <i className="fa-solid fa-yin-yang text-red-500 text-xl"></i>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest">I Ching</h3>
+                        </div>
+                        <div onClick={() => setActiveView('astral')} className="bg-white/5 p-6 rounded-2xl border border-blue-500/20 cursor-pointer hover:border-blue-500 transition-all text-center flex items-center justify-center gap-3">
+                            <i className="fa-solid fa-star-and-crescent text-blue-400 text-xl"></i>
+                            <h3 className="text-[10px] font-black uppercase tracking-widest">Carta Astral</h3>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen flex flex-col">
+                    <nav className="border-b border-white/10 p-4 sticky top-0 bg-black/80 backdrop-blur-md z-50 flex justify-between items-center">
+                        <div className="flex items-center gap-2 cursor-pointer" onClick={resetView}>
+                            <i className="fa-solid fa-wand-magic-sparkles text-purple-500"></i>
+                            <span className="font-black tracking-tighter uppercase text-xs">Mística.AI</span>
+                        </div>
+                        <div className="text-[10px] font-mono text-gray-500 uppercase tracking-widest">{ahora.toLocaleTimeString()}</div>
+                    </nav>
+
+                    <main className="flex-1 max-w-6xl w-full mx-auto p-4 py-8">
+                        {activeView === 'home' && renderHome()}
+
+                        {/* VISTA TV 2026 */}
+                        {activeView === 'tv' && (
+                            <div className="animate-in fade-in duration-500 space-y-6">
+                                <button onClick={resetView} className="text-gray-500 flex items-center gap-2 hover:text-white uppercase text-[10px] font-black"><ArrowLeft size={14} /> Volver</button>
+                                <div className="bg-gray-900 rounded-3xl border border-blue-500/20 overflow-hidden shadow-2xl">
+                                    <div className="p-6 border-b border-white/5 flex justify-between items-center bg-black/20">
+                                        <h2 className="text-xl font-black text-blue-400 flex items-center gap-2 uppercase tracking-tighter"><MonitorPlay /> Parrilla TV Febrero 2026</h2>
+                                        <div className="bg-blue-900/30 px-3 py-1.5 rounded-lg text-[10px] font-black text-blue-300 border border-blue-500/30 uppercase tracking-tighter">{ahora.toLocaleTimeString('es-ES', {hour: '2-digit', minute:'2-digit'})}</div>
+                                    </div>
+                                    <div className="tv-scroll flex overflow-x-auto p-6 gap-4 custom-scrollbar">
+                                        {canalesTV.map(canal => (
+                                            <div key={canal} className="flex-shrink-0 w-64 bg-black/40 rounded-2xl border border-white/5 p-4 flex flex-col gap-4">
+                                                <div className="font-black text-[9px] uppercase tracking-[0.2em] text-gray-500 border-b border-white/10 pb-2">{canal}</div>
+                                                <div className="space-y-3">
+                                                    {eventosTV.filter(e => e.channel === canal).map(ev => (
+                                                        <div key={ev.id} className={`p-3 rounded-xl border-2 transition-all ${isEnDirecto(ev.time) ? 'border-red-500 bg-red-500/10' : 'border-white/5 bg-white/5'}`}>
+                                                            <div className="flex justify-between items-start mb-1">
+                                                                <span className="text-[9px] font-black text-gray-400">{ev.time}</span>
+                                                                {isEnDirecto(ev.time) && <span className="text-[8px] font-black text-red-500 animate-pulse bg-red-500/20 px-1.5 py-0.5 rounded uppercase">Directo</span>}
+                                                            </div>
+                                                            <div className="text-[11px] font-bold leading-tight">{ev.event}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* VISTA FRASE DEL DÍA */}
+                        {activeView === 'quote' && (
+                            <div className="max-w-xl mx-auto animate-in zoom-in duration-300 space-y-6">
+                                <button onClick={resetView} className="text-gray-500 flex items-center gap-2 hover:text-white uppercase text-[10px] font-black"><ArrowLeft size={14} /> Volver</button>
+                                <div className="bg-gray-900 p-10 rounded-3xl border border-yellow-500/30 shadow-2xl relative overflow-hidden">
+                                    <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none"><Quote size={120} /></div>
+                                    <div className="space-y-8 relative z-10">
+                                        <div className="space-y-2">
+                                            <span className="text-yellow-500 text-[10px] font-black tracking-widest flex items-center gap-2 uppercase"><Sparkles size={14} /> Descubre</span>
+                                            <p className="text-3xl font-serif italic leading-tight text-white">"{fraseActual.texto}"</p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-6">
+                                            <div>
+                                                <span className="text-gray-500 text-[9px] uppercase font-black flex items-center gap-1 mb-1"><User size={12} /> Persona</span>
+                                                <p className="font-bold text-lg text-yellow-100">{fraseActual.autor}</p>
+                                            </div>
+                                            <div>
+                                                <span className="text-gray-500 text-[9px] uppercase font-black flex items-center gap-1 mb-1"><i className="fa-solid fa-font text-[9px]"></i> Palabra</span>
+                                                <p className="font-bold text-lg text-yellow-100">{fraseActual.palabra}</p>
+                                            </div>
+                                        </div>
+                                        <button onClick={() => setFraseActual(frasesDB[Math.floor(Math.random() * frasesDB.length)])} className="w-full bg-yellow-600 hover:bg-yellow-500 text-black font-black py-5 rounded-2xl flex items-center justify-center gap-3 transition-all active:scale-95 shadow-xl uppercase text-[10px] tracking-widest"><RefreshCw size={18} /> Nueva Revelación</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* VISTA TAROT CON CHAT */}
+                        {activeView === 'tarot' && (
+                            <div className="animate-in slide-in-from-bottom duration-500 space-y-6">
+                                <button onClick={resetView} className="text-gray-500 flex items-center gap-2 uppercase text-[10px] font-black"><ArrowLeft size={14} /> Volver</button>
+                                {tarotState === 'deck' && <div className="flex justify-center py-10"><button onClick={drawTarotSpread} className="bg-purple-600 hover:bg-purple-500 px-10 py-20 rounded-2xl font-black text-xl shadow-2xl border-4 border-white/10 uppercase tracking-widest">Iniciar Tirada Cuántica</button></div>}
+                                {tarotState === 'shuffling' && <div className="text-center py-20"><RefreshCw className="animate-spin mx-auto w-12 h-12 text-purple-500" /></div>}
+                                {tarotState === 'revealed' && (
+                                    <div className="space-y-6">
+                                        <div className="grid grid-cols-3 gap-4">
+                                            {drawnCards.map((c, i) => (
+                                                <div key={i} className="bg-gray-900 p-6 rounded-2xl border border-white/10 text-center shadow-xl">
+                                                    <div className="text-[10px] text-purple-400 font-black mb-2 tracking-widest uppercase">{c.pos}</div>
+                                                    <div className="text-xl font-black mb-2 uppercase">{c.name}</div>
+                                                    <div className="text-[10px] text-gray-500 uppercase">{c.meaning}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="bg-purple-900/20 p-6 rounded-2xl border border-purple-500/30 text-sm italic">{tarotSynthesis}</div>
+                                        <div className="bg-gray-900 rounded-2xl border border-white/10 overflow-hidden shadow-2xl">
+                                            <div className="p-3 bg-black/40 text-[10px] flex justify-between font-black uppercase tracking-widest">
+                                                <span>Interrogatorio</span>
+                                                <span>{tarotChatHistory.filter(m=>m.type==='user').length}/3 Preguntas</span>
+                                            </div>
+                                            <div className="p-4 h-40 overflow-y-auto space-y-2 custom-scrollbar">
+                                                {tarotChatHistory.map((m, i) => (
+                                                    <div key={i} className={`flex ${m.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                                        <div className={`p-3 rounded-xl text-xs font-bold ${m.type === 'user' ? 'bg-purple-600 shadow-lg' : 'bg-gray-800'}`}>{m.text}</div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            <form onSubmit={askTarotChat} className="p-3 border-t border-white/5 flex gap-2 bg-black/20">
+                                                <input value={tarotChatInput} onChange={e=>setTarotChatInput(e.target.value)} disabled={tarotChatHistory.filter(m=>m.type==='user').length>=3} className="flex-1 bg-transparent outline-none text-xs font-black uppercase px-2" placeholder="Haz tu pregunta..." />
+                                                <button className="text-purple-500 hover:scale-110 transition-transform"><Send size={18}/></button>
+                                            </form>
+                                        </div>
                                     </div>
                                 )}
                             </div>
                         )}
 
-                        {activeView === 'oracle' && (
-                            <div className="max-w-xl mx-auto h-[60vh] flex flex-col bg-gray-900 border border-pink-500/30 rounded-3xl overflow-hidden animate-in slide-in-from-bottom">
-                                <div className="p-4 bg-black/40 flex justify-between items-center"><span className="font-bold text-sm flex items-center gap-2"><i className="fa-solid fa-robot text-pink-500"></i> ORÁCULO NEURAL</span><button onClick={resetView} className="text-gray-500"><i className="fa-solid fa-xmark"></i></button></div>
-                                <div className="flex-1 p-4 overflow-y-auto space-y-4 text-sm">
-                                    {oracleHistory.map((m, i) => <div key={i} className={`flex ${m.type === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[80%] p-3 rounded-2xl ${m.type === 'user' ? 'bg-pink-600 text-white' : 'bg-gray-800 text-gray-300'}`}>{m.text}</div></div>)}
-                                    {loading && <div className="text-gray-600 animate-pulse text-xs italic">El oráculo está analizando las estrellas...</div>}
+                        {/* VISTA DANCING AI COMPLETA */}
+                        {activeView === 'aidancing' && (
+                            <div className="animate-in fade-in duration-500 space-y-8">
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                                    <button onClick={resetView} className="text-gray-500 flex items-center gap-2 hover:text-white uppercase text-[10px] font-black"><ArrowLeft size={14} /> Volver</button>
+                                    <div className="flex gap-4 w-full md:w-auto">
+                                        {!isMobile && <button onClick={playAllAIVideos} className="flex-1 bg-green-600 px-6 py-3 rounded-xl font-black text-[10px] uppercase shadow-lg shadow-green-900/20">Reproducir Todos</button>}
+                                        <button onClick={pauseAllAIVideos} className="flex-1 bg-red-600 px-6 py-3 rounded-xl font-black text-[10px] uppercase shadow-lg shadow-red-900/20">Pausar Todos</button>
+                                    </div>
                                 </div>
-                                <form onSubmit={askOracle} className="p-4 border-t border-white/5 flex gap-2">
-                                    <input value={oracleInput} onChange={e=>setOracleInput(e.target.value)} placeholder="Pregunta algo sobre tu destino..." className="flex-1 bg-transparent outline-none text-sm" />
-                                    <button className="text-pink-500"><i className="fa-solid fa-paper-plane"></i></button>
+                                <div className="space-y-12">
+                                    {aiVideos.map(group => (
+                                        <div key={group.id} className="bg-gray-900 p-6 rounded-3xl border border-white/5">
+                                            <h3 className="text-xs font-black uppercase text-green-400 mb-4 tracking-widest border-b border-white/5 pb-2">Secuencia {group.id}</h3>
+                                            <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 items-center">
+                                                <div className="bg-black rounded-xl overflow-hidden border border-white/5 shadow-2xl relative aspect-[9/16]">
+                                                    <video className={`ai-dance-video video-group-${group.id} w-full h-full object-contain`} src={`./${group.files[0]}`} controls playsInline preload="none" />
+                                                </div>
+                                                <div className="flex flex-col gap-4 items-center">
+                                                    <button onClick={() => playSequence(group.id)} className="bg-green-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"><i className="fa-solid fa-play"></i></button>
+                                                    <button onClick={() => stopSequence(group.id)} className="bg-red-600 w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"><i className="fa-solid fa-stop"></i></button>
+                                                </div>
+                                                <div className="bg-black rounded-xl overflow-hidden border border-white/5 shadow-2xl relative aspect-[9/16]">
+                                                    {group.files[1] && <video className={`ai-dance-video video-group-${group.id} w-full h-full object-contain`} src={`./${group.files[1]}`} controls playsInline preload="none" />}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="flex justify-center gap-4 py-10 border-t border-white/10">
+                                    <button onClick={() => setShowKarma(!showKarma)} className="bg-purple-900/40 border border-purple-500 px-10 py-4 rounded-full font-black uppercase tracking-widest text-[10px] hover:bg-purple-900/60 transition-all">KARMA</button>
+                                    <button onClick={() => setShowDimision(!showDimision)} className="bg-red-900/40 border border-red-500 px-10 py-4 rounded-full font-black uppercase tracking-widest text-[10px] hover:bg-red-900/60 transition-all">DIMISIÓN</button>
+                                </div>
+                                {showKarma && (
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom">
+                                        {['k1.mp4', 'k2.mp4', 'k3.mp4', 'k4.mp4'].map((k, idx) => (
+                                            <div key={idx} className="bg-black rounded-xl border border-purple-500/20 aspect-[9/16] overflow-hidden"><video src={`./${k}`} controls className="w-full h-full object-contain" /></div>
+                                        ))}
+                                    </div>
+                                )}
+                                {showDimision && <div className="flex justify-center"><video src="./DIMISION tiktok.mp4" controls className="max-w-sm rounded-xl border border-red-500/20 shadow-2xl aspect-[9/16] object-contain bg-black" /></div>}
+                            </div>
+                        )}
+
+                        {/* VISTAS RESTANTES (ORÁCULO, HORÓSCOPO, ICHING, ASTRAL) */}
+                        {activeView === 'oracle' && (
+                            <div className="max-w-xl mx-auto h-[60vh] flex flex-col bg-gray-900 border border-pink-500/30 rounded-3xl overflow-hidden animate-in slide-in-from-bottom shadow-2xl">
+                                <div className="p-4 bg-black/40 flex justify-between items-center shadow-lg"><span className="font-black text-[10px] flex items-center gap-2 uppercase tracking-widest"><i className="fa-solid fa-robot text-pink-500"></i> Oráculo Neural</span><button onClick={resetView} className="text-gray-500"><X size={16}/></button></div>
+                                <div className="flex-1 p-4 overflow-y-auto space-y-4 text-[10px] custom-scrollbar">
+                                    {oracleHistory.map((m, i) => <div key={i} className={`flex ${m.type === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[80%] p-4 rounded-2xl font-black ${m.type === 'user' ? 'bg-pink-600 shadow-lg text-white' : 'bg-gray-800 text-gray-300 shadow-lg border border-white/5'}`}>{m.text}</div></div>)}
+                                    {loading && <div className="text-pink-500 animate-pulse font-black uppercase tracking-widest">Calculando vectores...</div>}
+                                </div>
+                                <form onSubmit={askOracle} className="p-4 border-t border-white/5 flex gap-2 bg-black/30">
+                                    <input value={oracleInput} onChange={e=>setOracleInput(e.target.value)} placeholder="Pregunta algo sobre tu destino..." className="flex-1 bg-transparent outline-none text-[10px] font-black uppercase px-2" />
+                                    <button className="text-pink-500 hover:scale-125 transition-transform"><Send size={18}/></button>
                                 </form>
+                            </div>
+                        )}
+
+                        {activeView === 'horoscope' && (
+                            <div className="animate-in zoom-in duration-300">
+                                <button onClick={resetView} className="text-gray-500 mb-6 flex items-center gap-2 uppercase text-[10px] font-black"><ArrowLeft size={14}/> Volver</button>
+                                {loading ? <div className="text-center py-20"><RefreshCw className="animate-spin mx-auto w-12 h-12 text-yellow-500" /></div> : (
+                                    <div className="bg-gray-900 p-10 rounded-3xl border border-yellow-500/30 text-center shadow-2xl max-w-2xl mx-auto">
+                                        <span className="text-7xl mb-6 block drop-shadow-lg">{selectedSign?.icon}</span>
+                                        <h2 className="text-3xl font-black mb-6 uppercase tracking-tighter text-yellow-500">{selectedSign?.name}</h2>
+                                        <p className="text-gray-300 leading-relaxed font-bold uppercase text-xs tracking-widest">{prediction}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeView === 'iching' && (
+                            <div className="animate-in fade-in duration-500 text-center space-y-8">
+                                <button onClick={resetView} className="text-gray-500 flex items-center gap-2 uppercase text-[10px] font-black"><ArrowLeft size={14}/> Volver</button>
+                                <h2 className="text-2xl font-black text-red-500 uppercase tracking-widest">I Ching: Mutación Digital</h2>
+                                {ichingState === 'start' && <button onClick={throwIChing} className="bg-red-900/30 border-4 border-red-500/40 p-20 rounded-full hover:bg-red-900/50 transition-all hover:scale-110 shadow-2xl shadow-red-900/40"><i className="fa-solid fa-yin-yang text-6xl text-red-500 animate-spin-slow"></i></button>}
+                                {ichingState === 'throwing' && <div className="py-10 animate-pulse text-red-500 font-black uppercase tracking-widest">Consultando el oráculo...</div>}
+                                {ichingState === 'result' && (
+                                    <div className="bg-gray-900 p-8 rounded-3xl border border-red-500/30 flex flex-col md:flex-row gap-8 items-center max-w-2xl mx-auto shadow-2xl">
+                                        <div className="w-24">
+                                            {hexagram.map((l, i) => <div key={i}>{l === 'yang' ? <div className="yang-line"></div> : <div className="yin-line"><div></div><div></div></div>}</div>)}
+                                        </div>
+                                        <div className="flex-1 text-left space-y-4">
+                                            <h4 className="font-black text-red-400 uppercase text-[10px] tracking-widest">Hexagrama Resultante</h4>
+                                            <p className="text-gray-300 text-xs font-bold uppercase leading-relaxed">El flujo indica receptividad absoluta. No fuerces los eventos; la respuesta está en el vacío creativo.</p>
+                                            <button onClick={() => setIchingState('start')} className="text-[10px] text-red-500 font-black border-b-2 border-red-500 pb-1 uppercase tracking-widest">Nueva consulta</button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeView === 'astral' && (
+                            <div className="animate-in fade-in duration-500">
+                                <button onClick={resetView} className="text-gray-500 mb-6 flex items-center gap-2 uppercase text-[10px] font-black"><ArrowLeft size={14}/> Volver</button>
+                                {!astralChart ? (
+                                    <form onSubmit={calculateAstral} className="bg-gray-900 p-8 rounded-3xl border border-purple-500/30 space-y-4 max-w-lg mx-auto shadow-2xl">
+                                        <h3 className="text-xl font-black text-center uppercase tracking-tighter">Mapa Natal v4.0</h3>
+                                        <input required type="text" placeholder="Nombre" className="w-full bg-black p-4 rounded-xl border border-white/10 outline-none focus:border-purple-500 uppercase text-[10px] font-black" />
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <input required type="date" className="bg-black p-4 rounded-xl border border-white/10 outline-none text-[10px] font-black" />
+                                            <input required type="time" className="bg-black p-4 rounded-xl border border-white/10 outline-none text-[10px] font-black" />
+                                        </div>
+                                        <input required type="text" placeholder="Lugar de Nacimiento" className="w-full bg-black p-4 rounded-xl border border-white/10 outline-none focus:border-purple-500 uppercase text-[10px] font-black" />
+                                        <button className="w-full bg-purple-600 py-4 rounded-xl font-black text-[10px] hover:bg-purple-500 transition-colors uppercase tracking-widest">Calcular Efemérides</button>
+                                    </form>
+                                ) : (
+                                    <div className="bg-gray-900 p-8 rounded-3xl border border-purple-500/30 grid grid-cols-3 gap-4 text-center shadow-2xl max-w-2xl mx-auto">
+                                        <div className="bg-black p-6 rounded-2xl border border-white/5 shadow-inner"><span className="text-[9px] text-yellow-500 block mb-2 font-black uppercase tracking-widest">Sol</span><span className="text-4xl block mb-2 drop-shadow-md">{astralChart.sun.icon}</span><span className="font-black text-xs uppercase">{astralChart.sun.name}</span></div>
+                                        <div className="bg-black p-6 rounded-2xl border border-white/5 shadow-inner"><span className="text-[9px] text-blue-400 block mb-2 font-black uppercase tracking-widest">Luna</span><span className="text-4xl block mb-2 drop-shadow-md">{astralChart.moon.icon}</span><span className="font-black text-xs uppercase">{astralChart.moon.name}</span></div>
+                                        <div className="bg-black p-6 rounded-2xl border border-white/5 shadow-inner"><span className="text-[9px] text-pink-500 block mb-2 font-black uppercase tracking-widest">Asc</span><span className="text-4xl block mb-2 drop-shadow-md">{astralChart.asc.icon}</span><span className="font-black text-xs uppercase">{astralChart.asc.name}</span></div>
+                                        <div className="col-span-3 p-6 bg-purple-900/20 text-[10px] text-gray-400 mt-4 italic font-bold border border-purple-500/20 rounded-xl uppercase tracking-widest">Configuración astral cargada. Tu camino hacia el 2026 requiere equilibrio emocional y determinación creativa.</div>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </main>
 
-                    {/* PIE DE PÁGINA: CONTACTOS Y BOTÓN STRIPE REDUCIDO */}
-                    <footer className="mt-auto border-t border-white/10 bg-black/80 backdrop-blur-md py-6 px-4 text-center">
-                        <div className="flex flex-col justify-center items-center gap-4 mb-6">
+                    {/* PIE DE PÁGINA CON BOTÓN DE STRIPE ESCALADO */}
+                    <footer className="mt-auto border-t border-white/10 bg-black/80 backdrop-blur-md py-10 px-6 text-center shadow-2xl">
+                        <div className="flex flex-col md:flex-row justify-center items-center gap-10 mb-8">
+                            <a href="mailto:pedro.guirao@gmail.com" className="text-gray-400 text-[10px] font-black tracking-widest hover:text-purple-400 transition-colors flex items-center gap-2 uppercase">
+                                <i className="fa-solid fa-envelope"></i> pedro.guirao@gmail.com
+                            </a>
+                            <a href="https://pedroguiraogil.github.io/CURSOS/" target="_blank" className="text-gray-400 text-[10px] font-black tracking-widest hover:text-pink-400 transition-colors flex items-center gap-2 uppercase">
+                                <i className="fa-solid fa-graduation-cap"></i> Acceso Cursos
+                            </a>
                             
-                            <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-                                <a href="mailto:pedro.guirao@gmail.com" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2 text-sm font-mono">
-                                    <i className="fa-solid fa-envelope"></i> pedro.guirao@gmail.com
-                                </a>
-                                <a href="https://pedroguiraogil.github.io/CURSOS/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors flex items-center gap-2 text-sm font-mono">
-                                    <i className="fa-solid fa-graduation-cap"></i> Acceso a Cursos
-                                </a>
+                            {/* BOTÓN STRIPE REDUCIDO AL 75% */}
+                            <div className="transform scale-[0.75] origin-center hover:scale-[0.80] transition-transform shadow-2xl rounded-xl overflow-hidden">
+                                <stripe-buy-button 
+                                    buy-button-id="buy_btn_1Szc9xLMuCf9ela0GVyNo0PD" 
+                                    publishable-key="pk_live_51SzbaxLMuCf9ela0lFnv8OpenuCoG02c4crjmSRW1oq85DdwAaEhmMmIS0gYMH9wYbGr6AVXxzbJf7IdA6sptgxy00dKGPgVSc" 
+                                />
                             </div>
-                            
-                            {/* BOTÓN DE STRIPE ESCALADO PARA SER MÁS PEQUEÑO */}
-                            <div className="transform scale-[0.80] md:scale-75 origin-center mt-2 hover:scale-[0.85] transition-transform">
-                                <stripe-buy-button
-                                    buy-button-id="buy_btn_1Szc9xLMuCf9ela0GVyNo0PD"
-                                    publishable-key="pk_live_51SzbaxLMuCf9ela0lFnv8OpenuCoG02c4crjmSRW1oq85DdwAaEhmMmIS0gYMH9wYbGr6AVXxzbJf7IdA6sptgxy00dKGPgVSc"
-                                >
-                                </stripe-buy-button>
-                            </div>
-                            
                         </div>
-                        
-                        <div className="flex justify-center items-center gap-2 text-xs text-gray-500 font-mono">
-                            <span>VISTAS TOTALES:</span>
-                            <img 
-                                src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpedroguiraogil.github.io%2FCURSOS&label=VISITAS&countColor=%239333ea&labelColor=%23000000" 
-                                alt="Contador de visitas estático" 
-                                className="h-5 rounded" 
-                            />
+                        <div className="flex justify-center items-center gap-3 text-[10px] text-gray-500 font-black tracking-[0.3em] uppercase">
+                            <span>Vistas Totales:</span>
+                            <img src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpedroguiraogil.github.io%2FCURSOS&label=VISITAS&countColor=%239333ea&labelColor=%23000000" className="h-4 rounded shadow-lg shadow-purple-900/40" />
                         </div>
                     </footer>
                 </div>
