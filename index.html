@@ -410,50 +410,101 @@
             const [cargando, setCargando] = useState(false);
             const [error, setError] = useState('');
 
-            const llamarAPI = async (prompt) => {
+            const BANCO_FRASES = [
+                { frase: "La imaginación es más importante que el conocimiento.", autor: "Albert Einstein", contexto: "Einstein creía que la creatividad superaba al saber acumulado.", tags: ["einstein","ciencia","imaginación","conocimiento","creatividad"] },
+                { frase: "La vida es lo que pasa mientras estás ocupado haciendo otros planes.", autor: "John Lennon", contexto: "Lennon lo escribió en la canción 'Beautiful Boy' en 1980.", tags: ["lennon","vida","tiempo","planes","música"] },
+                { frase: "El éxito es la suma de pequeños esfuerzos repetidos día tras día.", autor: "Robert Collier", contexto: "Collier fue un influyente escritor de autoayuda del siglo XX.", tags: ["éxito","esfuerzo","trabajo","constancia","motivación"] },
+                { frase: "En medio de la dificultad yace la oportunidad.", autor: "Albert Einstein", contexto: "Einstein aplicó esta filosofía durante sus años de investigación más duros.", tags: ["einstein","dificultad","oportunidad","retos","superación"] },
+                { frase: "No llores porque terminó, sonríe porque sucedió.", autor: "Gabriel García Márquez", contexto: "Reflexión del Nobel colombiano sobre el valor de los momentos vividos.", tags: ["garcia marquez","amor","vida","felicidad","recuerdos"] },
+                { frase: "El único modo de hacer un gran trabajo es amar lo que haces.", autor: "Steve Jobs", contexto: "Jobs lo dijo en su famoso discurso de Stanford en 2005.", tags: ["jobs","trabajo","pasión","apple","motivación"] },
+                { frase: "Sé el cambio que quieres ver en el mundo.", autor: "Mahatma Gandhi", contexto: "Gandhi vivió esta frase liderando la independencia de India sin violencia.", tags: ["gandhi","cambio","mundo","paz","liderazgo"] },
+                { frase: "La libertad no es algo que se da; es algo que se conquista.", autor: "Malcolm X", contexto: "Malcolm X defendió los derechos civiles con esta convicción.", tags: ["malcolm x","libertad","derechos","lucha","conquista"] },
+                { frase: "El arte es la mentira que nos permite conocer la verdad.", autor: "Pablo Picasso", contexto: "Picasso reflexionaba así sobre la esencia del arte y la realidad.", tags: ["picasso","arte","verdad","creatividad","pintura"] },
+                { frase: "No basta saber, se debe también aplicar. No es suficiente querer, se debe también hacer.", autor: "Johann Wolfgang von Goethe", contexto: "Goethe sintetizó en esta frase su filosofía de vida activa.", tags: ["goethe","acción","conocimiento","voluntad","filosofía"] },
+                { frase: "La peor soledad es no estar cómodo con uno mismo.", autor: "Mark Twain", contexto: "Twain exploró la soledad y la identidad en muchas de sus obras.", tags: ["twain","soledad","identidad","autoconocimiento","comodidad"] },
+                { frase: "Primero te ignoran, luego se ríen de ti, luego te atacan, luego ganas.", autor: "Mahatma Gandhi", contexto: "Gandhi describía así el proceso de todo cambio social genuino.", tags: ["gandhi","perseverancia","victoria","cambio","resistencia"] },
+                { frase: "Un libro es un sueño que sostienes en tus manos.", autor: "Neil Gaiman", contexto: "Gaiman, autor de Sandman y Coraline, es un gran defensor de la lectura.", tags: ["gaiman","libro","lectura","sueño","literatura"] },
+                { frase: "La vida sin música sería un error.", autor: "Friedrich Nietzsche", contexto: "Nietzsche, gran aficionado a Wagner, consideraba la música esencial.", tags: ["nietzsche","música","vida","filosofía","arte"] },
+                { frase: "El secreto de la felicidad no es hacer siempre lo que se quiere, sino querer siempre lo que se hace.", autor: "Leo Tolstoi", contexto: "Tolstoi exploró esta idea en Anna Karenina y Guerra y Paz.", tags: ["tolstoi","felicidad","querer","voluntad","literatura"] },
+                { frase: "No hay camino para la paz; la paz es el camino.", autor: "Mahatma Gandhi", contexto: "Gandhi resumió su filosofía noviolenta en esta célebre frase.", tags: ["gandhi","paz","camino","noviolencia","filosofía"] },
+                { frase: "La creatividad es la inteligencia divirtiéndose.", autor: "Albert Einstein", contexto: "Einstein defendía el juego y la curiosidad como motores del genio.", tags: ["einstein","creatividad","inteligencia","juego","diversión"] },
+                { frase: "Prefiero morir de pie que vivir de rodillas.", autor: "Emiliano Zapata", contexto: "Zapata lideró la Revolución Mexicana con esta convicción inquebrantable.", tags: ["zapata","dignidad","libertad","revolución","valentía"] },
+                { frase: "El tiempo es el recurso más valioso que tenemos.", autor: "Carl Sandburg", contexto: "El poeta americano reflexionó sobre el tiempo en innumerables obras.", tags: ["sandburg","tiempo","recurso","valor","vida"] },
+                { frase: "Si quieres ir rápido, ve solo. Si quieres llegar lejos, ve acompañado.", autor: "Proverbio africano", contexto: "Sabiduría popular del continente africano sobre el poder de la comunidad.", tags: ["proverbio","equipo","comunidad","colaboración","viaje"] },
+                { frase: "El mayor riesgo es no correr ningún riesgo.", autor: "Mark Zuckerberg", contexto: "Zuckerberg lo dijo en la presentación de Facebook a inversores en 2012.", tags: ["zuckerberg","riesgo","valentía","emprendimiento","éxito"] },
+                { frase: "Lo que no te mata te hace más fuerte.", autor: "Friedrich Nietzsche", contexto: "Nietzsche lo escribió en El crepúsculo de los ídolos en 1888.", tags: ["nietzsche","fortaleza","adversidad","superación","filosofía"] },
+                { frase: "La esperanza es el sueño del hombre despierto.", autor: "Aristóteles", contexto: "Aristóteles, filósofo de la Antigua Grecia, reflexionó sobre la esperanza como fuerza vital.", tags: ["aristoteles","esperanza","sueño","filosofía","antigua grecia"] },
+                { frase: "Elige un trabajo que ames y no tendrás que trabajar ni un día de tu vida.", autor: "Confucio", contexto: "El sabio chino Confucio enseñó este principio hace más de 2500 años.", tags: ["confucio","trabajo","amor","vocación","felicidad"] },
+                { frase: "Dos cosas son infinitas: el universo y la estupidez humana. Y del universo no estoy seguro.", autor: "Albert Einstein", contexto: "Esta es una de las frases más humorísticas y célebres del genio alemán.", tags: ["einstein","universo","humor","infinito","humanidad"] },
+                { frase: "No dejes que el ruido de las opiniones ajenas ahogue tu propia voz interior.", autor: "Steve Jobs", contexto: "Jobs lo dijo en su mítico discurso de graduación en Stanford, 2005.", tags: ["jobs","opinión","voz","interior","stanford"] },
+                { frase: "La educación es el arma más poderosa para cambiar el mundo.", autor: "Nelson Mandela", contexto: "Mandela luchó por la educación como herramienta de liberación en Sudáfrica.", tags: ["mandela","educación","cambio","mundo","sudáfrica"] },
+                { frase: "Soy suficientemente grande para contener contradicciones.", autor: "Walt Whitman", contexto: "Whitman lo escribió en Hojas de hierba, su obra maestra poética.", tags: ["whitman","contradicción","identidad","poesía","literatura"] },
+                { frase: "El amor es la única fuerza capaz de transformar a un enemigo en amigo.", autor: "Martin Luther King Jr.", contexto: "King predicó esta filosofía durante el movimiento por los derechos civiles.", tags: ["luther king","amor","paz","transformación","derechos civiles"] },
+                { frase: "Dime y lo olvido, enséñame y lo recuerdo, involúcrame y lo aprendo.", autor: "Benjamin Franklin", contexto: "Franklin, polímata y Padre Fundador de EE.UU., aplicó esto en su vida entera.", tags: ["franklin","aprendizaje","educación","memoria","enseñanza"] },
+            ];
+
+            const fraseAleatoria = () => BANCO_FRASES[Math.floor(Math.random() * BANCO_FRASES.length)];
+
+            const frasePorDia = () => {
+                const idx = new Date().getDate() % BANCO_FRASES.length;
+                return BANCO_FRASES[idx];
+            };
+
+            const frasePorTermino = (termino) => {
+                const t = termino.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                const encontrada = BANCO_FRASES.find(f =>
+                    f.autor.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(t) ||
+                    f.tags.some(tag => tag.includes(t)) ||
+                    f.frase.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(t)
+                );
+                return encontrada || null;
+            };
+
+            const mostrarFrase = (f, contextoExtra) => {
                 setCargando(true);
-                setError('');
-                setFrase(null);
-                try {
-                    const response = await fetch("https://api.anthropic.com/v1/messages", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            model: "claude-sonnet-4-20250514",
-                            max_tokens: 1000,
-                            messages: [{ role: "user", content: prompt }]
-                        })
-                    });
-                    const data = await response.json();
-                    const texto = data.content?.map(b => b.text || '').join('') || '';
-                    // Esperamos JSON: { frase, autor, contexto }
-                    const clean = texto.replace(/```json|```/g, '').trim();
-                    const parsed = JSON.parse(clean);
-                    setFrase(parsed);
-                } catch (e) {
-                    setError('No se pudo obtener la frase. Inténtalo de nuevo.');
-                } finally {
+                setTimeout(() => {
+                    setFrase({ ...f, contexto: contextoExtra || f.contexto });
                     setCargando(false);
-                }
+                }, 600);
             };
 
             const obtenerFraseDia = () => {
+                setError(''); setFrase(null);
                 const hoy = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
-                llamarAPI(`Hoy es ${hoy}. Dame una frase célebre inspiradora adecuada para este día. Responde SOLO con JSON válido sin ningún texto adicional, con este formato exacto: {"frase":"...","autor":"...","contexto":"breve explicación de por qué encaja hoy"}`);
+                const f = frasePorDia();
+                mostrarFrase(f, `Frase seleccionada para este ${hoy}.`);
             };
 
             const buscarPorPersonaje = () => {
-                if (!inputValor.trim()) { setError('Escribe el nombre de una persona.'); return; }
-                llamarAPI(`Dame una frase célebre y conocida de ${inputValor}. Responde SOLO con JSON válido sin ningún texto adicional: {"frase":"...","autor":"${inputValor}","contexto":"breve contexto de la frase"}`);
+                setError(''); setFrase(null);
+                if (!inputValor.trim()) {
+                    // Sin input: frase aleatoria de un personaje famoso
+                    mostrarFrase(fraseAleatoria());
+                } else {
+                    const f = frasePorTermino(inputValor);
+                    if (f) { mostrarFrase(f); }
+                    else { setError(`No tenemos frases de "${inputValor}". Prueba: Einstein, Gandhi, Picasso, Mandela, Jobs, Lennon...`); }
+                }
             };
 
             const buscarPorPalabra = () => {
-                if (!inputValor.trim()) { setError('Escribe una palabra o tema.'); return; }
-                llamarAPI(`Dame una frase célebre de cualquier autor famoso que hable sobre "${inputValor}". Responde SOLO con JSON válido sin ningún texto adicional: {"frase":"...","autor":"...","contexto":"por qué esta frase trata sobre ${inputValor}"}`);
+                setError(''); setFrase(null);
+                if (!inputValor.trim()) {
+                    // Sin input: frase aleatoria sobre cualquier tema
+                    mostrarFrase(fraseAleatoria());
+                } else {
+                    const f = frasePorTermino(inputValor);
+                    if (f) { mostrarFrase(f, `Frase relacionada con "${inputValor}".`); }
+                    else {
+                        const aleatoria = fraseAleatoria();
+                        mostrarFrase(aleatoria, `No encontramos "${inputValor}" exacto, pero aquí va una gran frase.`);
+                    }
+                }
             };
 
             const obtenerAlAzar = () => {
-                llamarAPI(`Dame una frase célebre completamente al azar de cualquier persona famosa de la historia. Sorpréndeme. Responde SOLO con JSON válido sin ningún texto adicional: {"frase":"...","autor":"...","contexto":"breve dato curioso sobre el autor o la frase"}`);
+                setError(''); setFrase(null);
+                mostrarFrase(fraseAleatoria());
             };
 
             const acciones = {
@@ -511,34 +562,37 @@
                         })}
                     </div>
 
-                    {/* Input (solo para personaje y palabra) */}
+                    {/* Botón de acción — funciona para todos los modos */}
+                    <button
+                        onClick={acciones[modo]}
+                        className={`w-full ${c.activeBg} hover:opacity-90 py-4 rounded-xl font-bold text-white transition-opacity flex items-center justify-center gap-2 text-lg`}
+                    >
+                        <i className={`fa-solid ${modoActual.icon}`}></i>
+                        {modo === 'dia'       && 'Ver Frase del Día'}
+                        {modo === 'azar'      && 'Dame una frase al azar'}
+                        {modo === 'personaje' && (inputValor.trim() ? `Buscar frases de "${inputValor}"` : 'Dame una frase de un personaje famoso')}
+                        {modo === 'palabra'   && (inputValor.trim() ? `Buscar frases sobre "${inputValor}"` : 'Dame una frase sobre un tema al azar')}
+                    </button>
+
+                    {/* Input opcional para personaje y palabra */}
                     {(modo === 'personaje' || modo === 'palabra') && (
                         <div className="flex gap-3">
                             <input
                                 value={inputValor}
                                 onChange={e => setInputValor(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && acciones[modo]()}
-                                placeholder={modo === 'personaje' ? 'Ej: Frida Kahlo, Einstein...' : 'Ej: libertad, amor, tiempo...'}
-                                className={`flex-1 bg-gray-900 border ${c.border}/40 focus:${c.border} rounded-xl px-4 py-3 outline-none text-sm transition-colors`}
+                                placeholder={modo === 'personaje' ? 'O escribe un nombre: Einstein, Gandhi...' : 'O escribe un tema: amor, libertad...'}
+                                className={`flex-1 bg-gray-900 border ${c.border}/30 focus:outline-none focus:border-opacity-100 rounded-xl px-4 py-2.5 text-sm text-gray-300 placeholder-gray-600 transition-colors`}
                             />
-                            <button
-                                onClick={acciones[modo]}
-                                className={`${c.activeBg} hover:opacity-90 px-5 py-3 rounded-xl font-bold text-sm text-white transition-opacity`}
-                            >
-                                Buscar
-                            </button>
+                            {inputValor.trim() && (
+                                <button
+                                    onClick={() => { setInputValor(''); setFrase(null); setError(''); }}
+                                    className="bg-gray-800 hover:bg-gray-700 px-3 rounded-xl text-gray-500 hover:text-white transition-colors text-sm"
+                                >
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            )}
                         </div>
-                    )}
-
-                    {/* Botón de acción para modos sin input */}
-                    {(modo === 'dia' || modo === 'azar') && (
-                        <button
-                            onClick={acciones[modo]}
-                            className={`w-full ${c.activeBg} hover:opacity-90 py-4 rounded-xl font-bold text-white transition-opacity flex items-center justify-center gap-2`}
-                        >
-                            <i className={`fa-solid ${modoActual.icon}`}></i>
-                            {modo === 'dia' ? 'Ver Frase del Día' : 'Dame una frase al azar'}
-                        </button>
                     )}
 
                     {/* Estado de carga */}
