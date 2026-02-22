@@ -12,6 +12,8 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
+    <script async src="https://js.stripe.com/v3/buy-button.js"></script>
+
     <style>
         @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .animate-spin-slow { animation: spin-slow 12s linear infinite; }
@@ -542,11 +544,10 @@
                         )}
                     </main>
 
-                    {/* PIE DE PÁGINA CON BOTÓN DONACIONES VISIBLE */}
+                    {/* PIE DE PÁGINA: CONTACTOS Y BOTÓN STRIPE REDUCIDO */}
                     <footer className="mt-auto border-t border-white/10 bg-black/80 backdrop-blur-md py-6 px-4 text-center">
-                        <div className="flex flex-col justify-center items-center gap-6 mb-6">
+                        <div className="flex flex-col justify-center items-center gap-4 mb-6">
                             
-                            {/* ENLACES DE CONTACTO */}
                             <div className="flex flex-col md:flex-row gap-4 md:gap-8">
                                 <a href="mailto:pedro.guirao@gmail.com" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2 text-sm font-mono">
                                     <i className="fa-solid fa-envelope"></i> pedro.guirao@gmail.com
@@ -556,14 +557,14 @@
                                 </a>
                             </div>
                             
-                            {/* BOTÓN DE DONACIONES AJUSTADO (Altura fijada para evitar que sea minúsculo) */}
-                            <a href="AQUI_TU_ENLACE_REAL_DE_DONACION" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-105 block mt-2">
-                                <img 
-                                    src="./image_95dccb.png" 
-                                    alt="Botón de donaciones" 
-                                    className="h-16 w-auto object-contain rounded-xl hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-shadow"
-                                />
-                            </a>
+                            {/* BOTÓN DE STRIPE ESCALADO PARA SER MÁS PEQUEÑO */}
+                            <div className="transform scale-[0.80] md:scale-75 origin-center mt-2 hover:scale-[0.85] transition-transform">
+                                <stripe-buy-button
+                                    buy-button-id="buy_btn_1Szc9xLMuCf9ela0GVyNo0PD"
+                                    publishable-key="pk_live_51SzbaxLMuCf9ela0lFnv8OpenuCoG02c4crjmSRW1oq85DdwAaEhmMmIS0gYMH9wYbGr6AVXxzbJf7IdA6sptgxy00dKGPgVSc"
+                                >
+                                </stripe-buy-button>
+                            </div>
                             
                         </div>
                         
