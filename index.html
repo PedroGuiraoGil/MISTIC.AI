@@ -390,7 +390,8 @@
                                     
                                     {showKarma && (
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-in slide-in-from-bottom duration-500 text-left">
-                                            {['K1.mp4', 'K2.mp4', 'K3.mp4', 'K4.mp4'].map((kvid, idx) => (
+                                            {/* CORRECCIÓN DE NOMBRES DE ARCHIVO AQUÍ */}
+                                            {['k1.mp4', 'k2.mp4', 'k3.mp4', 'k4.mp4'].map((kvid, idx) => (
                                                 <div key={idx} className="bg-black rounded-xl overflow-hidden border border-purple-500/40 relative shadow-lg">
                                                     <div className="absolute top-2 left-2 bg-black/80 px-2 py-1 rounded text-[10px] z-10 text-purple-300 pointer-events-none font-mono tracking-widest">
                                                         {kvid}
@@ -543,6 +544,7 @@
                         )}
                     </main>
 
+                    {/* PIE DE PÁGINA (FOOTER GLOBAL) */}
                     <footer className="mt-auto border-t border-white/10 bg-black/80 backdrop-blur-md py-6 px-4 text-center">
                         <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 mb-4">
                             <a href="mailto:pedro.guirao@gmail.com" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2 text-sm font-mono">
@@ -554,10 +556,11 @@
                         </div>
                         <div className="flex justify-center items-center gap-2 text-xs text-gray-500 font-mono">
                             <span>VISTAS TOTALES:</span>
+                            {/* NUEVO CONTADOR ESTABLE CON VISITORBADGE */}
                             <img 
-                                src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fpedroguiraogil.github.io%2FCURSOS&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false" 
-                                alt="Contador de visitas estático" 
-                                className="h-5" 
+                                src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpedroguiraogil.github.io%2FCURSOS&label=VISITAS&countColor=%239333ea&labelColor=%23000000" 
+                                alt="Contador de visitas" 
+                                className="h-5 rounded" 
                             />
                         </div>
                     </footer>
