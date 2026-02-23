@@ -73,12 +73,12 @@
                 const cargarEPG = async () => {
                     setCargandoEPG(true);
                     setErrorEPG('');
-                    // open-epg.com tiene XMLs de España sin comprimir con CORS abierto
+                    // globetvapp/epg en GitHub raw tiene CORS abierto
                     const EPG_URLS = [
-                        'https://www.open-epg.com/files/spain1.xml',
-                        'https://www.open-epg.com/files/spain2.xml',
-                        'https://www.open-epg.com/files/spain3.xml',
-                        'https://www.open-epg.com/files/spain4.xml',
+                        'https://raw.githubusercontent.com/globetvapp/epg/main/Spain/spain1.xml',
+                        'https://raw.githubusercontent.com/globetvapp/epg/main/Spain/spain2.xml',
+                        'https://raw.githubusercontent.com/globetvapp/epg/main/Spain/spain3.xml',
+                        'https://raw.githubusercontent.com/globetvapp/epg/main/Spain/spain4.xml',
                     ];
                     let loaded = false;
                     for (const epgUrl of EPG_URLS) {
