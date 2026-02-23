@@ -99,6 +99,9 @@
                 const result = {};
 
                 // Mapea channel id -> nombre
+                const allIds = Array.from(doc.querySelectorAll('channel')).map(c => c.getAttribute('id'));
+                console.log('[EPG] Canal IDs en XML (primeros 60):', JSON.stringify(allIds.slice(0,60)));
+
                 const channelMap = {};
                 CANALES_CONFIG.forEach(c => { channelMap[c.epgId] = c.nombre; });
 
