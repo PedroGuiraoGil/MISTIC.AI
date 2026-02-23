@@ -36,312 +36,167 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // =============================================
-        // CANALES A MOSTRAR — IDs del EPG_dobleM
-        // =============================================
-        const CANALES_CONFIG = [
-            { nombre: 'Movistar Plus+',    epgId: 'MovistarPlus.es'         },
-            { nombre: 'Movistar LaLiga',   epgId: 'MovistarLaLiga.es'       },
-            { nombre: 'DAZN LaLiga',       epgId: 'DAZNLaLiga.es'           },
-            { nombre: 'Liga de Campeones', epgId: 'MovistarLigaCampeones.es' },
-            { nombre: 'Deportes',          epgId: 'MovistarDeportes.es'      },
-            { nombre: 'Deportes 2',        epgId: 'MovistarDeportes2.es'     },
-            { nombre: 'Vamos',             epgId: 'MovistarVamos.es'         },
-            { nombre: 'Teledeporte',       epgId: 'Teledeporte.es'           },
-            { nombre: 'Eurosport 1',       epgId: 'Eurosport1.es'           },
-            { nombre: 'Eurosport 2',       epgId: 'Eurosport2.es'           },
-            { nombre: 'DAZN 1',            epgId: 'DAZN1.es'                },
-            { nombre: 'DAZN 2',            epgId: 'DAZN2.es'                },
-            { nombre: 'Canal Historia',    epgId: 'CanalHistoria.es'        },
-            { nombre: 'DMAX',              epgId: 'DMAX.es'                 },
-            { nombre: 'Odisea',            epgId: 'Odisea.es'               },
+        const GROQ_KEY = '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';
+
+        const CANALES_TV = [
+            'Movistar Plus+', 'Movistar LaLiga', 'DAZN LaLiga', 'Liga de Campeones',
+            'Movistar Deportes', 'Movistar Deportes 2', 'Vamos', 'Teledeporte',
+            'Eurosport 1', 'Eurosport 2', 'DAZN 1', 'DAZN 2',
+            'Esport3', 'Canal Historia', 'DMAX', 'Odisea'
         ];
 
-        // =============================================
-        // COMPONENTE PARRILLA TV — EPG en tiempo real
-        // =============================================
-        const ParrillaTV = ({ onBack }) => {
+        const ParrillaTV = ({ onBack, programacion, cargando, cargados, recargar }) => {
             const [ahora] = React.useState(new Date());
-            const [diaSeleccionado, setDiaSeleccionado] = React.useState('hoy');
-            const [eventos, setEventos] = React.useState({});
-            const [cargandoEPG, setCargandoEPG] = React.useState(true);
-            const [errorEPG, setErrorEPG] = React.useState('');
-            const scrollContainerRef = React.useRef(null);
+            const [error] = React.useState('');
+            const scrollRef = React.useRef(null);
 
-            // Carga y parsea el XML de EPG_dobleM
-            React.useEffect(() => {
-                const cargarEPG = async () => {
-                    setCargandoEPG(true);
-                    setErrorEPG('');
-                    // globetvapp/epg en GitHub raw tiene CORS abierto
-                    const EPG_URLS = [
-                        'https://raw.githubusercontent.com/globetvapp/epg/main/Spain/spain1.xml',
-                        'https://raw.githubusercontent.com/globetvapp/epg/main/Spain/spain2.xml',
-                        'https://raw.githubusercontent.com/globetvapp/epg/main/Spain/spain3.xml',
-                        'https://raw.githubusercontent.com/globetvapp/epg/main/Spain/spain4.xml',
-                    ];
-                    let loaded = false;
-                    for (const epgUrl of EPG_URLS) {
-                        try {
-                            console.log('[EPG] Probando:', epgUrl);
-                            const res = await fetch(epgUrl, { signal: AbortSignal.timeout(20000) });
-                            if (!res.ok) throw new Error('HTTP ' + res.status);
-                            const xml = await res.text();
-                            console.log('[EPG] XML bytes:', xml.length);
-                            if (xml.length < 5000) throw new Error('XML vacio');
-                            const parsed = parsearXMLTV(xml);
-                            const nCanales = Object.keys(parsed).length;
-                            console.log('[EPG] Canales encontrados:', nCanales, Object.keys(parsed));
-                            if (nCanales > 0) {
-                                setEventos(prev => ({ ...prev, ...parsed }));
-                                loaded = true;
-                            }
-                        } catch (e) {
-                            console.warn('[EPG] Fallo:', epgUrl, e.message);
-                        }
-                    }
-                    if (!loaded) {
-                        setErrorEPG('No se pudo cargar EPG. Reintenta mas tarde.');
-                    }
-                };
-                cargarEPG();
-            }, []);
-
-            // Parsea XMLTV y devuelve { channelId: [ {start, stop, title, desc} ] }
-            const parsearXMLTV = (xmlStr) => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(xmlStr, 'text/xml');
-                const result = {};
-                // Debug: mostrar estructura raiz del XML
-                const root = doc.documentElement;
-                console.log('[EPG] Root tag:', root ? root.tagName : 'NULL');
-                console.log('[EPG] Primeros 500 chars del XML:', xmlStr.substring(0,500));
-                console.log('[EPG] channels en doc:', doc.querySelectorAll('channel').length);
-                console.log('[EPG] programmes en doc:', doc.querySelectorAll('programme').length);
-
-                // Mapea channel id -> nombre
-                // Matching flexible por display-name del canal
-                const channelMap = {};
-                doc.querySelectorAll('channel').forEach(ch => {
-                    const id = ch.getAttribute('id');
-                    const nameEl = ch.querySelector('display-name');
-                    const dn = nameEl ? nameEl.textContent.trim().toLowerCase() : '';
-                    CANALES_CONFIG.forEach(c => {
-                        const cn = c.nombre.toLowerCase().replace(/[^a-z0-9]/g,'');
-                        const dnClean = dn.replace(/[^a-z0-9]/g,'');
-                        if (dnClean && cn && (dnClean.includes(cn) || cn.includes(dnClean))) {
-                            channelMap[id] = c.nombre;
-                        }
-                    });
-                });
-                console.log('[EPG] Canales mapeados:', Object.keys(channelMap).length, Object.values(channelMap));
+            const fechaStr = ahora.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            const horaStr  = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
 
-                const programmes = doc.querySelectorAll('programme');
-                programmes.forEach(prog => {
-                    const channel = prog.getAttribute('channel');
-                    if (!channelMap[channel]) return; // solo canales que nos interesan
+            const toMin = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
 
-                    const startRaw = prog.getAttribute('start');
-                    const stopRaw  = prog.getAttribute('stop');
-                    const title    = prog.querySelector('title') ? prog.querySelector('title').textContent : '';
-
-                    if (!startRaw || !title) return;
-
-                    const start = xmltvFecha(startRaw);
-                    const stop  = stopRaw ? xmltvFecha(stopRaw) : null;
-
-                    const cname = channelMap[channel];
-                    if (!result[cname]) result[cname] = [];
-                    result[cname].push({ start, stop, title });
-                });
-
-                // Ordena cada canal por hora de inicio
-                Object.keys(result).forEach(c => {
-                    result[c].sort((a, b) => a.start - b.start);
-                });
-
-                return result;
+            const isAhora = (inicio, fin) => {
+                const ahoraMin = ahora.getHours() * 60 + ahora.getMinutes();
+                return toMin(inicio) <= ahoraMin && ahoraMin < toMin(fin);
             };
 
-            // Convierte fecha XMLTV "20260223143000 +0100" a Date
-            const xmltvFecha = (raw) => {
-                const s = raw.replace(/\s.*/, ''); // quita timezone
-                const y  = s.substring(0,4);
-                const mo = s.substring(4,6);
-                const d  = s.substring(6,8);
-                const h  = s.substring(8,10);
-                const mi = s.substring(10,12);
-                const se = s.substring(12,14) || '00';
-                // Obtiene offset del raw
-                const tzMatch = raw.match(/([+-])(\d{2})(\d{2})$/);
-                let offsetMs = 0;
-                if (tzMatch) {
-                    const sign = tzMatch[1] === '+' ? 1 : -1;
-                    offsetMs = sign * (parseInt(tzMatch[2]) * 60 + parseInt(tzMatch[3])) * 60000;
-                }
-                const utc = Date.UTC(y, mo-1, d, h, mi, se) - offsetMs;
-                return new Date(utc);
-            };
-
-            // Filtra eventos del dia seleccionado
-            const fechaHoy    = new Date(ahora); fechaHoy.setHours(0,0,0,0);
-            const fechaManana = new Date(fechaHoy); fechaManana.setDate(fechaManana.getDate() + 1);
-            const fechaPasado = new Date(fechaManana); fechaPasado.setDate(fechaPasado.getDate() + 1);
-
-            const desdeFecha = diaSeleccionado === 'hoy' ? fechaHoy : fechaManana;
-            const hastaFecha = diaSeleccionado === 'hoy' ? fechaManana : fechaPasado;
-
-            // Para "hoy" filtra desde 2h antes de ahora para mostrar lo que esta en curso
-            const desdeReal = diaSeleccionado === 'hoy'
-                ? new Date(ahora.getTime() - 2 * 60 * 60 * 1000)
-                : desdeFecha;
-
-            const eventosFiltrados = (canal) => {
-                const lista = eventos[canal] || [];
-                return lista.filter(e => e.start >= desdeReal && e.start < hastaFecha);
-            };
-
-            const isEnDirecto = (ev) => {
-                if (diaSeleccionado !== 'hoy') return false;
-                if (!ev.stop) return false;
-                return ev.start <= ahora && ev.stop > ahora;
+            // Muestra desde 1h antes de ahora hasta fin del dia
+            const filtrarProgs = (progs) => {
+                const limiteMin = Math.max(0, ahora.getHours() * 60 + ahora.getMinutes() - 60);
+                const filtrados = progs.filter(p => toMin(p.fin || '23:59') > limiteMin);
+                // Si no hay nada (todos pasados), muestra desde 00:00
+                return filtrados.length > 0 ? filtrados : progs;
             };
 
             const getHeaderStyle = (canal) => {
-                if (canal === 'Movistar Plus+') return 'bg-blue-800 text-white';
-                if (canal.includes('DAZN')) return 'bg-yellow-400 text-slate-900';
-                if (canal.includes('Movistar') || canal === 'Vamos' || canal.includes('Deportes') || canal === 'Liga de Campeones') return 'bg-blue-600 text-white';
-                if (canal === 'Canal Historia') return 'bg-slate-900 text-amber-500';
-                if (canal === 'DMAX') return 'bg-gray-800 text-white';
-                if (canal === 'Odisea') return 'bg-teal-700 text-white';
-                if (canal.includes('Eurosport')) return 'bg-red-600 text-white';
+                if (canal === 'La 1' || canal === 'La 2') return 'bg-blue-700 text-white';
+                if (canal === 'Antena 3' || canal === 'Neox' || canal === 'Nova') return 'bg-orange-600 text-white';
+                if (canal === 'Telecinco' || canal === 'Cuatro' || canal === 'Energy' || canal === 'Boing') return 'bg-purple-700 text-white';
+                if (canal === 'La Sexta' || canal === 'Mega') return 'bg-green-700 text-white';
                 if (canal === 'Teledeporte') return 'bg-orange-500 text-white';
+                if (canal === 'Eurosport 1' || canal === 'Eurosport 2') return 'bg-red-600 text-white';
+                if (canal === 'Canal Historia') return 'bg-slate-800 text-amber-400';
+                if (canal === 'DMAX') return 'bg-gray-700 text-white';
+                if (canal === 'Odisea') return 'bg-teal-700 text-white';
+                if (canal === 'AXN') return 'bg-blue-900 text-white';
+                if (canal === 'AMC') return 'bg-stone-800 text-white';
                 return 'bg-slate-700 text-white';
             };
 
             const handleScroll = (dir) => {
-                const a = 350;
-                if (!scrollContainerRef.current) return;
-                if (dir === 'left')  scrollContainerRef.current.scrollBy({ left: -a, behavior: 'smooth' });
-                if (dir === 'right') scrollContainerRef.current.scrollBy({ left:  a, behavior: 'smooth' });
-                if (dir === 'up')    scrollContainerRef.current.scrollBy({ top: -a, behavior: 'smooth' });
-                if (dir === 'down')  scrollContainerRef.current.scrollBy({ top:  a, behavior: 'smooth' });
+                if (!scrollRef.current) return;
+                const a = 300;
+                if (dir === 'left')  scrollRef.current.scrollBy({ left: -a, behavior: 'smooth' });
+                if (dir === 'right') scrollRef.current.scrollBy({ left:  a, behavior: 'smooth' });
+                if (dir === 'up')    scrollRef.current.scrollBy({ top:  -a, behavior: 'smooth' });
+                if (dir === 'down')  scrollRef.current.scrollBy({ top:   a, behavior: 'smooth' });
             };
 
-            const formatHora = (date) => date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            const tieneDatos = Object.keys(programacion).length > 0;
 
             return (
                 <div className="animate-in fade-in duration-500 flex flex-col h-full">
                     {/* Cabecera */}
                     <div className="bg-white/5 rounded-2xl border border-white/10 p-4 mb-4">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
-                                <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors flex items-center gap-2">
+                                <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
                                     <i className="fa-solid fa-arrow-left"></i>
                                 </button>
                                 <h2 className="text-xl font-bold flex items-center gap-2">
                                     <i className="fa-solid fa-tv text-purple-400"></i>
                                     Parrilla TV
                                 </h2>
-                                <span className="text-sm text-gray-400 font-mono">
-                                    {ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                                {cargandoEPG && (
-                                    <span className="text-xs text-yellow-500 flex items-center gap-1">
-                                        <i className="fa-solid fa-spinner animate-spin text-xs"></i>
-                                        Cargando EPG...
-                                    </span>
-                                )}
-                                {!cargandoEPG && !errorEPG && (
-                                    <span className="text-xs text-green-500 flex items-center gap-1">
-                                        <i className="fa-solid fa-circle-check text-xs"></i>
-                                        EPG actualizado
+                                <span className="text-sm text-gray-400 font-mono">{horaStr}</span>
+                                {cargando && (
+                                    <span className="text-xs text-yellow-400 flex items-center gap-1">
+                                        <i className="fa-solid fa-spinner animate-spin"></i>
+                                        Generando con IA... ({cargados.length}/{CANALES_TV.length})
                                     </span>
                                 )}
                             </div>
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setDiaSeleccionado('hoy')}
-                                    className={'px-4 py-2 rounded-xl text-sm font-bold transition-all ' + (diaSeleccionado === 'hoy' ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10')}>
-                                    Hoy
-                                </button>
-                                <button
-                                    onClick={() => setDiaSeleccionado('manana')}
-                                    className={'px-4 py-2 rounded-xl text-sm font-bold transition-all ' + (diaSeleccionado === 'manana' ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10')}>
-                                    Manana
-                                </button>
-                            </div>
+                            <button onClick={recargar} disabled={cargando}
+                                className="flex items-center gap-2 bg-purple-700 hover:bg-purple-600 disabled:opacity-50 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
+                                <i className={'fa-solid ' + (cargando ? 'fa-spinner animate-spin' : 'fa-wand-magic-sparkles')}></i>
+                                {tieneDatos ? 'Actualizar' : 'Generar programacion'}
+                            </button>
                         </div>
-                        {errorEPG && (
-                            <p className="text-xs text-red-400 mt-2">
-                                <i className="fa-solid fa-triangle-exclamation mr-1"></i>{errorEPG}
+                        {tieneDatos && (
+                            <p className="text-xs text-yellow-600/70 italic mt-2">
+                                Programacion generada por IA. Puede no coincidir exactamente con la parrilla real.
                             </p>
                         )}
-                        <p className="text-xs text-gray-600 mt-2">
-                            Desplazate horizontalmente entre los canales
-                        </p>
+                        {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
                     </div>
 
-                    {/* Controles scroll */}
-                    <div className="flex justify-between items-center mb-2 px-1">
-                        <button onClick={() => handleScroll('left')}  className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white transition-all"><i className="fa-solid fa-chevron-left"></i></button>
-                        <button onClick={() => handleScroll('up')}    className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white transition-all"><i className="fa-solid fa-chevron-up"></i></button>
-                        <button onClick={() => handleScroll('down')}  className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white transition-all"><i className="fa-solid fa-chevron-down"></i></button>
-                        <button onClick={() => handleScroll('right')} className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white transition-all"><i className="fa-solid fa-chevron-right"></i></button>
-                    </div>
+                    {!tieneDatos && !cargando && (
+                        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-gray-500">
+                            <i className="fa-solid fa-tv text-5xl text-gray-700"></i>
+                            <p className="text-sm">Pulsa "Generar programacion" para ver la parrilla de hoy</p>
+                            <p className="text-xs text-gray-600">Generado por IA - aproximado</p>
+                        </div>
+                    )}
 
-                    {/* Grid de canales */}
-                    <div ref={scrollContainerRef} className="flex gap-4 overflow-x-auto pb-4 flex-1 overflow-y-auto tv-scroll">
-                        {cargandoEPG ? (
-                            <div className="flex-1 flex items-center justify-center text-gray-500">
-                                <i className="fa-solid fa-spinner animate-spin mr-2"></i>
-                                Cargando programacion en tiempo real...
+                    {tieneDatos && (
+                        <>
+                            <div className="flex justify-between items-center mb-2 px-1">
+                                <button onClick={() => handleScroll('left')}  className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white"><i className="fa-solid fa-chevron-left"></i></button>
+                                <button onClick={() => handleScroll('up')}    className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white"><i className="fa-solid fa-chevron-up"></i></button>
+                                <button onClick={() => handleScroll('down')}  className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white"><i className="fa-solid fa-chevron-down"></i></button>
+                                <button onClick={() => handleScroll('right')} className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white"><i className="fa-solid fa-chevron-right"></i></button>
                             </div>
-                        ) : (
-                            CANALES_CONFIG.map(canal => {
-                                const evs = eventosFiltrados(canal.nombre);
-                                return (
-                                    <div key={canal.nombre} className="w-64 flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-white/10 overflow-hidden">
-                                        <div className={'p-3 font-bold text-center text-sm ' + getHeaderStyle(canal.nombre)}>
-                                            {canal.nombre}
-                                        </div>
-                                        <div className="flex flex-col gap-1 p-2 overflow-y-auto max-h-96 tv-scroll">
-                                            {evs.length === 0 ? (
-                                                <p className="text-xs text-gray-600 text-center p-4">Sin datos</p>
-                                            ) : (
-                                                evs.map((ev, i) => {
-                                                    const directo = isEnDirecto(ev);
-                                                    return (
-                                                        <div key={i} className={'p-3 rounded-lg border transition-all ' + (directo ? 'border-red-500/50 bg-red-950/40 ring-1 ring-red-500/30' : 'border-white/5 bg-white/5 hover:bg-white/10')}>
-                                                            <div className="flex items-center justify-between gap-2 mb-1">
-                                                                <span className={'font-mono font-bold text-xs px-2 py-0.5 rounded ' + (directo ? 'bg-red-900/60 text-red-300' : 'bg-gray-800 text-gray-400')}>
-                                                                    {formatHora(ev.start)}
-                                                                </span>
-                                                                {directo && (
-                                                                    <span className="flex items-center gap-1 text-red-400 text-xs font-bold">
-                                                                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full inline-block animate-pulse"></span>
-                                                                        Ahora
+
+                            <div ref={scrollRef} className="flex gap-3 overflow-x-auto overflow-y-hidden pb-2">
+                                {CANALES_TV.map(canal => {
+                                    const progs = programacion[canal] || [];
+                                    const cargandoEste = cargando && !cargados.includes(canal);
+                                    return (
+                                        <div key={canal} className="w-56 flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-white/10 overflow-hidden">
+                                            <div className={'p-2 font-bold text-center text-xs ' + getHeaderStyle(canal)}>
+                                                {canal}
+                                            </div>
+                                            <div className="flex flex-col gap-1 p-1.5 overflow-y-auto max-h-80">
+                                                {cargandoEste ? (
+                                                    <div className="text-center py-4 text-gray-600 text-xs">
+                                                        <i className="fa-solid fa-spinner animate-spin mr-1"></i>
+                                                        Cargando...
+                                                    </div>
+                                                ) : progs.length === 0 ? (
+                                                    <p className="text-xs text-gray-600 text-center p-3">Sin datos</p>
+                                                ) : (
+                                                    filtrarProgs(progs).map((p, i) => {
+                                                        const directo = p.fin && isAhora(p.inicio, p.fin);
+                                                        return (
+                                                            <div key={i} className={'p-2 rounded-lg border text-xs ' + (directo ? 'border-red-500/50 bg-red-950/40' : 'border-white/5 bg-white/5')}>
+                                                                <div className="flex items-center justify-between mb-0.5">
+                                                                    <span className={'font-mono font-bold px-1.5 py-0.5 rounded text-xs ' + (directo ? 'bg-red-900/60 text-red-300' : 'bg-gray-800 text-gray-400')}>
+                                                                        {p.inicio}
                                                                     </span>
-                                                                )}
+                                                                    {directo && (
+                                                                        <span className="flex items-center gap-1 text-red-400 text-xs font-bold">
+                                                                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse inline-block"></span>
+                                                                            Ahora
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <p className="text-gray-200 leading-tight">{p.titulo}</p>
+                                                                {p.fin && <p className="text-gray-600 mt-0.5">hasta {p.fin}</p>}
                                                             </div>
-                                                            <p className="text-xs text-gray-200 leading-tight">{ev.title}</p>
-                                                            {ev.stop && (
-                                                                <p className="text-xs text-gray-600 mt-1">hasta {formatHora(ev.stop)}</p>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })
-                                            )}
+                                                        );
+                                                    })
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })
-                        )}
-                    </div>
+                                    );
+                                })}
+                            </div>
+                        </>
+                    )}
                 </div>
             );
         };
+
 
 
         // =============================================
@@ -757,6 +612,9 @@
         const App = () => {
             const [activeView, setActiveView] = useState('home'); 
             const [loading, setLoading] = useState(false);
+            const [tvProgramacion, setTvProgramacion] = useState({});
+            const [tvCargando, setTvCargando] = useState(false);
+            const [tvCargados, setTvCargados] = useState([]);
             const [isMobile, setIsMobile] = useState(false);
 
             useEffect(() => {
@@ -771,6 +629,51 @@
                 return () => window.removeEventListener('resize', checkDevice);
             }, []);
             
+            // Carga programacion TV al arrancar la app
+            const llamarGroqTV = async (canal, fechaStr) => {
+                const prompt = 'Hoy es ' + fechaStr + '. Dame la programacion tipica de hoy para el canal de television espanol llamado: ' + canal + '. ' +
+                    'Dame entre 12 y 15 programas cubriendo todo el dia desde las 00:00 hasta las 23:59. ' +
+                    'IMPORTANTE: en el JSON pon exactamente este nombre de canal: ' + canal + '. ' +
+                    'SOLO JSON, sin texto ni markdown: {"canales":[{"nombre":"' + canal + '","programas":[{"inicio":"08:00","fin":"09:30","titulo":"Titulo del programa"}]}]}';
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_KEY },
+                    body: JSON.stringify({ model: 'meta-llama/llama-4-scout-17b-16e-instruct', max_tokens: 1500, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
+                });
+                if (!res.ok) throw new Error('Groq ' + res.status);
+                const d = await res.json();
+                const txt = d.choices[0].message.content.trim().replace(/```json|```/g, '').trim();
+                const data = JSON.parse(txt);
+                // Acepta el canal aunque el nombre no coincida exactamente
+                const progs = data.canales && data.canales[0] && data.canales[0].programas;
+                if (!progs || progs.length === 0) throw new Error('Sin programas');
+                return progs;
+            };
+
+            const cargarTV = async () => {
+                if (tvCargando || Object.keys(tvProgramacion).length > 0) return;
+                setTvCargando(true);
+                setTvCargados([]);
+                const ahora = new Date();
+                const fechaStr = ahora.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                // Todas en paralelo - mucho mas rapido
+                const promesas = CANALES_TV.map(async (canal) => {
+                    for (let intento = 0; intento < 2; intento++) {
+                        try {
+                            if (intento > 0) await new Promise(r => setTimeout(r, 1500));
+                            const progs = await llamarGroqTV(canal, fechaStr);
+                            setTvProgramacion(prev => ({ ...prev, [canal]: progs }));
+                            setTvCargados(prev => [...prev, canal]);
+                            return;
+                        } catch (e) { console.warn('TV intento', intento+1, canal, e.message); }
+                    }
+                });
+                await Promise.all(promesas);
+                setTvCargando(false);
+            };
+
+            useEffect(() => { cargarTV(); }, []);
+
             const [selectedSign, setSelectedSign] = useState(null);
             const [prediction, setPrediction] = useState('');
             const [tarotState, setTarotState] = useState('deck'); 
@@ -1025,7 +928,7 @@
 
                         {/* NUEVA VISTA: PARRILLA TV */}
                         {activeView === 'parrilla' && (
-                            <ParrillaTV onBack={resetView} />
+                            <ParrillaTV onBack={resetView} programacion={tvProgramacion} cargando={tvCargando} cargados={tvCargados} recargar={cargarTV} />
                         )}
 
                         {/* VISTA: FRASES CÉLEBRES */}
