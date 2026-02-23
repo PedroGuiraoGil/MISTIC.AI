@@ -574,7 +574,7 @@
                 return { ...f, src: 'Banco local' };
             };
 
-            // ── Búsqueda por autor: prueba las 3 APIs con ES y EN ──
+            // ── Búsqueda por autor: prueba las 3 APIs con ES y EN, nunca falla ──
             const buscarAutor = async (autor) => {
                 const ck = 'a_' + autor.toLowerCase();
                 if (cache.current[ck]) return cache.current[ck];
@@ -588,9 +588,12 @@
                         if (lista?.length) { cache.current[ck] = lista; return lista; }
                     } catch {}
                 }
-                const t = autor.toLowerCase();
-                const local = BANCO_LOCAL.filter(f => f.a.toLowerCase().includes(t));
-                return local.length ? local.map(f => ({ ...f, src: 'Banco local' })) : null;
+                // Banco local por nombre de autor
+                const t = autor.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+                const local = BANCO_LOCAL.filter(f =>
+                    f.a.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").includes(t)
+                );
+                return local.length ? local.map(f => ({ ...f, src: 'Banco local' })) : [];
             };
 
             // ── Búsqueda por tema: tags QuoteSlate + autor MultiLang + banco local ──
@@ -647,36 +650,72 @@
                 setFrase(f); setFuente(f.src);
             });
 
-            const buscarPorPersonaje = () => run(async () => {
-                const q = inputValor.trim();
-                if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
+            // ── Fallback local garantizado cuando APIs no encuentran nada ──
+            const FRASES_EXTRA = {
+                _default: [
+                    {q:"La sabiduría comienza cuando reconoces lo que no sabes.",a:"Sócrates"},
+                    {q:"El conocimiento es poder.",a:"Francis Bacon"},
+                    {q:"Somos lo que hacemos repetidamente. La excelencia es un hábito.",a:"Aristóteles"},
+                    {q:"El único bien verdadero es el conocimiento; el único mal, la ignorancia.",a:"Sócrates"},
+                    {q:"No hay viento favorable para el que no sabe a qué puerto va.",a:"Séneca"},
+                ],
+                miedo:    [{q:"El miedo es la mente asesina.",a:"Frank Herbert"},{q:"El valiente conquista el miedo, no lo ignora.",a:"Nelson Mandela"}],
+                amor:     [{q:"Amar no es mirarse, sino mirar juntos en la misma dirección.",a:"Antoine de Saint-Exupéry"},{q:"El amor es la única fuerza que transforma a un enemigo en amigo.",a:"Martin Luther King Jr."}],
+                muerte:   [{q:"No temas a la muerte, sino a la vida no vivida.",a:"Natalie Babbitt"},{q:"La muerte no es nada. Me he escapado a la habitación de al lado.",a:"Henry Scott Holland"}],
+                tiempo:   [{q:"El tiempo es el único capital que no puedes permitirte perder.",a:"Thomas Edison"},{q:"No esperes. El momento adecuado nunca llegará solo.",a:"Napoleón Hill"}],
+                libertad: [{q:"La libertad no se da, se conquista.",a:"Malcolm X"},{q:"Prefiero morir de pie que vivir de rodillas.",a:"Emiliano Zapata"}],
+                guerra:   [{q:"La guerra es el fracaso de la diplomacia.",a:"Hen Kendall"},{q:"En la guerra no hay vencedores, solo víctimas.",a:"Winston Churchill"}],
+                musica:   [{q:"La música es el lenguaje del espíritu.",a:"Khalil Gibran"},{q:"Sin música la vida sería un error.",a:"Friedrich Nietzsche"}],
+                arte:     [{q:"El arte es la mentira que nos permite conocer la verdad.",a:"Pablo Picasso"},{q:"La creatividad es la inteligencia divirtiéndose.",a:"Albert Einstein"}],
+                felicidad:[{q:"La felicidad viene de tus propias acciones.",a:"Dalai Lama"},{q:"La alegría está en la lucha, no en la victoria.",a:"Mahatma Gandhi"}],
+                vida:     [{q:"La vida es lo que pasa mientras haces otros planes.",a:"John Lennon"},{q:"Vive como si fueras a morir mañana. Aprende como si fueras a vivir siempre.",a:"Mahatma Gandhi"}],
+                exito:    [{q:"El éxito es la suma de pequeños esfuerzos repetidos cada día.",a:"Robert Collier"},{q:"El secreto del éxito es la constancia en el propósito.",a:"Benjamín Disraeli"}],
+                tristeza: [{q:"Las lágrimas son las palabras que el corazón no puede expresar.",a:"Anónimo"},{q:"No llores porque terminó, sonríe porque sucedió.",a:"Gabriel García Márquez"}],
+                esperanza:[{q:"La esperanza es el sueño del hombre despierto.",a:"Aristóteles"},{q:"Podrán cortar todas las flores, pero no podrán detener la primavera.",a:"Pablo Neruda"}],
+                poder:    [{q:"El poder no corrompe; el miedo corrompe, quizás el miedo al poder.",a:"John Steinbeck"},{q:"El único poder que existe es el que emana del pueblo.",a:"Abraham Lincoln"}],
+            };
 
-                let lista = await buscarAutor(q);
+            const generarLocal = (termino) => {
+                const t = termino.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+                for (const [cat, frases] of Object.entries(FRASES_EXTRA)) {
+                    if (cat !== '_default' && t.includes(cat)) {
+                        return frases[Math.floor(Math.random() * frases.length)];
+                    }
+                }
+                const enBanco = BANCO_LOCAL.filter(f =>
+                    f.q.toLowerCase().includes(t) || f.a.toLowerCase().includes(t)
+                );
+                if (enBanco.length) return enBanco[Math.floor(Math.random() * enBanco.length)];
+                const def = FRASES_EXTRA._default;
+                return def[Math.floor(Math.random() * def.length)];
+            };
+
+            const buscar = async (q, modoPersonaje) => {
+                // Busca tanto por autor como por tema/tag
+                const lista = modoPersonaje ? await buscarAutor(q) : await buscarTema(q);
                 if (lista?.length) {
                     const listaES = await traducirLista(lista);
                     setResultados(listaES);
                     const f = listaES[Math.floor(Math.random() * listaES.length)];
                     setFrase(f); setFuente(f.src);
                 } else {
-                    setError(`No encontramos frases de "${q}". Prueba: Einstein, Gandhi, Shakespeare, Nietzsche, Cervantes, Neruda, Aristóteles, Churchill, Tolstói...`);
+                    const f = { ...generarLocal(q), src: 'Banco local' };
+                    setFrase(f); setFuente(f.src);
                 }
+            };
+
+            const buscarPorPersonaje = () => run(async () => {
+                const q = inputValor.trim();
+                if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
+                await buscar(q, true);
             });
 
             const buscarPorPalabra = () => run(async () => {
                 const q = inputValor.trim();
                 if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
-                const lista = await buscarTema(q);
-                if (lista?.length) {
-                    const listaES = await traducirLista(lista);
-                    setResultados(listaES);
-                    const f = listaES[Math.floor(Math.random() * listaES.length)];
-                    setFrase(f); setFuente(f.src);
-                } else {
-                    const f = await randomCascade();
-                    setFrase(f); setFuente(f.src);
-                    setError(`Sin resultados exactos para "${q}", aquí una frase al azar.`);
-                }
+                await buscar(q, false);
             });
+
 
             const acciones = { dia: obtenerFraseDia, personaje: buscarPorPersonaje, palabra: buscarPorPalabra, azar: obtenerAlAzar };
 
