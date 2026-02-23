@@ -455,492 +455,331 @@
         ];
 
         const FrasesView = ({ onBack }) => {
-            const [modo, setModo] = useState('dia');
-            const [inputValor, setInputValor] = useState('');
-            const [frase, setFrase] = useState(null);
-            const [resultados, setResultados] = useState([]);
-            const [cargando, setCargando] = useState(false);
-            const [error, setError] = useState('');
-            const [fuente, setFuente] = useState('');
+            const [modo, setModo] = React.useState('dia');
+            const [input, setInput] = React.useState('');
+            const [frase, setFrase] = React.useState(null);
+            const [lista, setLista] = React.useState([]);
+            const [cargando, setCargando] = React.useState(false);
+            const [iaUsada, setIaUsada] = React.useState('');
             const cache = React.useRef({});
 
-            // ═══════════════════════════════════════════════════════
-            // [CLAVES API] — pon aquí las tuyas (todas gratuitas)
-            //    Groq:       console.groq.com → API Keys → Create
-            //    Gemini:     aistudio.google.com → Get API Key
-            //    Mistral:    console.mistral.ai → API Keys
-            //    OpenRouter: openrouter.ai → Keys → Create Key
-            // ═══════════════════════════════════════════════════════
+            // CLAVES API (todas gratuitas, sin tarjeta)
+            // Groq:       console.groq.com
+            // Gemini:     aistudio.google.com
+            // Mistral:    console.mistral.ai
+            // OpenRouter: openrouter.ai
             const KEYS = {
-                groq:       'TU_CLAVE_GROQ_AQUI',
-                gemini:     'TU_CLAVE_GEMINI_AQUI',
-                mistral:    'TU_CLAVE_MISTRAL_AQUI',
-                openrouter: 'TU_CLAVE_OPENROUTER_AQUI',
+                groq:       'TU_CLAVE_GROQ',
+                gemini:     'TU_CLAVE_GEMINI',
+                mistral:    'TU_CLAVE_MISTRAL',
+                openrouter: 'TU_CLAVE_OPENROUTER',
             };
 
-            // ═══════════════════════════════════════════════════════
-            // PROVEEDORES — límites diarios gratuitos totales: ~17.400/día
-            // ═══════════════════════════════════════════════════════
+            const tieneClave = (id) => {
+                const base = id.split('_')[0];
+                const k = KEYS[base];
+                return k && !k.startsWith('TU_');
+            };
+
+            // Timeout helper
+            const conTimeout = (p, ms) => Promise.race([p, new Promise((_, r) => setTimeout(() => r(new Error('timeout')), ms || 7000))]);
+
+            // Limpia comillas tipograficas del texto
+            const limpiar = (s) => s.replace(/[\u00AB\u00BB\u201C\u201D\u2018\u2019"]/g, '').trim();
+
+            // Parsea "FRASE: x\nAUTOR: y" 
+            const parsear1 = (txt) => {
+                const f = (txt.match(/FRASE:\s*(.+)/) || [])[1];
+                const a = (txt.match(/AUTOR:\s*(.+)/) || [])[1];
+                if (f && a) return { q: limpiar(f), a: a.trim() };
+                return { q: limpiar(txt), a: 'Desconocido' };
+            };
+
+            const parsearLista = (txt, ia) => {
+                const result = [];
+                const lineas = txt.split('\n');
+                let q = null;
+                for (const l of lineas) {
+                    const mf = (l.match(/^FRASE:\s*(.+)/) || []);
+                    const ma = (l.match(/^AUTOR:\s*(.+)/) || []);
+                    if (mf[1]) q = limpiar(mf[1]);
+                    if (ma[1] && q) { result.push({ q: q, a: ma[1].trim(), ia: ia }); q = null; }
+                }
+                return result;
+            };
+
+            // PROVEEDORES
             const PROVEEDORES = [
                 {
-                    id: 'groq_llama',
-                    nombre: 'Groq / Llama 4',
-                    limite: 14400,
-                    llamar: async (prompt) => {
-                        const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    id: 'claude', nombre: 'Claude',
+                    call: async (prompt) => {
+                        const r = await fetch('https://api.anthropic.com/v1/messages', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEYS.groq}` },
-                            body: JSON.stringify({
-                                model: 'meta-llama/llama-4-scout-17b-16e-instruct',
-                                max_tokens: 300,
-                                messages: [{ role: 'user', content: prompt }]
-                            })
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
                         });
-                        if (!r.ok) throw new Error(`Groq ${r.status}`);
+                        if (!r.ok) throw new Error('Claude ' + r.status);
                         const d = await r.json();
-                        return { texto: d.choices[0].message.content.trim(), ia: 'Groq - Llama 4' };
+                        return { txt: d.content[0].text.trim(), ia: 'Claude' };
                     }
                 },
                 {
-                    id: 'groq_qwen',
-                    nombre: 'Groq / Qwen3',
-                    limite: 1000,
-                    llamar: async (prompt) => {
+                    id: 'groq_llama', nombre: 'Groq/Llama',
+                    call: async (prompt) => {
                         const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEYS.groq}` },
-                            body: JSON.stringify({
-                                model: 'qwen/qwen3-32b',
-                                max_tokens: 300,
-                                messages: [{ role: 'user', content: prompt }]
-                            })
+                            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + KEYS.groq },
+                            body: JSON.stringify({ model: 'meta-llama/llama-4-scout-17b-16e-instruct', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
                         });
-                        if (!r.ok) throw new Error(`Groq/Qwen ${r.status}`);
+                        if (!r.ok) throw new Error('Groq ' + r.status);
                         const d = await r.json();
-                        return { texto: d.choices[0].message.content.trim(), ia: 'Groq - Qwen3' };
+                        return { txt: d.choices[0].message.content.trim(), ia: 'Groq/Llama' };
                     }
                 },
                 {
-                    id: 'gemini',
-                    nombre: 'Gemini Flash',
-                    limite: 1000,
-                    llamar: async (prompt) => {
-                        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${KEYS.gemini}`, {
+                    id: 'gemini', nombre: 'Gemini',
+                    call: async (prompt) => {
+                        const url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + KEYS.gemini;
+                        const r = await fetch(url, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
                         });
-                        if (!r.ok) throw new Error(`Gemini ${r.status}`);
+                        if (!r.ok) throw new Error('Gemini ' + r.status);
                         const d = await r.json();
-                        return { texto: d.candidates[0].content.parts[0].text.trim(), ia: 'Gemini Flash' };
+                        return { txt: d.candidates[0].content.parts[0].text.trim(), ia: 'Gemini' };
                     }
                 },
                 {
-                    id: 'mistral',
-                    nombre: 'Mistral Small',
-                    limite: 2880,
-                    llamar: async (prompt) => {
+                    id: 'mistral', nombre: 'Mistral',
+                    call: async (prompt) => {
                         const r = await fetch('https://api.mistral.ai/v1/chat/completions', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEYS.mistral}` },
-                            body: JSON.stringify({
-                                model: 'mistral-small-latest',
-                                max_tokens: 300,
-                                messages: [{ role: 'user', content: prompt }]
-                            })
+                            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + KEYS.mistral },
+                            body: JSON.stringify({ model: 'mistral-small-latest', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
                         });
-                        if (!r.ok) throw new Error(`Mistral ${r.status}`);
+                        if (!r.ok) throw new Error('Mistral ' + r.status);
                         const d = await r.json();
-                        return { texto: d.choices[0].message.content.trim(), ia: 'Mistral Small' };
+                        return { txt: d.choices[0].message.content.trim(), ia: 'Mistral' };
                     }
                 },
                 {
-                    id: 'openrouter_llama',
-                    nombre: 'OpenRouter / Llama',
-                    limite: 999999,
-                    llamar: async (prompt) => {
+                    id: 'openrouter', nombre: 'OpenRouter',
+                    call: async (prompt) => {
                         const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
                             method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${KEYS.openrouter}`,
-                                'HTTP-Referer': 'https://mystica-ai.com',
-                                'X-Title': 'Mystica AI'
-                            },
-                            body: JSON.stringify({
-                                model: 'meta-llama/llama-3.1-8b-instruct:free',
-                                max_tokens: 300,
-                                messages: [{ role: 'user', content: prompt }]
-                            })
+                            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + KEYS.openrouter, 'HTTP-Referer': 'https://mystica.ai' },
+                            body: JSON.stringify({ model: 'meta-llama/llama-3.1-8b-instruct:free', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
                         });
-                        if (!r.ok) throw new Error(`OpenRouter ${r.status}`);
+                        if (!r.ok) throw new Error('OpenRouter ' + r.status);
                         const d = await r.json();
-                        return { texto: d.choices[0].message.content.trim(), ia: 'OpenRouter - Llama' };
-                    }
-                },
-                {
-                    id: 'openrouter_mistral',
-                    nombre: 'OpenRouter / Mistral',
-                    limite: 999999,
-                    llamar: async (prompt) => {
-                        const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${KEYS.openrouter}`,
-                                'HTTP-Referer': 'https://mystica-ai.com',
-                                'X-Title': 'Mystica AI'
-                            },
-                            body: JSON.stringify({
-                                model: 'mistralai/mistral-7b-instruct:free',
-                                max_tokens: 300,
-                                messages: [{ role: 'user', content: prompt }]
-                            })
-                        });
-                        if (!r.ok) throw new Error(`OpenRouter/Mistral ${r.status}`);
-                        const d = await r.json();
-                        return { texto: d.choices[0].message.content.trim(), ia: 'OpenRouter - Mistral' };
-                    }
-                },
-                {
-                    id: 'claude',
-                    nombre: 'Claude (Anthropic)',
-                    limite: 40,
-                    llamar: async (prompt) => {
-                        const r = await fetch('https://api.anthropic.com/v1/messages', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                model: 'claude-haiku-4-5-20251001',
-                                max_tokens: 300,
-                                messages: [{ role: 'user', content: prompt }]
-                            })
-                        });
-                        if (!r.ok) throw new Error(`Claude ${r.status}`);
-                        const d = await r.json();
-                        return { texto: d.content[0].text.trim(), ia: 'Claude (Anthropic)' };
+                        return { txt: d.choices[0].message.content.trim(), ia: 'OpenRouter' };
                     }
                 },
             ];
 
-            // ═══════════════════════════════════════════════════════
-            // MOTOR DE ROTACIÓN Y FALLBACK
-            // Orden aleatorio en cada arranque, fallback automático
-            // ═══════════════════════════════════════════════════════
-
-            // Mezcla los proveedores aleatoriamente al cargar
+            // Orden aleatorio al montar, Claude siempre primero
             const ordenRef = React.useRef(null);
             if (!ordenRef.current) {
-                // Pone los de mayor límite con más peso en la rotación
-                // pero mantiene orden aleatorio para distribuir carga
-                const orden = [...PROVEEDORES].sort(() => Math.random() - 0.5);
-                ordenRef.current = orden;
+                const resto = PROVEEDORES.filter(p => p.id !== 'claude').sort(() => Math.random() - 0.5);
+                ordenRef.current = [PROVEEDORES[0], ...resto];
             }
 
-            const limpiarComillas = (s) => s.replace(/^[\u0022\u00AB\u00BB\u201C\u201D\u2018\u2019]+|[\u0022\u00AB\u00BB\u201C\u201D\u2018\u2019]+$/g, '').trim();
-            const parsearRespuesta = (texto) => {
-                const fraseLine = texto.match(/FRASE:\s*(.+)/)?.[1]?.trim();
-                const autorLine = texto.match(/AUTOR:\s*(.+)/)?.[1]?.trim();
-                if (fraseLine && autorLine) return { q: limpiarComillas(fraseLine), a: autorLine };
-                const guion = texto.match(/^.{0,1}(.+?).{0,1}\s*[-\u2014\u2013]\s*(.+)$/m);
-                if (guion) return { q: guion[1].trim(), a: guion[2].trim() };
-                return { q: limpiarComillas(texto), a: 'Desconocido' };
-            };
-
-            const TIMEOUT = 7000;
-            const conTimeout = (promesa) => Promise.race([
-                promesa,
-                new Promise((_, r) => setTimeout(() => r(new Error('Timeout')), TIMEOUT))
-            ]);
-
-            // Llama en cascada: intenta cada proveedor en orden hasta obtener respuesta
-            const llamarCascada = async (prompt) => {
-                // Primero Claude (funciona sin clave en claude.ai)
-                // Luego el resto en orden aleatorio si tienen clave configurada
-                const conClave = ordenRef.current.filter(p => {
-                    const k = KEYS[p.id.split('_')[0]];
-                    return k && !k.startsWith('TU_');
-                });
-                const orden = [
-                    PROVEEDORES.find(p => p.id === 'claude'),
-                    ...conClave.filter(p => p.id !== 'claude'),
-                ].filter(Boolean);
-
-                for (const proveedor of orden) {
+            // Cascada: Claude primero, luego los que tienen clave, fallback banco
+            const cascada = async (prompt) => {
+                for (const p of ordenRef.current) {
+                    if (p.id !== 'claude' && !tieneClave(p.id)) continue;
                     try {
-                        const { texto, ia } = await conTimeout(proveedor.llamar(prompt));
-                        if (!texto || texto.length < 10) throw new Error('Respuesta vacía');
-                        return { ...parsearRespuesta(texto), src: 'IA: ' + ia };
+                        const { txt, ia } = await conTimeout(p.call(prompt));
+                        if (txt && txt.length > 10) return { txt, ia };
                     } catch (e) {
-                        await new Promise(r => setTimeout(r, 300));
+                        await new Promise(res => setTimeout(res, 200));
                     }
                 }
                 return null;
             };
 
-            // ═══════════════════════════════════════════════════════
-            // BANCO LOCAL — último recurso sin red
-            // ═══════════════════════════════════════════════════════
+            // BANCO LOCAL fallback
             const BANCO = [
-                {q:"La imaginación es más importante que el conocimiento.",a:"Albert Einstein"},
-                {q:"Dos cosas son infinitas: el universo y la estupidez humana.",a:"Albert Einstein"},
-                {q:"Sé el cambio que quieres ver en el mundo.",a:"Mahatma Gandhi"},
-                {q:"El único modo de hacer un gran trabajo es amar lo que haces.",a:"Steve Jobs"},
-                {q:"La vida sin música sería un error.",a:"Friedrich Nietzsche"},
-                {q:"Lo que no te mata te hace más fuerte.",a:"Friedrich Nietzsche"},
-                {q:"La educación es el arma más poderosa para cambiar el mundo.",a:"Nelson Mandela"},
-                {q:"El amor es la única fuerza capaz de transformar a un enemigo en amigo.",a:"Martin Luther King Jr."},
-                {q:"El miedo es el camino al lado oscuro.",a:"Yoda"},
-                {q:"Si estás pasando por el infierno, sigue adelante.",a:"Winston Churchill"},
-                {q:"No llores porque terminó, sonríe porque sucedió.",a:"Gabriel García Márquez"},
-                {q:"Pienso, luego existo.",a:"René Descartes"},
-                {q:"Ser o no ser, esa es la cuestión.",a:"William Shakespeare"},
-                {q:"La risa es el sol que ahuyenta el invierno del rostro humano.",a:"Victor Hugo"},
-                {q:"Un día sin reír es un día perdido.",a:"Charles Chaplin"},
-                {q:"Caminante, son tus huellas el camino y nada más.",a:"Antonio Machado"},
-                {q:"Podrán cortar todas las flores, pero no podrán detener la primavera.",a:"Pablo Neruda"},
-                {q:"La belleza salvará al mundo.",a:"Fiódor Dostoievski"},
-                {q:"El infierno son los otros.",a:"Jean-Paul Sartre"},
-                {q:"Nada en la vida debe ser temido, solamente comprendido.",a:"Marie Curie"},
+                { q: 'La imaginacion es mas importante que el conocimiento.', a: 'Albert Einstein' },
+                { q: 'Se el cambio que quieres ver en el mundo.', a: 'Mahatma Gandhi' },
+                { q: 'El unico modo de hacer un gran trabajo es amar lo que haces.', a: 'Steve Jobs' },
+                { q: 'La vida sin musica seria un error.', a: 'Friedrich Nietzsche' },
+                { q: 'Lo que no te mata te hace mas fuerte.', a: 'Friedrich Nietzsche' },
+                { q: 'La educacion es el arma mas poderosa.', a: 'Nelson Mandela' },
+                { q: 'Si estas pasando por el infierno, sigue adelante.', a: 'Winston Churchill' },
+                { q: 'No llores porque termino, sonrie porque sucedio.', a: 'Gabriel Garcia Marquez' },
+                { q: 'Pienso, luego existo.', a: 'Rene Descartes' },
+                { q: 'Ser o no ser, esa es la cuestion.', a: 'William Shakespeare' },
             ];
-            const localRandom = () => {
-                const f = BANCO[Math.floor(Math.random() * BANCO.length)];
-                return { ...f, src: 'Banco local' };
-            };
+            const bancoRandom = () => BANCO[Math.floor(Math.random() * BANCO.length)];
 
-            // ═══════════════════════════════════════════════════════
             // PROMPTS
-            // ═══════════════════════════════════════════════════════
-            const promptRandom = () =>
-                `Dame UNA frase célebre de un pensador, escritor, filósofo, científico o líder. SIEMPRE en español. Formato exacto:\nFRASE: [la frase]\nAUTOR: [nombre del autor]\nNada más.`;
-
-            const promptDia = () => {
-                const fecha = new Date().toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
-                return `Es ${fecha}. Dame UNA frase célebre inspiradora para este día. SIEMPRE en español. Formato exacto:\nFRASE: [la frase]\nAUTOR: [nombre del autor]\nNada más.`;
+            const pRandom = () => 'Dame UNA frase celebre de un autor famoso. En castellano. Responde SOLO en este formato:\nFRASE: [la frase]\nAUTOR: [el autor]';
+            const pDia = () => {
+                const f = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
+                return 'Es ' + f + '. Dame UNA frase celebre inspiradora. En castellano. Responde SOLO:\nFRASE: [la frase]\nAUTOR: [el autor]';
             };
-
-            const promptPersonaje = (p) =>
-                `Dame 5 frases célebres reales o representativas de ${p} en español. Si no conoces a ${p}, escribe frases en su estilo. Formato exacto, una por bloque:\nFRASE: [frase 1]\nAUTOR: ${p}\nFRASE: [frase 2]\nAUTOR: ${p}\nFRASE: [frase 3]\nAUTOR: ${p}\nFRASE: [frase 4]\nAUTOR: ${p}\nFRASE: [frase 5]\nAUTOR: ${p}\nNada más.`;
-
-            const promptTema = (t) =>
-                `Dame 5 frases célebres reales sobre "${t}" en español, de autores diferentes. Formato exacto, una por bloque:\nFRASE: [frase 1]\nAUTOR: [autor 1]\nFRASE: [frase 2]\nAUTOR: [autor 2]\nFRASE: [frase 3]\nAUTOR: [autor 3]\nFRASE: [frase 4]\nAUTOR: [autor 4]\nFRASE: [frase 5]\nAUTOR: [autor 5]\nNada más.`;
-
-            // Parsea múltiples frases de la respuesta
-            const parsearLista = (texto, ia) => {
-                const frases = [];
-                const lineas = texto.split('\n');
-                let q = null;
-                for (const l of lineas) {
-                    const mf = l.match(/^FRASE:\s*(.+)/);
-                    const ma = l.match(/^AUTOR:\s*(.+)/);
-                    if (mf) q = limpiarComillas(mf[1].trim());
-                    if (ma && q) { frases.push({ q, a: ma[1].trim(), src: 'IA: ' + ia }); q = null; }
-                }
-                return frases;
-            };
+            const pPersonaje = (n) => 'Dame 5 frases de ' + n + ' en castellano. SOLO este formato repetido 5 veces:\nFRASE: [frase]\nAUTOR: ' + n + '\n';
+            const pTema = (t) => 'Dame 5 frases celebres sobre "' + t + '" en castellano, de autores distintos. SOLO este formato:\nFRASE: [frase]\nAUTOR: [autor]\n';
 
             // ACCIONES
-            // ═══════════════════════════════════════════════════════
-            // ACCIONES
-            // ═══════════════════════════════════════════════════════
             const run = (fn) => {
-                setCargando(true); setError(''); setFrase(null); setResultados([]); setFuente('');
-                fn().catch(e => {
-                    console.error(e);
-                    const f = localRandom();
-                    setFrase(f); setFuente(f.src);
-                }).finally(() => setCargando(false));
+                setCargando(true); setFrase(null); setLista([]); setIaUsada('');
+                fn().finally(() => setCargando(false));
             };
 
-            const obtenerFraseDia = () => run(async () => {
-                const ck = 'dia_' + new Date().toDateString();
-                if (cache.current[ck]) { const f = cache.current[ck]; setFrase(f); setFuente(f.src); return; }
-                const f = (await llamarCascada(promptDia())) || localRandom();
+            const accionSimple = (prompt, ck) => run(async () => {
+                if (cache.current[ck]) { const f = cache.current[ck]; setFrase(f); setIaUsada(f.ia || ''); return; }
+                const res = await cascada(prompt);
+                const f = res ? { ...parsear1(res.txt), ia: res.ia } : { ...bancoRandom(), ia: 'Banco local' };
                 cache.current[ck] = f;
-                setFrase(f); setFuente(f.src);
+                setFrase(f); setIaUsada(f.ia || '');
             });
 
-            const obtenerAlAzar = () => run(async () => {
-                const f = (await llamarCascada(promptRandom())) || localRandom();
-                setFrase(f); setFuente(f.src);
-            });
-
-            const buscarPorPersonaje = () => run(async () => {
-                const q = inputValor.trim();
-                if (!q) { const f = (await llamarCascada(promptRandom())) || localRandom(); setFrase(f); setFuente(f.src); return; }
-                const ck = 'pers_' + q.toLowerCase();
+            const accionLista = (prompt, ck) => run(async () => {
                 if (cache.current[ck]) {
-                    const lista = cache.current[ck];
-                    setResultados(lista); setFrase(lista[0]); setFuente(lista[0].src); return;
+                    const l = cache.current[ck];
+                    setLista(l); setFrase(l[0]); setIaUsada(l[0] ? l[0].ia : ''); return;
                 }
-                // Cascada inteligente: Claude primero, luego proveedores con clave
-                const ordenLista = [
-                    PROVEEDORES.find(p => p.id === 'claude'),
-                    ...ordenRef.current.filter(p => { const k = KEYS[p.id.split('_')[0]]; return p.id !== 'claude' && k && !k.startsWith('TU_'); })
-                ].filter(Boolean);
-                for (const proveedor of ordenLista) {
+                for (const p of ordenRef.current) {
+                    if (p.id !== 'claude' && !tieneClave(p.id)) continue;
                     try {
-                        const { texto, ia } = await conTimeout(proveedor.llamar(promptPersonaje(q)));
-                        const lista = parsearLista(texto, ia);
-                        if (lista.length > 0) {
-                            cache.current[ck] = lista;
-                            setResultados(lista);
-                            const f = lista[Math.floor(Math.random() * lista.length)];
-                            setFrase(f); setFuente(f.src); return;
+                        const { txt, ia } = await conTimeout(p.call(prompt));
+                        const l = parsearLista(txt, ia);
+                        if (l.length > 0) {
+                            cache.current[ck] = l;
+                            setLista(l);
+                            const f = l[Math.floor(Math.random() * l.length)];
+                            setFrase(f); setIaUsada(ia); return;
                         }
                     } catch {}
                 }
-                const f = localRandom(); setFrase(f); setFuente(f.src);
+                const f = { ...bancoRandom(), ia: 'Banco local' };
+                setFrase(f); setIaUsada(f.ia);
             });
 
-            const buscarPorPalabra = () => run(async () => {
-                const q = inputValor.trim();
-                if (!q) { const f = (await llamarCascada(promptRandom())) || localRandom(); setFrase(f); setFuente(f.src); return; }
-                const ck = 'tema_' + q.toLowerCase();
-                if (cache.current[ck]) {
-                    const lista = cache.current[ck];
-                    setResultados(lista); setFrase(lista[0]); setFuente(lista[0].src); return;
-                }
-                const ordenLista2 = [
-                    PROVEEDORES.find(p => p.id === 'claude'),
-                    ...ordenRef.current.filter(p => { const k = KEYS[p.id.split('_')[0]]; return p.id !== 'claude' && k && !k.startsWith('TU_'); })
-                ].filter(Boolean);
-                for (const proveedor of ordenLista2) {
-                    try {
-                        const { texto, ia } = await conTimeout(proveedor.llamar(promptTema(q)));
-                        const lista = parsearLista(texto, ia);
-                        if (lista.length > 0) {
-                            cache.current[ck] = lista;
-                            setResultados(lista);
-                            const f = lista[Math.floor(Math.random() * lista.length)];
-                            setFrase(f); setFuente(f.src); return;
-                        }
-                    } catch {}
-                }
-                const f = localRandom(); setFrase(f); setFuente(f.src);
-            });
-            // UI
-            // ═══════════════════════════════════════════════════════
-            const modos = [
-                { id:'dia',       icon:'fa-sun',              label:'Frase del Día', color:'amber'  },
-                { id:'personaje', icon:'fa-user',             label:'Por Personaje', color:'purple' },
-                { id:'palabra',   icon:'fa-magnifying-glass', label:'Por Palabra',   color:'blue'   },
-                { id:'azar',      icon:'fa-shuffle',          label:'Al Azar',       color:'green'  },
+            const onDia       = () => accionSimple(pDia(), 'dia_' + new Date().toDateString());
+            const onAzar      = () => accionSimple(pRandom(), 'az_' + Date.now());
+            const onPersonaje = () => { const q = input.trim(); if (!q) return onAzar(); accionLista(pPersonaje(q), 'p_' + q.toLowerCase()); };
+            const onTema      = () => { const q = input.trim(); if (!q) return onAzar(); accionLista(pTema(q), 't_' + q.toLowerCase()); };
+
+            // UI helpers - sin template literals anidados
+            const MODOS = [
+                { id: 'dia',       label: 'Frase del Dia',  icon: 'fa-sun',              color: 'amber',  accion: onDia       },
+                { id: 'personaje', label: 'Por Personaje',  icon: 'fa-user',             color: 'purple', accion: onPersonaje },
+                { id: 'palabra',   label: 'Por Palabra',    icon: 'fa-magnifying-glass', color: 'blue',   accion: onTema      },
+                { id: 'azar',      label: 'Al Azar',        icon: 'fa-shuffle',          color: 'green',  accion: onAzar      },
             ];
-            const colorMap = {
-                amber:  { border:'border-amber-500',  text:'text-amber-400',  activeBg:'bg-amber-600'  },
-                purple: { border:'border-purple-500', text:'text-purple-400', activeBg:'bg-purple-600' },
-                blue:   { border:'border-blue-500',   text:'text-blue-400',   activeBg:'bg-blue-600'   },
-                green:  { border:'border-green-500',  text:'text-green-400',  activeBg:'bg-green-600'  },
+            const COLORS = {
+                amber:  { ring: 'ring-amber-500',  text: 'text-amber-400',  btn: 'bg-amber-600',  activeBg: 'bg-amber-600  text-white', inactiveBg: 'bg-gray-900 text-gray-400' },
+                purple: { ring: 'ring-purple-500', text: 'text-purple-400', btn: 'bg-purple-600', activeBg: 'bg-purple-600 text-white', inactiveBg: 'bg-gray-900 text-gray-400' },
+                blue:   { ring: 'ring-blue-500',   text: 'text-blue-400',   btn: 'bg-blue-600',   activeBg: 'bg-blue-600   text-white', inactiveBg: 'bg-gray-900 text-gray-400' },
+                green:  { ring: 'ring-green-500',  text: 'text-green-400',  btn: 'bg-green-600',  activeBg: 'bg-green-600  text-white', inactiveBg: 'bg-gray-900 text-gray-400' },
             };
-            const modoActual = modos.find(m => m.id === modo);
-            const c = colorMap[modoActual.color];
+
+            const modoActual = MODOS.find(m => m.id === modo) || MODOS[0];
+            const C = COLORS[modoActual.color];
+            const needsInput = modo === 'personaje' || modo === 'palabra';
 
             return (
                 <div className="animate-in fade-in duration-500 space-y-6 max-w-2xl mx-auto">
 
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
-                                <i className="fa-solid fa-arrow-left"></i>
-                            </button>
-                            <h2 className="text-2xl font-bold flex items-center gap-2">
-                                <i className="fa-solid fa-quote-left text-amber-400"></i>
-                                Frases Célebres
-                            </h2>
-                        </div>
-                        {fuente && <span className="text-[9px] text-gray-600 font-mono truncate max-w-44 hidden">{fuente}</span>}
+                    <div className="flex items-center gap-3">
+                        <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
+                            <i className="fa-solid fa-arrow-left"></i>
+                        </button>
+                        <h2 className="text-2xl font-bold">
+                            <i className="fa-solid fa-quote-left text-amber-400 mr-2"></i>
+                            Frases Celebres
+                        </h2>
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                        {modos.map(m => {
-                            const mc = colorMap[m.color]; const activo = modo === m.id;
+                        {MODOS.map(m => {
+                            const mc = COLORS[m.color];
+                            const isActive = modo === m.id;
+                            const bgClass = isActive ? mc.activeBg : mc.inactiveBg;
                             return (
                                 <button key={m.id}
-                                    onClick={() => { setModo(m.id); setFrase(null); setResultados([]); setError(''); setInputValor(''); setFuente(''); }}
-                                    className={`p-3 rounded-xl border transition-all text-center text-xs font-bold flex flex-col items-center gap-1.5
-                                        ${activo ? `${mc.activeBg} border-transparent text-white` : `bg-gray-900 ${mc.border}/30 hover:${mc.border} text-gray-400`}`}>
-                                    <i className={`fa-solid ${m.icon} text-lg ${activo ? 'text-white' : mc.text}`}></i>
+                                    onClick={() => { setModo(m.id); setFrase(null); setLista([]); setInput(''); setIaUsada(''); }}
+                                    className={'p-3 rounded-xl border transition-all text-center text-xs font-bold flex flex-col items-center gap-1.5 ' + bgClass}>
+                                    <i className={'fa-solid ' + m.icon + ' text-lg ' + (isActive ? 'text-white' : mc.text)}></i>
                                     {m.label}
                                 </button>
                             );
                         })}
                     </div>
 
-                    {(modo === 'personaje' || modo === 'palabra') && (
-                        <div className="space-y-1">
-                            <div className="flex gap-3">
-                                <input
-                                    value={inputValor}
-                                    onChange={e => setInputValor(e.target.value)}
-                                    onKeyDown={e => e.key === 'Enter' && acciones[modo]()}
-                                    placeholder={modo === 'personaje'
-                                        ? 'Cualquier persona: Poincaré, Sun Tzu, Frida Kahlo...'
-                                        : 'Cualquier tema: horror, soledad, revolución, caos...'}
-                                    className={`flex-1 bg-gray-900 border ${c.border}/30 rounded-xl px-4 py-2.5 text-sm text-gray-300 placeholder-gray-600 outline-none`}
-                                />
-                                {inputValor.trim() && (
-                                    <button onClick={() => { setInputValor(''); setFrase(null); setResultados([]); setError(''); setFuente(''); }}
-                                        className="bg-gray-800 hover:bg-gray-700 px-3 rounded-xl text-gray-500 hover:text-white transition-colors">
-                                        <i className="fa-solid fa-xmark text-sm"></i>
-                                    </button>
-                                )}
-                            </div>
-                            <p className="text-[10px] text-gray-600 pl-1">
-                                Generado por IA - en castellano
-                            </p>
+                    {needsInput && (
+                        <div className="flex gap-2">
+                            <input
+                                value={input}
+                                onChange={e => setInput(e.target.value)}
+                                onKeyDown={e => e.key === 'Enter' && modoActual.accion()}
+                                placeholder={modo === 'personaje' ? 'Cualquier persona: Poincare, Sun Tzu, Frida...' : 'Cualquier tema: horror, amor, guerra, caos...'}
+                                className="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-300 placeholder-gray-600 outline-none"
+                            />
+                            {input && (
+                                <button onClick={() => { setInput(''); setFrase(null); setLista([]); setIaUsada(''); }}
+                                    className="bg-gray-800 hover:bg-gray-700 px-3 rounded-xl text-gray-500 hover:text-white">
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            )}
                         </div>
                     )}
 
-                    <button onClick={acciones[modo]} disabled={cargando}
-                        className={`w-full ${c.activeBg} hover:opacity-90 disabled:opacity-50 py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 text-lg`}>
+                    <button onClick={modoActual.accion} disabled={cargando}
+                        className={'w-full ' + C.btn + ' hover:opacity-90 disabled:opacity-50 py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 text-lg'}>
                         {cargando
-                            ? <><i className="fa-solid fa-spinner animate-spin"></i> Consultando IAs...</>
-                            : <>
-                                <i className={`fa-solid ${modoActual.icon}`}></i>
-                                {modo === 'dia'       && 'Ver Frase del Día'}
-                                {modo === 'azar'      && 'Dame una frase al azar'}
-                                {modo === 'personaje' && (inputValor.trim() ? `Frases de "${inputValor}"` : 'Frase de un personaje famoso')}
-                                {modo === 'palabra'   && (inputValor.trim() ? `Frases sobre "${inputValor}"` : 'Frase sobre cualquier tema')}
-                              </>
+                            ? React.createElement('span', null,
+                                React.createElement('i', { className: 'fa-solid fa-spinner animate-spin mr-2' }),
+                                'Consultando IA...')
+                            : React.createElement('span', { className: 'flex items-center gap-2' },
+                                React.createElement('i', { className: 'fa-solid ' + modoActual.icon }),
+                                modo === 'dia'       ? 'Ver Frase del Dia' :
+                                modo === 'azar'      ? 'Dame una frase al azar' :
+                                modo === 'personaje' ? (input.trim() ? 'Frases de "' + input + '"' : 'Frase de un personaje') :
+                                                       (input.trim() ? 'Frases sobre "' + input + '"' : 'Frase sobre cualquier tema')
+                              )
                         }
                     </button>
 
-                    {error && (
-                        <div className="bg-red-900/30 border border-red-500/40 rounded-xl p-4 text-red-300 text-sm">
-                            <i className="fa-solid fa-triangle-exclamation mr-2"></i>{error}
-                        </div>
-                    )}
-
                     {frase && !cargando && (
-                        <div className={`bg-gray-900 border ${c.border}/30 rounded-3xl p-8 relative overflow-hidden`}>
-                            <span className="absolute top-4 left-5 text-7xl font-black text-white/5 leading-none select-none">"</span>
-                            <blockquote className="relative z-10">
-                                <p className={`text-xl md:text-2xl italic ${c.text} leading-relaxed mb-6`}>"{frase.q}"</p>
-                                <footer className="border-t border-white/10 pt-4 flex items-end justify-between gap-2">
+                        <div className={'bg-gray-900 border rounded-3xl p-8 relative overflow-hidden ' + C.ring + ' ring-1'}>
+                            <blockquote>
+                                <p className={'text-xl md:text-2xl italic leading-relaxed mb-6 ' + C.text}>
+                                    "{frase.q}"
+                                </p>
+                                <footer className="border-t border-white/10 pt-4 flex items-end justify-between gap-4">
                                     <p className="font-bold text-white text-lg">— {frase.a}</p>
-                                    {frase.src && <span className="text-[10px] text-gray-600 font-mono shrink-0">{frase.src}</span>}
+                                    {iaUsada && <span className="text-xs text-gray-600 shrink-0">{iaUsada}</span>}
                                 </footer>
                             </blockquote>
-                            <button onClick={() => navigator.clipboard.writeText(`"${frase.q}" — ${frase.a}`)}
-                                className="absolute top-4 right-4 bg-white/5 hover:bg-white/10 p-2 rounded-lg transition-colors text-gray-500 hover:text-white" title="Copiar">
+                            <button
+                                onClick={() => navigator.clipboard.writeText('"' + frase.q + '" - ' + frase.a)}
+                                className="absolute top-4 right-4 bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-500 hover:text-white">
                                 <i className="fa-solid fa-copy text-xs"></i>
                             </button>
                         </div>
                     )}
 
-                    {resultados.length > 1 && !cargando && (
+                    {lista.length > 1 && !cargando && (
                         <div className="space-y-2">
-                            <p className="text-xs text-gray-600 font-mono uppercase tracking-widest">{resultados.length} frases — pulsa para ver</p>
-                            <div className="space-y-2 max-h-52 overflow-y-auto tv-scroll pr-1">
-                                {resultados.map((q, i) => (
-                                    <button key={i} onClick={() => { setFrase(q); setFuente(q.src); }}
-                                        className={`w-full text-left p-3 rounded-xl border transition-all text-sm
-                                            ${frase?.q === q.q ? `${c.border} bg-white/5` : 'border-white/5 bg-white/5 hover:bg-white/10'}`}>
-                                        <span className="italic text-gray-300 line-clamp-2">"{q.q}"</span>
-                                        <span className={`block mt-1 text-xs font-bold ${c.text}`}>— {q.a}</span>
-                                    </button>
-                                ))}
+                            <p className="text-xs text-gray-600 uppercase tracking-widest">{lista.length} frases — pulsa para ver</p>
+                            <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                                {lista.map((item, i) => {
+                                    const isSelected = frase && frase.q === item.q;
+                                    const rowClass = 'w-full text-left p-3 rounded-xl border transition-all text-sm ' +
+                                        (isSelected ? C.ring + ' ring-1 bg-white/5' : 'border-white/5 bg-white/5 hover:bg-white/10');
+                                    return (
+                                        <button key={i} onClick={() => { setFrase(item); setIaUsada(item.ia || ''); }}
+                                            className={rowClass}>
+                                            <span className="italic text-gray-300 line-clamp-2">"{item.q}"</span>
+                                            <span className={'block mt-1 text-xs font-bold ' + C.text}>— {item.a}</span>
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
