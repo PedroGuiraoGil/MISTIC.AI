@@ -464,261 +464,366 @@
             const [fuente, setFuente] = useState('');
             const cache = React.useRef({});
 
-            const TO = 5000;
-            const sig = () => { try { return AbortSignal.timeout(TO); } catch { return undefined; } };
-            const N = (raw) => ({ q: raw.quote || raw.q, a: raw.author || raw.a });
-
-            // ── Detecta si una frase está en inglés (heurística simple) ──
-            const esIngles = (texto) => {
-                if (!texto) return false;
-                const palabrasEN = ['the','is','are','was','were','have','has','you','your','this','that','with','from','not','can','will','what','when','who','do','does','did','be','been','being','it','its','they','them','their','we','our','he','she','his','her','if','but','and','or','for','of','in','on','at','to','a','an'];
-                const palabras = texto.toLowerCase().replace(/[^a-záéíóúñü\s]/g,'').split(/\s+/);
-                const coincidencias = palabras.filter(p => palabrasEN.includes(p)).length;
-                return coincidencias >= 2;
+            // ═══════════════════════════════════════════════════════
+            // 🔑 CLAVES API — pon aquí las tuyas (todas gratuitas)
+            //    Groq:       console.groq.com → API Keys → Create
+            //    Gemini:     aistudio.google.com → Get API Key
+            //    Mistral:    console.mistral.ai → API Keys
+            //    OpenRouter: openrouter.ai → Keys → Create Key
+            // ═══════════════════════════════════════════════════════
+            const KEYS = {
+                groq:       'TU_CLAVE_GROQ_AQUI',
+                gemini:     'TU_CLAVE_GEMINI_AQUI',
+                mistral:    'TU_CLAVE_MISTRAL_AQUI',
+                openrouter: 'TU_CLAVE_OPENROUTER_AQUI',
             };
 
-            // ── Traduce al español usando Google Translate (gratuito, sin clave, CORS ok) ──
-            const traducir = async (frase) => {
-                if (!esIngles(frase.q)) return frase;
-                const ck = 'tr_' + frase.q.substring(0, 40);
-                if (cache.current[ck]) return cache.current[ck];
-                try {
-                    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(frase.q)}`;
-                    const res = await fetch(url, { signal: sig() });
-                    if (res.ok) {
-                        const data = await res.json();
-                        // El resultado es [[[traduccion, original, ...], ...], ...]
-                        const traducida = data?.[0]?.map(x => x?.[0]).filter(Boolean).join('').trim();
-                        if (traducida) {
-                            const resultado = { ...frase, q: traducida, qOrig: frase.q, src: (frase.src || '') };
-                            cache.current[ck] = resultado;
-                            return resultado;
-                        }
+            // ═══════════════════════════════════════════════════════
+            // PROVEEDORES — límites diarios gratuitos totales: ~17.400/día
+            // ═══════════════════════════════════════════════════════
+            const PROVEEDORES = [
+                {
+                    id: 'groq_llama',
+                    nombre: 'Groq / Llama 4',
+                    limite: 14400,
+                    llamar: async (prompt) => {
+                        const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEYS.groq}` },
+                            body: JSON.stringify({
+                                model: 'meta-llama/llama-4-scout-17b-16e-instruct',
+                                max_tokens: 300,
+                                messages: [{ role: 'user', content: prompt }]
+                            })
+                        });
+                        if (!r.ok) throw new Error(`Groq ${r.status}`);
+                        const d = await r.json();
+                        return { texto: d.choices[0].message.content.trim(), ia: 'Groq · Llama 4' };
                     }
-                } catch {}
-                return frase;
-            };
-
-            // ── Traduce una lista de frases (las primeras 10) ──
-            const traducirLista = async (lista) => {
-                const primeras = lista.slice(0, 10);
-                return Promise.all(primeras.map(f => traducir(f)));
-            };
-
-            // ── API 1: QuoteSlate — 2600+ frases EN, filtro por autor y tag ──
-            const qslateRandom = async () => {
-                const r = await fetch('https://quoteslate.vercel.app/api/quotes/random', { signal: sig() });
-                if (!r.ok) throw 0;
-                return { ...N(await r.json()), src: 'QuoteSlate 2600+' };
-            };
-            const qslateAuthor = async (a) => {
-                const r = await fetch(`https://quoteslate.vercel.app/api/quotes/random?count=10&authors=${encodeURIComponent(a)}`, { signal: sig() });
-                if (!r.ok) throw 0;
-                const d = await r.json();
-                return (Array.isArray(d) ? d : [d]).map(x => ({ ...N(x), src: 'QuoteSlate' }));
-            };
-            const qslateTag = async (t) => {
-                const r = await fetch(`https://quoteslate.vercel.app/api/quotes/random?count=10&tags=${encodeURIComponent(t)}`, { signal: sig() });
-                if (!r.ok) throw 0;
-                const d = await r.json();
-                return (Array.isArray(d) ? d : [d]).map(x => ({ ...N(x), src: 'QuoteSlate' }));
-            };
-            const qslateTags = async () => {
-                if (cache.current._tags) return cache.current._tags;
-                const r = await fetch('https://quoteslate.vercel.app/api/tags', { signal: sig() });
-                if (!r.ok) throw 0;
-                const d = await r.json(); cache.current._tags = d; return d;
-            };
-
-            // ── API 2: MultiLang API — 1746 frases ES+EN, búsqueda por autor ──
-            const qthreeRandom = async (lang = 'en') => {
-                const r = await fetch(`https://quotes-api-three.vercel.app/api/randomquote?language=${lang}`, { signal: sig() });
-                if (!r.ok) throw 0;
-                return { ...N(await r.json()), src: `MultiLang 1746 (${lang.toUpperCase()})` };
-            };
-            const qthreeAuthor = async (autor, lang = 'en') => {
-                const r = await fetch(`https://quotes-api-three.vercel.app/api/quotes?language=${lang}&author=%25${encodeURIComponent(autor)}%25&limit=10`, { signal: sig() });
-                if (!r.ok) throw 0;
-                const d = await r.json();
-                if (!d.quotes?.length) throw 0;
-                return d.quotes.map(x => ({ ...N(x), src: `MultiLang (${lang.toUpperCase()})` }));
-            };
-
-            // ── API 3: QuotesDB — random ──
-            const qdbRandom = async () => {
-                const r = await fetch('https://quotes-db.vercel.app/api/random', { signal: sig() });
-                if (!r.ok) throw 0;
-                return { ...N(await r.json()), src: 'QuotesDB' };
-            };
-
-            // ── API 4: RandomQuotes — random ──
-            const rfreeRandom = async () => {
-                const r = await fetch('https://random-quotes-freeapi.vercel.app/api/random', { signal: sig() });
-                if (!r.ok) throw 0;
-                return { ...N(await r.json()), src: 'RandomQuotes API' };
-            };
-
-            // ── Cascada random: español nativo primero, luego traduce ──
-            const randomCascade = async () => {
-                // 1. Español nativo
-                try { return await qthreeRandom('es'); } catch {}
-                // 2. Inglés con traducción automática
-                for (const fn of [qslateRandom, qdbRandom, rfreeRandom]) {
-                    try {
-                        const f = await fn();
-                        return await traducir(f);
-                    } catch {}
-                }
-                // 3. Banco local
-                const f = BANCO_LOCAL[Math.floor(Math.random() * BANCO_LOCAL.length)];
-                return { ...f, src: 'Banco local' };
-            };
-
-            // ── Búsqueda por autor: prueba las 3 APIs con ES y EN, nunca falla ──
-            const buscarAutor = async (autor) => {
-                const ck = 'a_' + autor.toLowerCase();
-                if (cache.current[ck]) return cache.current[ck];
-                for (const fn of [
-                    () => qslateAuthor(autor),
-                    () => qthreeAuthor(autor, 'es'),
-                    () => qthreeAuthor(autor, 'en'),
-                ]) {
-                    try {
-                        const lista = await fn();
-                        if (lista?.length) { cache.current[ck] = lista; return lista; }
-                    } catch {}
-                }
-                // Banco local por nombre de autor
-                const t = autor.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-                const local = BANCO_LOCAL.filter(f =>
-                    f.a.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").includes(t)
-                );
-                return local.length ? local.map(f => ({ ...f, src: 'Banco local' })) : [];
-            };
-
-            // ── Búsqueda por tema: tags QuoteSlate + autor MultiLang + banco local ──
-            const buscarTema = async (tema) => {
-                const ck = 't_' + tema.toLowerCase();
-                if (cache.current[ck]) return cache.current[ck];
-
-                // 1. Tag exacto
-                try {
-                    const lista = await qslateTag(tema);
-                    if (lista?.length) { cache.current[ck] = lista; return lista; }
-                } catch {}
-
-                // 2. Tag parcial
-                try {
-                    const tags = await qslateTags();
-                    const t = tema.toLowerCase();
-                    const match = tags.find(tag => tag.toLowerCase().includes(t) || t.includes(tag.toLowerCase()));
-                    if (match) {
-                        const lista = await qslateTag(match);
-                        if (lista?.length) { cache.current[ck] = lista; return lista; }
+                },
+                {
+                    id: 'groq_qwen',
+                    nombre: 'Groq / Qwen3',
+                    limite: 1000,
+                    llamar: async (prompt) => {
+                        const r = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEYS.groq}` },
+                            body: JSON.stringify({
+                                model: 'qwen/qwen3-32b',
+                                max_tokens: 300,
+                                messages: [{ role: 'user', content: prompt }]
+                            })
+                        });
+                        if (!r.ok) throw new Error(`Groq/Qwen ${r.status}`);
+                        const d = await r.json();
+                        return { texto: d.choices[0].message.content.trim(), ia: 'Groq · Qwen3' };
                     }
-                } catch {}
+                },
+                {
+                    id: 'gemini',
+                    nombre: 'Gemini Flash',
+                    limite: 1000,
+                    llamar: async (prompt) => {
+                        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${KEYS.gemini}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                        });
+                        if (!r.ok) throw new Error(`Gemini ${r.status}`);
+                        const d = await r.json();
+                        return { texto: d.candidates[0].content.parts[0].text.trim(), ia: 'Gemini Flash' };
+                    }
+                },
+                {
+                    id: 'mistral',
+                    nombre: 'Mistral Small',
+                    limite: 2880,
+                    llamar: async (prompt) => {
+                        const r = await fetch('https://api.mistral.ai/v1/chat/completions', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEYS.mistral}` },
+                            body: JSON.stringify({
+                                model: 'mistral-small-latest',
+                                max_tokens: 300,
+                                messages: [{ role: 'user', content: prompt }]
+                            })
+                        });
+                        if (!r.ok) throw new Error(`Mistral ${r.status}`);
+                        const d = await r.json();
+                        return { texto: d.choices[0].message.content.trim(), ia: 'Mistral Small' };
+                    }
+                },
+                {
+                    id: 'openrouter_llama',
+                    nombre: 'OpenRouter / Llama',
+                    limite: 999999,
+                    llamar: async (prompt) => {
+                        const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${KEYS.openrouter}`,
+                                'HTTP-Referer': 'https://mystica-ai.com',
+                                'X-Title': 'Mística AI'
+                            },
+                            body: JSON.stringify({
+                                model: 'meta-llama/llama-3.1-8b-instruct:free',
+                                max_tokens: 300,
+                                messages: [{ role: 'user', content: prompt }]
+                            })
+                        });
+                        if (!r.ok) throw new Error(`OpenRouter ${r.status}`);
+                        const d = await r.json();
+                        return { texto: d.choices[0].message.content.trim(), ia: 'OpenRouter · Llama' };
+                    }
+                },
+                {
+                    id: 'openrouter_mistral',
+                    nombre: 'OpenRouter / Mistral',
+                    limite: 999999,
+                    llamar: async (prompt) => {
+                        const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${KEYS.openrouter}`,
+                                'HTTP-Referer': 'https://mystica-ai.com',
+                                'X-Title': 'Mística AI'
+                            },
+                            body: JSON.stringify({
+                                model: 'mistralai/mistral-7b-instruct:free',
+                                max_tokens: 300,
+                                messages: [{ role: 'user', content: prompt }]
+                            })
+                        });
+                        if (!r.ok) throw new Error(`OpenRouter/Mistral ${r.status}`);
+                        const d = await r.json();
+                        return { texto: d.choices[0].message.content.trim(), ia: 'OpenRouter · Mistral' };
+                    }
+                },
+                {
+                    id: 'claude',
+                    nombre: 'Claude (Anthropic)',
+                    limite: 40,
+                    llamar: async (prompt) => {
+                        const r = await fetch('https://api.anthropic.com/v1/messages', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                model: 'claude-haiku-4-5-20251001',
+                                max_tokens: 300,
+                                messages: [{ role: 'user', content: prompt }]
+                            })
+                        });
+                        if (!r.ok) throw new Error(`Claude ${r.status}`);
+                        const d = await r.json();
+                        return { texto: d.content[0].text.trim(), ia: 'Claude (Anthropic)' };
+                    }
+                },
+            ];
 
-                // 3. Como autor en español
-                try {
-                    const lista = await qthreeAuthor(tema, 'es');
-                    if (lista?.length) { cache.current[ck] = lista; return lista; }
-                } catch {}
+            // ═══════════════════════════════════════════════════════
+            // MOTOR DE ROTACIÓN Y FALLBACK
+            // Orden aleatorio en cada arranque, fallback automático
+            // ═══════════════════════════════════════════════════════
 
-                // 4. Banco local
-                const t2 = tema.toLowerCase();
-                const local = BANCO_LOCAL.filter(f =>
-                    f.q.toLowerCase().includes(t2) || f.a.toLowerCase().includes(t2)
-                );
-                return local.length ? local.map(f => ({ ...f, src: 'Banco local' })) : null;
+            // Mezcla los proveedores aleatoriamente al cargar
+            const ordenRef = React.useRef(null);
+            if (!ordenRef.current) {
+                // Pone los de mayor límite con más peso en la rotación
+                // pero mantiene orden aleatorio para distribuir carga
+                const orden = [...PROVEEDORES].sort(() => Math.random() - 0.5);
+                ordenRef.current = orden;
+            }
+
+            const parsearRespuesta = (texto) => {
+                // Intenta extraer FRASE: / AUTOR: del formato estructurado
+                const fraseLine = texto.match(/FRASE:\s*(.+)/)?.[1]?.trim();
+                const autorLine = texto.match(/AUTOR:\s*(.+)/)?.[1]?.trim();
+                if (fraseLine && autorLine) return { q: fraseLine.replace(/^["«»""]|["«»""]$/g,''), a: autorLine };
+                // Si no tiene formato, intenta "frase" — Autor
+                const guion = texto.match(/^["«»""]?(.+?)["«»""]?\s*[—–-]\s*(.+)$/m);
+                if (guion) return { q: guion[1].trim(), a: guion[2].trim() };
+                // Devuelve el texto como frase sin autor conocido
+                return { q: texto.replace(/^["«»""]|["«»""]$/g,'').trim(), a: 'Desconocido' };
             };
 
+            const TIMEOUT = 7000;
+            const conTimeout = (promesa) => Promise.race([
+                promesa,
+                new Promise((_, r) => setTimeout(() => r(new Error('Timeout')), TIMEOUT))
+            ]);
+
+            // Llama en cascada: intenta cada proveedor en orden hasta obtener respuesta
+            const llamarCascada = async (prompt) => {
+                const orden = ordenRef.current;
+                const errores = [];
+                for (const proveedor of orden) {
+                    // Salta proveedores sin clave configurada
+                    const clave = KEYS[proveedor.id.split('_')[0]];
+                    const sinClave = clave && clave.startsWith('TU_');
+                    if (sinClave && proveedor.id !== 'claude') continue;
+
+                    try {
+                        const { texto, ia } = await conTimeout(proveedor.llamar(prompt));
+                        if (!texto || texto.length < 10) throw new Error('Respuesta vacía');
+                        return { ...parsearRespuesta(texto), src: `✨ ${ia}` };
+                    } catch (e) {
+                        errores.push(`${proveedor.nombre}: ${e.message}`);
+                        // Pequeña pausa antes de intentar el siguiente
+                        await new Promise(r => setTimeout(r, 300));
+                    }
+                }
+                // Todos fallaron → banco local
+                console.warn('Todos los proveedores fallaron:', errores);
+                return null;
+            };
+
+            // ═══════════════════════════════════════════════════════
+            // BANCO LOCAL — último recurso sin red
+            // ═══════════════════════════════════════════════════════
+            const BANCO = [
+                {q:"La imaginación es más importante que el conocimiento.",a:"Albert Einstein"},
+                {q:"Dos cosas son infinitas: el universo y la estupidez humana.",a:"Albert Einstein"},
+                {q:"Sé el cambio que quieres ver en el mundo.",a:"Mahatma Gandhi"},
+                {q:"El único modo de hacer un gran trabajo es amar lo que haces.",a:"Steve Jobs"},
+                {q:"La vida sin música sería un error.",a:"Friedrich Nietzsche"},
+                {q:"Lo que no te mata te hace más fuerte.",a:"Friedrich Nietzsche"},
+                {q:"La educación es el arma más poderosa para cambiar el mundo.",a:"Nelson Mandela"},
+                {q:"El amor es la única fuerza capaz de transformar a un enemigo en amigo.",a:"Martin Luther King Jr."},
+                {q:"El miedo es el camino al lado oscuro.",a:"Yoda"},
+                {q:"Si estás pasando por el infierno, sigue adelante.",a:"Winston Churchill"},
+                {q:"No llores porque terminó, sonríe porque sucedió.",a:"Gabriel García Márquez"},
+                {q:"Pienso, luego existo.",a:"René Descartes"},
+                {q:"Ser o no ser, esa es la cuestión.",a:"William Shakespeare"},
+                {q:"La risa es el sol que ahuyenta el invierno del rostro humano.",a:"Victor Hugo"},
+                {q:"Un día sin reír es un día perdido.",a:"Charles Chaplin"},
+                {q:"Caminante, son tus huellas el camino y nada más.",a:"Antonio Machado"},
+                {q:"Podrán cortar todas las flores, pero no podrán detener la primavera.",a:"Pablo Neruda"},
+                {q:"La belleza salvará al mundo.",a:"Fiódor Dostoievski"},
+                {q:"El infierno son los otros.",a:"Jean-Paul Sartre"},
+                {q:"Nada en la vida debe ser temido, solamente comprendido.",a:"Marie Curie"},
+            ];
+            const localRandom = () => {
+                const f = BANCO[Math.floor(Math.random() * BANCO.length)];
+                return { ...f, src: '📚 Banco local' };
+            };
+
+            // ═══════════════════════════════════════════════════════
+            // PROMPTS
+            // ═══════════════════════════════════════════════════════
+            const promptRandom = () =>
+                `Dame UNA frase célebre de un pensador, escritor, filósofo, científico o líder. SIEMPRE en español. Formato exacto:\nFRASE: [la frase]\nAUTOR: [nombre del autor]\nNada más.`;
+
+            const promptDia = () => {
+                const fecha = new Date().toLocaleDateString('es-ES', { weekday:'long', day:'numeric', month:'long' });
+                return `Es ${fecha}. Dame UNA frase célebre inspiradora para este día. SIEMPRE en español. Formato exacto:\nFRASE: [la frase]\nAUTOR: [nombre del autor]\nNada más.`;
+            };
+
+            const promptPersonaje = (p) =>
+                `Dame 5 frases célebres reales o representativas de ${p} en español. Si no conoces a ${p}, escribe frases en su estilo. Formato exacto, una por bloque:\nFRASE: [frase 1]\nAUTOR: ${p}\nFRASE: [frase 2]\nAUTOR: ${p}\nFRASE: [frase 3]\nAUTOR: ${p}\nFRASE: [frase 4]\nAUTOR: ${p}\nFRASE: [frase 5]\nAUTOR: ${p}\nNada más.`;
+
+            const promptTema = (t) =>
+                `Dame 5 frases célebres reales sobre "${t}" en español, de autores diferentes. Formato exacto, una por bloque:\nFRASE: [frase 1]\nAUTOR: [autor 1]\nFRASE: [frase 2]\nAUTOR: [autor 2]\nFRASE: [frase 3]\nAUTOR: [autor 3]\nFRASE: [frase 4]\nAUTOR: [autor 4]\nFRASE: [frase 5]\nAUTOR: [autor 5]\nNada más.`;
+
+            // Parsea múltiples frases de la respuesta
+            const parsearLista = (texto, ia) => {
+                const frases = [];
+                const lineas = texto.split('\n');
+                let q = null;
+                for (const l of lineas) {
+                    const mf = l.match(/^FRASE:\s*(.+)/);
+                    const ma = l.match(/^AUTOR:\s*(.+)/);
+                    if (mf) q = mf[1].trim().replace(/^["«»""]|["«»""]$/g,'');
+                    if (ma && q) { frases.push({ q, a: ma[1].trim(), src: `✨ ${ia}` }); q = null; }
+                }
+                return frases;
+            };
+
+            // ═══════════════════════════════════════════════════════
+            // ACCIONES
+            // ═══════════════════════════════════════════════════════
             const run = (fn) => {
                 setCargando(true); setError(''); setFrase(null); setResultados([]); setFuente('');
-                fn().catch(() => setError('Error inesperado.')).finally(() => setCargando(false));
+                fn().catch(e => {
+                    console.error(e);
+                    const f = localRandom();
+                    setFrase(f); setFuente(f.src);
+                }).finally(() => setCargando(false));
             };
 
             const obtenerFraseDia = () => run(async () => {
                 const ck = 'dia_' + new Date().toDateString();
                 if (cache.current[ck]) { const f = cache.current[ck]; setFrase(f); setFuente(f.src); return; }
-                const f = await randomCascade();
+                const f = (await llamarCascada(promptDia())) || localRandom();
                 cache.current[ck] = f;
                 setFrase(f); setFuente(f.src);
             });
 
             const obtenerAlAzar = () => run(async () => {
-                const f = await randomCascade();
+                const f = (await llamarCascada(promptRandom())) || localRandom();
                 setFrase(f); setFuente(f.src);
             });
 
-            // ── Fallback local garantizado cuando APIs no encuentran nada ──
-            const FRASES_EXTRA = {
-                _default: [
-                    {q:"La sabiduría comienza cuando reconoces lo que no sabes.",a:"Sócrates"},
-                    {q:"El conocimiento es poder.",a:"Francis Bacon"},
-                    {q:"Somos lo que hacemos repetidamente. La excelencia es un hábito.",a:"Aristóteles"},
-                    {q:"El único bien verdadero es el conocimiento; el único mal, la ignorancia.",a:"Sócrates"},
-                    {q:"No hay viento favorable para el que no sabe a qué puerto va.",a:"Séneca"},
-                ],
-                miedo:    [{q:"El miedo es la mente asesina.",a:"Frank Herbert"},{q:"El valiente conquista el miedo, no lo ignora.",a:"Nelson Mandela"}],
-                amor:     [{q:"Amar no es mirarse, sino mirar juntos en la misma dirección.",a:"Antoine de Saint-Exupéry"},{q:"El amor es la única fuerza que transforma a un enemigo en amigo.",a:"Martin Luther King Jr."}],
-                muerte:   [{q:"No temas a la muerte, sino a la vida no vivida.",a:"Natalie Babbitt"},{q:"La muerte no es nada. Me he escapado a la habitación de al lado.",a:"Henry Scott Holland"}],
-                tiempo:   [{q:"El tiempo es el único capital que no puedes permitirte perder.",a:"Thomas Edison"},{q:"No esperes. El momento adecuado nunca llegará solo.",a:"Napoleón Hill"}],
-                libertad: [{q:"La libertad no se da, se conquista.",a:"Malcolm X"},{q:"Prefiero morir de pie que vivir de rodillas.",a:"Emiliano Zapata"}],
-                guerra:   [{q:"La guerra es el fracaso de la diplomacia.",a:"Hen Kendall"},{q:"En la guerra no hay vencedores, solo víctimas.",a:"Winston Churchill"}],
-                musica:   [{q:"La música es el lenguaje del espíritu.",a:"Khalil Gibran"},{q:"Sin música la vida sería un error.",a:"Friedrich Nietzsche"}],
-                arte:     [{q:"El arte es la mentira que nos permite conocer la verdad.",a:"Pablo Picasso"},{q:"La creatividad es la inteligencia divirtiéndose.",a:"Albert Einstein"}],
-                felicidad:[{q:"La felicidad viene de tus propias acciones.",a:"Dalai Lama"},{q:"La alegría está en la lucha, no en la victoria.",a:"Mahatma Gandhi"}],
-                vida:     [{q:"La vida es lo que pasa mientras haces otros planes.",a:"John Lennon"},{q:"Vive como si fueras a morir mañana. Aprende como si fueras a vivir siempre.",a:"Mahatma Gandhi"}],
-                exito:    [{q:"El éxito es la suma de pequeños esfuerzos repetidos cada día.",a:"Robert Collier"},{q:"El secreto del éxito es la constancia en el propósito.",a:"Benjamín Disraeli"}],
-                tristeza: [{q:"Las lágrimas son las palabras que el corazón no puede expresar.",a:"Anónimo"},{q:"No llores porque terminó, sonríe porque sucedió.",a:"Gabriel García Márquez"}],
-                esperanza:[{q:"La esperanza es el sueño del hombre despierto.",a:"Aristóteles"},{q:"Podrán cortar todas las flores, pero no podrán detener la primavera.",a:"Pablo Neruda"}],
-                poder:    [{q:"El poder no corrompe; el miedo corrompe, quizás el miedo al poder.",a:"John Steinbeck"},{q:"El único poder que existe es el que emana del pueblo.",a:"Abraham Lincoln"}],
-            };
-
-            const generarLocal = (termino) => {
-                const t = termino.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-                for (const [cat, frases] of Object.entries(FRASES_EXTRA)) {
-                    if (cat !== '_default' && t.includes(cat)) {
-                        return frases[Math.floor(Math.random() * frases.length)];
-                    }
-                }
-                const enBanco = BANCO_LOCAL.filter(f =>
-                    f.q.toLowerCase().includes(t) || f.a.toLowerCase().includes(t)
-                );
-                if (enBanco.length) return enBanco[Math.floor(Math.random() * enBanco.length)];
-                const def = FRASES_EXTRA._default;
-                return def[Math.floor(Math.random() * def.length)];
-            };
-
-            const buscar = async (q, modoPersonaje) => {
-                // Busca tanto por autor como por tema/tag
-                const lista = modoPersonaje ? await buscarAutor(q) : await buscarTema(q);
-                if (lista?.length) {
-                    const listaES = await traducirLista(lista);
-                    setResultados(listaES);
-                    const f = listaES[Math.floor(Math.random() * listaES.length)];
-                    setFrase(f); setFuente(f.src);
-                } else {
-                    const f = { ...generarLocal(q), src: 'Banco local' };
-                    setFrase(f); setFuente(f.src);
-                }
-            };
-
             const buscarPorPersonaje = () => run(async () => {
                 const q = inputValor.trim();
-                if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
-                await buscar(q, true);
+                if (!q) { const f = (await llamarCascada(promptRandom())) || localRandom(); setFrase(f); setFuente(f.src); return; }
+                const ck = 'pers_' + q.toLowerCase();
+                if (cache.current[ck]) {
+                    const lista = cache.current[ck];
+                    setResultados(lista); setFrase(lista[0]); setFuente(lista[0].src); return;
+                }
+                // Llama en cascada y parsea lista completa
+                const orden = ordenRef.current;
+                for (const proveedor of orden) {
+                    const clave = KEYS[proveedor.id.split('_')[0]];
+                    if (clave?.startsWith('TU_') && proveedor.id !== 'claude') continue;
+                    try {
+                        const { texto, ia } = await conTimeout(proveedor.llamar(promptPersonaje(q)));
+                        const lista = parsearLista(texto, ia);
+                        if (lista.length > 0) {
+                            cache.current[ck] = lista;
+                            setResultados(lista);
+                            const f = lista[Math.floor(Math.random() * lista.length)];
+                            setFrase(f); setFuente(f.src); return;
+                        }
+                    } catch {}
+                }
+                const f = localRandom(); setFrase(f); setFuente(f.src);
             });
 
             const buscarPorPalabra = () => run(async () => {
                 const q = inputValor.trim();
-                if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
-                await buscar(q, false);
+                if (!q) { const f = (await llamarCascada(promptRandom())) || localRandom(); setFrase(f); setFuente(f.src); return; }
+                const ck = 'tema_' + q.toLowerCase();
+                if (cache.current[ck]) {
+                    const lista = cache.current[ck];
+                    setResultados(lista); setFrase(lista[0]); setFuente(lista[0].src); return;
+                }
+                const orden = ordenRef.current;
+                for (const proveedor of orden) {
+                    const clave = KEYS[proveedor.id.split('_')[0]];
+                    if (clave?.startsWith('TU_') && proveedor.id !== 'claude') continue;
+                    try {
+                        const { texto, ia } = await conTimeout(proveedor.llamar(promptTema(q)));
+                        const lista = parsearLista(texto, ia);
+                        if (lista.length > 0) {
+                            cache.current[ck] = lista;
+                            setResultados(lista);
+                            const f = lista[Math.floor(Math.random() * lista.length)];
+                            setFrase(f); setFuente(f.src); return;
+                        }
+                    } catch {}
+                }
+                const f = localRandom(); setFrase(f); setFuente(f.src);
             });
-
 
             const acciones = { dia: obtenerFraseDia, personaje: buscarPorPersonaje, palabra: buscarPorPalabra, azar: obtenerAlAzar };
 
+            // ═══════════════════════════════════════════════════════
+            // UI
+            // ═══════════════════════════════════════════════════════
             const modos = [
                 { id:'dia',       icon:'fa-sun',              label:'Frase del Día', color:'amber'  },
                 { id:'personaje', icon:'fa-user',             label:'Por Personaje', color:'purple' },
@@ -726,16 +831,17 @@
                 { id:'azar',      icon:'fa-shuffle',          label:'Al Azar',       color:'green'  },
             ];
             const colorMap = {
-                amber:  {border:'border-amber-500',  text:'text-amber-400',  activeBg:'bg-amber-600' },
-                purple: {border:'border-purple-500', text:'text-purple-400', activeBg:'bg-purple-600'},
-                blue:   {border:'border-blue-500',   text:'text-blue-400',   activeBg:'bg-blue-600'  },
-                green:  {border:'border-green-500',  text:'text-green-400',  activeBg:'bg-green-600' },
+                amber:  { border:'border-amber-500',  text:'text-amber-400',  activeBg:'bg-amber-600'  },
+                purple: { border:'border-purple-500', text:'text-purple-400', activeBg:'bg-purple-600' },
+                blue:   { border:'border-blue-500',   text:'text-blue-400',   activeBg:'bg-blue-600'   },
+                green:  { border:'border-green-500',  text:'text-green-400',  activeBg:'bg-green-600'  },
             };
             const modoActual = modos.find(m => m.id === modo);
             const c = colorMap[modoActual.color];
 
             return (
                 <div className="animate-in fade-in duration-500 space-y-6 max-w-2xl mx-auto">
+
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
@@ -746,7 +852,7 @@
                                 Frases Célebres
                             </h2>
                         </div>
-                        {fuente && <span className="text-[9px] text-gray-600 font-mono truncate max-w-36">{fuente}</span>}
+                        {fuente && <span className="text-[9px] text-gray-500 font-mono truncate max-w-44">{fuente}</span>}
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -755,33 +861,36 @@
                             return (
                                 <button key={m.id}
                                     onClick={() => { setModo(m.id); setFrase(null); setResultados([]); setError(''); setInputValor(''); setFuente(''); }}
-                                    className={`p-3 rounded-xl border transition-all text-center text-xs font-bold flex flex-col items-center gap-1.5 ${activo ? `${mc.activeBg} border-transparent text-white` : `bg-gray-900 ${mc.border}/30 hover:${mc.border} text-gray-400`}`}>
-                                    <i className={`fa-solid ${m.icon} text-lg ${activo?'text-white':mc.text}`}></i>
+                                    className={`p-3 rounded-xl border transition-all text-center text-xs font-bold flex flex-col items-center gap-1.5
+                                        ${activo ? `${mc.activeBg} border-transparent text-white` : `bg-gray-900 ${mc.border}/30 hover:${mc.border} text-gray-400`}`}>
+                                    <i className={`fa-solid ${m.icon} text-lg ${activo ? 'text-white' : mc.text}`}></i>
                                     {m.label}
                                 </button>
                             );
                         })}
                     </div>
 
-                    {(modo==='personaje'||modo==='palabra') && (
+                    {(modo === 'personaje' || modo === 'palabra') && (
                         <div className="space-y-1">
                             <div className="flex gap-3">
-                                <input value={inputValor} onChange={e=>setInputValor(e.target.value)}
-                                    onKeyDown={e=>e.key==='Enter'&&acciones[modo]()}
-                                    placeholder={modo==='personaje'
-                                        ? 'Ej: Einstein, Gandhi, Shakespeare, Neruda, Cervantes...'
-                                        : 'Ej: amor, miedo, vida, esperanza, coraje, humor, sabiduría...'}
+                                <input
+                                    value={inputValor}
+                                    onChange={e => setInputValor(e.target.value)}
+                                    onKeyDown={e => e.key === 'Enter' && acciones[modo]()}
+                                    placeholder={modo === 'personaje'
+                                        ? 'Cualquier persona: Poincaré, Sun Tzu, Frida Kahlo...'
+                                        : 'Cualquier tema: horror, soledad, revolución, caos...'}
                                     className={`flex-1 bg-gray-900 border ${c.border}/30 rounded-xl px-4 py-2.5 text-sm text-gray-300 placeholder-gray-600 outline-none`}
                                 />
                                 {inputValor.trim() && (
-                                    <button onClick={()=>{setInputValor('');setFrase(null);setResultados([]);setError('');setFuente('');}}
+                                    <button onClick={() => { setInputValor(''); setFrase(null); setResultados([]); setError(''); setFuente(''); }}
                                         className="bg-gray-800 hover:bg-gray-700 px-3 rounded-xl text-gray-500 hover:text-white transition-colors">
                                         <i className="fa-solid fa-xmark text-sm"></i>
                                     </button>
                                 )}
                             </div>
                             <p className="text-[10px] text-gray-600 pl-1">
-                                {modo==='personaje' ? '4 bases de datos · +4300 frases · traducción automática' : 'Busca por tema o etiqueta · traducción automática al castellano'}
+                                ✨ Multi-IA · Groq + Gemini + Mistral + OpenRouter + Claude · ~17.400 respuestas/día
                             </p>
                         </div>
                     )}
@@ -789,19 +898,20 @@
                     <button onClick={acciones[modo]} disabled={cargando}
                         className={`w-full ${c.activeBg} hover:opacity-90 disabled:opacity-50 py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 text-lg`}>
                         {cargando
-                            ? <><i className="fa-solid fa-spinner animate-spin"></i> Consultando bases de datos...</>
-                            : <><i className={`fa-solid ${modoActual.icon}`}></i>
-                                {modo==='dia'       && 'Ver Frase del Día'}
-                                {modo==='azar'      && 'Dame una frase al azar'}
-                                {modo==='personaje' && (inputValor.trim() ? `Buscar frases de "${inputValor}"` : 'Frase de un personaje famoso')}
-                                {modo==='palabra'   && (inputValor.trim() ? `Buscar frases sobre "${inputValor}"` : 'Frase sobre cualquier tema')}
-                            </>
+                            ? <><i className="fa-solid fa-spinner animate-spin"></i> Consultando IAs...</>
+                            : <>
+                                <i className={`fa-solid ${modoActual.icon}`}></i>
+                                {modo === 'dia'       && 'Ver Frase del Día'}
+                                {modo === 'azar'      && 'Dame una frase al azar'}
+                                {modo === 'personaje' && (inputValor.trim() ? `Frases de "${inputValor}"` : 'Frase de un personaje famoso')}
+                                {modo === 'palabra'   && (inputValor.trim() ? `Frases sobre "${inputValor}"` : 'Frase sobre cualquier tema')}
+                              </>
                         }
                     </button>
 
                     {error && (
-                        <div className="bg-yellow-900/30 border border-yellow-500/40 rounded-xl p-4 text-yellow-300 text-sm">
-                            <i className="fa-solid fa-circle-info mr-2"></i>{error}
+                        <div className="bg-red-900/30 border border-red-500/40 rounded-xl p-4 text-red-300 text-sm">
+                            <i className="fa-solid fa-triangle-exclamation mr-2"></i>{error}
                         </div>
                     )}
 
@@ -814,7 +924,7 @@
                                     <p className="font-bold text-white text-lg">— {frase.a}</p>
                                 </footer>
                             </blockquote>
-                            <button onClick={()=>navigator.clipboard.writeText(`"${frase.q}" — ${frase.a}`)}
+                            <button onClick={() => navigator.clipboard.writeText(`"${frase.q}" — ${frase.a}`)}
                                 className="absolute top-4 right-4 bg-white/5 hover:bg-white/10 p-2 rounded-lg transition-colors text-gray-500 hover:text-white" title="Copiar">
                                 <i className="fa-solid fa-copy text-xs"></i>
                             </button>
@@ -823,11 +933,12 @@
 
                     {resultados.length > 1 && !cargando && (
                         <div className="space-y-2">
-                            <p className="text-xs text-gray-600 font-mono uppercase tracking-widest">{resultados.length} resultados — pulsa para ver</p>
+                            <p className="text-xs text-gray-600 font-mono uppercase tracking-widest">{resultados.length} frases — pulsa para ver</p>
                             <div className="space-y-2 max-h-52 overflow-y-auto tv-scroll pr-1">
-                                {resultados.map((q,i) => (
-                                    <button key={i} onClick={async()=>{ const f = esIngles(q.q)?await traducir(q):q; setFrase(f); setFuente(f.src); }}
-                                        className={`w-full text-left p-3 rounded-xl border transition-all text-sm ${frase?.q===q.q?`${c.border} bg-white/5`:'border-white/5 bg-white/5 hover:bg-white/10'}`}>
+                                {resultados.map((q, i) => (
+                                    <button key={i} onClick={() => { setFrase(q); setFuente(q.src); }}
+                                        className={`w-full text-left p-3 rounded-xl border transition-all text-sm
+                                            ${frase?.q === q.q ? `${c.border} bg-white/5` : 'border-white/5 bg-white/5 hover:bg-white/10'}`}>
                                         <span className="italic text-gray-300 line-clamp-2">"{q.q}"</span>
                                         <span className={`block mt-1 text-xs font-bold ${c.text}`}>— {q.a}</span>
                                     </button>
