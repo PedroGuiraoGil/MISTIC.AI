@@ -112,6 +112,12 @@
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(xmlStr, 'text/xml');
                 const result = {};
+                // Debug: mostrar estructura raiz del XML
+                const root = doc.documentElement;
+                console.log('[EPG] Root tag:', root ? root.tagName : 'NULL');
+                console.log('[EPG] Primeros 500 chars del XML:', xmlStr.substring(0,500));
+                console.log('[EPG] channels en doc:', doc.querySelectorAll('channel').length);
+                console.log('[EPG] programmes en doc:', doc.querySelectorAll('programme').length);
 
                 // Mapea channel id -> nombre
                 // Matching flexible por display-name del canal
