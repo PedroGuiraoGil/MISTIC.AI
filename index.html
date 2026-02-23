@@ -37,265 +37,168 @@
         const { useState, useEffect, useRef } = React;
 
         // =============================================
-        // DATOS PARRILLA TV
+        // CANALES A MOSTRAR — IDs del EPG_dobleM
         // =============================================
-        const EVENTOS_HOY = [
-          { id: 1001, time: "09:00", event: "Resumen JJOO Milán 2026", sport: "Polideportivo", channel: "Movistar Plus+" },
-          { id: 1002, time: "11:00", event: "Lo mejor de la jornada LaLiga", sport: "Fútbol", channel: "Movistar Plus+" },
-          { id: 1003, time: "13:00", event: "Generación NBA", sport: "Baloncesto", channel: "Movistar Plus+" },
-          { id: 1004, time: "14:30", event: "Informe Plus+: Estrellas 2026", sport: "Reportaje", channel: "Movistar Plus+" },
-          { id: 1005, time: "16:15", event: "Multifútbol LaLiga", sport: "Fútbol", channel: "Movistar Plus+" },
-          { id: 1006, time: "18:30", event: "NBA: Resumen de la semana", sport: "Baloncesto", channel: "Movistar Plus+" },
-          { id: 1007, time: "20:00", event: "Deporte Plus+: Domingo", sport: "Informativo", channel: "Movistar Plus+" },
-          { id: 1008, time: "21:00", event: "Fútbol: Villarreal - Valencia (Simulcast)", sport: "Fútbol", channel: "Movistar Plus+" },
-          { id: 1009, time: "23:15", event: "El Día Después", sport: "Análisis", channel: "Movistar Plus+" },
-          { id: 1010, time: "01:00", event: "La Resistencia: Lo mejor", sport: "Entretenimiento", channel: "Movistar Plus+" },
-          { id: 1101, time: "10:00", event: "LaLiga zap", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 1102, time: "12:00", event: "Repetición: Real Madrid - Betis", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 1103, time: "13:30", event: "Previa LaLiga", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 1104, time: "16:15", event: "FC Barcelona - Levante UD", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 1105, time: "18:15", event: "LaLiga Show", sport: "Programa", channel: "Movistar LaLiga" },
-          { id: 1106, time: "20:00", event: "Previa LaLiga", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 1107, time: "21:00", event: "Villarreal CF - Valencia CF", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 1108, time: "23:00", event: "El Día Después", sport: "Programa", channel: "Movistar LaLiga" },
-          { id: 1109, time: "00:30", event: "Resumen Jornada 25", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 1201, time: "11:00", event: "Dorsal Diez", sport: "Documental", channel: "DAZN LaLiga" },
-          { id: 1202, time: "13:00", event: "Previa: Getafe - Sevilla", sport: "Fútbol", channel: "DAZN LaLiga" },
-          { id: 1203, time: "14:00", event: "Getafe CF - Sevilla FC", sport: "Fútbol", channel: "DAZN LaLiga" },
-          { id: 1204, time: "16:00", event: "El Post de DAZN", sport: "Programa", channel: "DAZN LaLiga" },
-          { id: 1205, time: "17:30", event: "Fever Pitch", sport: "Fútbol", channel: "DAZN LaLiga" },
-          { id: 1206, time: "18:30", event: "RC Celta - RCD Mallorca", sport: "Fútbol", channel: "DAZN LaLiga" },
-          { id: 1207, time: "20:30", event: "El Post de DAZN", sport: "Programa", channel: "DAZN LaLiga" },
-          { id: 1208, time: "22:00", event: "Código LaLiga", sport: "Programa", channel: "DAZN LaLiga" },
-          { id: 1209, time: "23:30", event: "LaLiga Highlights", sport: "Resúmenes", channel: "DAZN LaLiga" },
-          { id: 1301, time: "10:00", event: "Especial: Los 100 goles de la UCL", sport: "Fútbol", channel: "Liga de Campeones" },
-          { id: 1302, time: "12:00", event: "Repetición: PSG - Man. City", sport: "Fútbol", channel: "Liga de Campeones" },
-          { id: 1303, time: "14:00", event: "UCL Magazine", sport: "Programa", channel: "Liga de Campeones" },
-          { id: 1304, time: "16:00", event: "Repetición: Inter - At. Madrid", sport: "Fútbol", channel: "Liga de Campeones" },
-          { id: 1305, time: "18:00", event: "Documental: La Decimocuarta", sport: "Fútbol", channel: "Liga de Campeones" },
-          { id: 1306, time: "20:00", event: "Noche de Champions", sport: "Programa", channel: "Liga de Campeones" },
-          { id: 1307, time: "21:30", event: "UCL Highlights", sport: "Resúmenes", channel: "Liga de Campeones" },
-          { id: 1401, time: "10:00", event: "Golf: PGA Tour Resumen", sport: "Golf", channel: "Deportes" },
-          { id: 1402, time: "12:30", event: "Copa del Rey Basket (Final Diferido)", sport: "Baloncesto", channel: "Deportes" },
-          { id: 1403, time: "15:00", event: "Tenis: ATP 500 Rio", sport: "Tenis", channel: "Deportes" },
-          { id: 1404, time: "17:00", event: "Rugby: Seis Naciones", sport: "Rugby", channel: "Deportes" },
-          { id: 1405, time: "19:00", event: "Liga Endesa: Real Madrid - Baskonia", sport: "Baloncesto", channel: "Deportes" },
-          { id: 1406, time: "21:00", event: "PGA Tour: The Honda Classic", sport: "Golf", channel: "Deportes" },
-          { id: 1407, time: "00:00", event: "NBA Live", sport: "Baloncesto", channel: "Deportes" },
-          { id: 1501, time: "11:00", event: "Vela: America's Cup Resumen", sport: "Vela", channel: "Deportes 2" },
-          { id: 1502, time: "13:00", event: "IndyCar Series", sport: "Motor", channel: "Deportes 2" },
-          { id: 1503, time: "15:30", event: "Ciclismo: UAE Tour", sport: "Ciclismo", channel: "Deportes 2" },
-          { id: 1504, time: "18:00", event: "Balonmano: Liga Asobal", sport: "Balonmano", channel: "Deportes 2" },
-          { id: 1505, time: "20:30", event: "Voleibol: Superliga", sport: "Voleibol", channel: "Deportes 2" },
-          { id: 1506, time: "22:00", event: "NFL Total Access", sport: "Fútbol Americano", channel: "Deportes 2" },
-          { id: 1601, time: "10:00", event: "Informe Plus", sport: "Documental", channel: "Vamos" },
-          { id: 1602, time: "12:00", event: "Universo Valdano", sport: "Entrevista", channel: "Vamos" },
-          { id: 1603, time: "14:30", event: "Noticias Vamos", sport: "Informativo", channel: "Vamos" },
-          { id: 1604, time: "16:00", event: "Bakala", sport: "Humor", channel: "Vamos" },
-          { id: 1605, time: "18:00", event: "Noticias Vamos", sport: "Informativo", channel: "Vamos" },
-          { id: 1606, time: "20:30", event: "Noticias Vamos", sport: "Informativo", channel: "Vamos" },
-          { id: 1607, time: "21:30", event: "El Día Después", sport: "Programa", channel: "Vamos" },
-          { id: 1701, time: "09:00", event: "JJ.OO.: Esquí de fondo", sport: "JJOO 2026", channel: "Teledeporte" },
-          { id: 1702, time: "11:00", event: "JJ.OO.: Curling Femenino", sport: "JJOO 2026", channel: "Teledeporte" },
-          { id: 1703, time: "13:00", event: "Liga Guerreras: Balonmano", sport: "Balonmano", channel: "Teledeporte" },
-          { id: 1704, time: "15:00", event: "Esquí acrobático: Final", sport: "JJOO 2026", channel: "Teledeporte" },
-          { id: 1705, time: "18:00", event: "Baloncesto Femenino", sport: "Baloncesto", channel: "Teledeporte" },
-          { id: 1706, time: "20:30", event: "Ceremonia de Clausura JJOO", sport: "JJOO 2026", channel: "Teledeporte" },
-          { id: 1707, time: "22:45", event: "Estudio Estadio", sport: "Programa", channel: "Teledeporte" },
-          { id: 1801, time: "10:00", event: "Bobsleigh: Serie 3", sport: "JJOO 2026", channel: "Eurosport 1" },
-          { id: 1802, time: "12:00", event: "Bobsleigh: Final", sport: "JJOO 2026", channel: "Eurosport 1" },
-          { id: 1803, time: "14:05", event: "Hockey Hielo: Final M", sport: "JJOO 2026", channel: "Eurosport 1" },
-          { id: 1804, time: "17:00", event: "Villa Olímpica", sport: "Resumen", channel: "Eurosport 1" },
-          { id: 1805, time: "20:30", event: "Ceremonia de Clausura", sport: "JJOO 2026", channel: "Eurosport 1" },
-          { id: 1806, time: "23:00", event: "Snooker: Players Championship", sport: "Snooker", channel: "Eurosport 1" },
-          { id: 1901, time: "11:00", event: "Snowboard Cross", sport: "JJOO 2026", channel: "Eurosport 2" },
-          { id: 1902, time: "13:30", event: "Bobsleigh Serie 4", sport: "JJOO 2026", channel: "Eurosport 2" },
-          { id: 1903, time: "15:00", event: "Patinaje Velocidad", sport: "JJOO 2026", channel: "Eurosport 2" },
-          { id: 1904, time: "18:00", event: "Ciclismo: UAE Tour", sport: "Ciclismo", channel: "Eurosport 2" },
-          { id: 1905, time: "21:00", event: "Salto de Esquí", sport: "JJOO 2026", channel: "Eurosport 2" },
-          { id: 2001, time: "12:00", event: "Premier League Stories", sport: "Documental", channel: "DAZN 1" },
-          { id: 2002, time: "14:50", event: "Nottingham Forest - Liverpool", sport: "Fútbol", channel: "DAZN 1" },
-          { id: 2003, time: "17:20", event: "Tottenham - Arsenal", sport: "Fútbol", channel: "DAZN 1" },
-          { id: 2004, time: "19:30", event: "Premier League Review", sport: "Resumen", channel: "DAZN 1" },
-          { id: 2005, time: "21:00", event: "Boxeo: Wood vs Warrington", sport: "Boxeo", channel: "DAZN 1" },
-          { id: 2101, time: "11:50", event: "Eibar - Athletic (Liga F)", sport: "Fútbol", channel: "DAZN 2" },
-          { id: 2102, time: "14:50", event: "Sunderland - Fulham", sport: "Fútbol", channel: "DAZN 2" },
-          { id: 2103, time: "17:50", event: "Sevilla - At. Madrid (Liga F)", sport: "Fútbol", channel: "DAZN 2" },
-          { id: 2104, time: "21:00", event: "SBK Australia: Carrera 2", sport: "Motor", channel: "DAZN 2" },
-          { id: 2201, time: "12:55", event: "Minicopa Endesa: Final", sport: "Baloncesto", channel: "Esport3" },
-          { id: 2202, time: "16:00", event: "Lliga Femenina: Uni Girona", sport: "Baloncesto", channel: "Esport3" },
-          { id: 2203, time: "18:00", event: "Lliga Asobal: Granollers", sport: "Balonmano", channel: "Esport3" },
-          { id: 2204, time: "20:30", event: "Motor a Fons", sport: "Motor", channel: "Esport3" },
-          { id: 2205, time: "21:40", event: "Sala de Premsa", sport: "Informativo", channel: "Esport3" },
-          { id: 2206, time: "22:40", event: "Gol a gol", sport: "Fútbol", channel: "Esport3" },
-          { id: 2207, time: "00:00", event: "3CatInfo Esports", sport: "Informativo", channel: "Esport3" },
-          { id: 2301, time: "12:00", event: "Tecnología de la antigüedad", sport: "Documental", channel: "Canal Historia" },
-          { id: 2302, time: "14:00", event: "Forjado a fuego", sport: "Competición", channel: "Canal Historia" },
-          { id: 2303, time: "16:00", event: "El precio de la historia", sport: "Reality", channel: "Canal Historia" },
-          { id: 2304, time: "18:00", event: "Templarios: Secretos", sport: "Historia", channel: "Canal Historia" },
-          { id: 2305, time: "20:00", event: "Gigantes de la comida", sport: "Documental", channel: "Canal Historia" },
-          { id: 2306, time: "22:00", event: "Grandes robos", sport: "Crimen", channel: "Canal Historia" },
-          { id: 2401, time: "12:00", event: "Fronteras de España", sport: "Docureality", channel: "DMAX" },
-          { id: 2402, time: "14:00", event: "Monstruos de río", sport: "Pesca", channel: "DMAX" },
-          { id: 2403, time: "16:00", event: "Wild Frank", sport: "Naturaleza", channel: "DMAX" },
-          { id: 2404, time: "18:00", event: "Aventura en pelotas", sport: "Reality", channel: "DMAX" },
-          { id: 2405, time: "20:00", event: "Desmontando la historia", sport: "Documental", channel: "DMAX" },
-          { id: 2406, time: "22:00", event: "Alienígenas", sport: "Misterio", channel: "DMAX" },
-          { id: 2501, time: "13:00", event: "Vida Salvaje", sport: "Naturaleza", channel: "Odisea" },
-          { id: 2502, time: "15:00", event: "Planeta Azul II", sport: "Naturaleza", channel: "Odisea" },
-          { id: 2503, time: "17:00", event: "Ingeniería de vanguardia", sport: "Tecnología", channel: "Odisea" },
-          { id: 2504, time: "20:00", event: "El cosmos", sport: "Ciencia", channel: "Odisea" },
-          { id: 2505, time: "22:00", event: "Megatraslados", sport: "Ingeniería", channel: "Odisea" }
-        ];
-
-        const EVENTOS_MANANA = [
-          { id: 3001, time: "08:00", event: "JJOO: Resumen final y medallas", sport: "Polideportivo", channel: "Movistar Plus+" },
-          { id: 3002, time: "10:00", event: "La Resistencia: Mejores momentos", sport: "Humor", channel: "Movistar Plus+" },
-          { id: 3003, time: "12:00", event: "Resumen LaLiga: Jornada 25", sport: "Fútbol", channel: "Movistar Plus+" },
-          { id: 3004, time: "14:30", event: "Entrevista: El año de los JJOO", sport: "Programa", channel: "Movistar Plus+" },
-          { id: 3005, time: "17:00", event: "NBA: Boston - Lakers (Dif.)", sport: "Baloncesto", channel: "Movistar Plus+" },
-          { id: 3006, time: "20:30", event: "Deporte Plus+: Lunes", sport: "Informativo", channel: "Movistar Plus+" },
-          { id: 3007, time: "21:00", event: "Alavés - Girona (Directo)", sport: "Fútbol", channel: "Movistar Plus+" },
-          { id: 3008, time: "23:00", event: "El Día Después", sport: "Análisis", channel: "Movistar Plus+" },
-          { id: 3101, time: "09:00", event: "Zap LaLiga", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 3102, time: "11:00", event: "FC Barcelona - Levante (Dif.)", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 3103, time: "14:00", event: "Resumen Getafe - Sevilla", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 3104, time: "18:00", event: "Villarreal - Valencia (Dif.)", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 3105, time: "20:30", event: "Previa: Alavés - Girona", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 3106, time: "21:00", event: "Deportivo Alavés - Girona FC", sport: "Fútbol", channel: "Movistar LaLiga" },
-          { id: 3107, time: "23:00", event: "Post LaLiga", sport: "Programa", channel: "Movistar LaLiga" },
-          { id: 3201, time: "10:00", event: "Resumen RC Celta - Mallorca", sport: "Fútbol", channel: "DAZN LaLiga" },
-          { id: 3202, time: "13:00", event: "LaLiga Show: Lunes", sport: "Programa", channel: "DAZN LaLiga" },
-          { id: 3203, time: "15:00", event: "Villarreal - Valencia (Dif.)", sport: "Fútbol", channel: "DAZN LaLiga" },
-          { id: 3204, time: "18:00", event: "LaLiga zap", sport: "Fútbol", channel: "DAZN LaLiga" },
-          { id: 3205, time: "21:00", event: "Deportivo Alavés - Girona FC", sport: "Fútbol", channel: "DAZN LaLiga" },
-          { id: 3206, time: "23:00", event: "El Post de DAZN", sport: "Programa", channel: "DAZN LaLiga" },
-          { id: 3301, time: "10:00", event: "Magacín UCL", sport: "Fútbol", channel: "Liga de Campeones" },
-          { id: 3302, time: "13:00", event: "Classic Match: Barça - PSG", sport: "Fútbol", channel: "Liga de Campeones" },
-          { id: 3303, time: "16:00", event: "Previa Octavos de Final", sport: "Fútbol", channel: "Liga de Campeones" },
-          { id: 3304, time: "20:00", event: "Noche de Champions", sport: "Programa", channel: "Liga de Campeones" },
-          { id: 3305, time: "22:00", event: "UCL Highlights", sport: "Resúmenes", channel: "Liga de Campeones" },
-          { id: 3401, time: "12:00", event: "NCAA: Michigan - Duke", sport: "Baloncesto", channel: "Deportes" },
-          { id: 3402, time: "15:00", event: "ATP 500 Doha: Ronda 1", sport: "Tenis", channel: "Deportes" },
-          { id: 3403, time: "18:00", event: "Seis Naciones: Resumen jornada", sport: "Rugby", channel: "Deportes" },
-          { id: 3404, time: "20:00", event: "NBA Action", sport: "Baloncesto", channel: "Deportes" },
-          { id: 3405, time: "22:00", event: "PGA Tour: Highlights", sport: "Golf", channel: "Deportes" },
-          { id: 3406, time: "01:30", event: "NBA: Warriors - Nuggets", sport: "Baloncesto", channel: "Deportes" },
-          { id: 3501, time: "11:00", event: "Atletismo Pista Cubierta", sport: "Atletismo", channel: "Deportes 2" },
-          { id: 3502, time: "14:00", event: "World of Free Sports", sport: "Polideportivo", channel: "Deportes 2" },
-          { id: 3503, time: "18:00", event: "Liga Asobal: Resumen", sport: "Balonmano", channel: "Deportes 2" },
-          { id: 3504, time: "21:00", event: "NFL Total Access", sport: "Fútbol Americano", channel: "Deportes 2" },
-          { id: 3505, time: "23:00", event: "IndyCar Series: Highlights", sport: "Motor", channel: "Deportes 2" },
-          { id: 3601, time: "12:00", event: "Universo Valdano", sport: "Entrevista", channel: "Vamos" },
-          { id: 3602, time: "14:30", event: "Noticias Vamos", sport: "Informativo", channel: "Vamos" },
-          { id: 3603, time: "17:00", event: "Generación NBA", sport: "Baloncesto", channel: "Vamos" },
-          { id: 3604, time: "20:30", event: "Noticias Vamos", sport: "Informativo", channel: "Vamos" },
-          { id: 3605, time: "21:30", event: "El Día Después", sport: "Programa", channel: "Vamos" },
-          { id: 3606, time: "23:00", event: "Noticias Vamos", sport: "Informativo", channel: "Vamos" },
-          { id: 3701, time: "10:00", event: "Estudio Estadio (Rep.)", sport: "Fútbol", channel: "Teledeporte" },
-          { id: 3702, time: "14:00", event: "Conexión Teledeporte", sport: "Informativo", channel: "Teledeporte" },
-          { id: 3703, time: "17:00", event: "Atletismo: 10km Castellón", sport: "Atletismo", channel: "Teledeporte" },
-          { id: 3704, time: "19:00", event: "Balonmano: Liga Guerreras", sport: "Balonmano", channel: "Teledeporte" },
-          { id: 3705, time: "21:30", event: "Teledeporte Noticias", sport: "Informativo", channel: "Teledeporte" },
-          { id: 3706, time: "22:30", event: "Estudio Estadio", sport: "Programa", channel: "Teledeporte" },
-          { id: 3801, time: "09:00", event: "Lo mejor de Milán 2026", sport: "JJOO 2026", channel: "Eurosport 1" },
-          { id: 3802, time: "13:00", event: "Snooker: Players Championship", sport: "Snooker", channel: "Eurosport 1" },
-          { id: 3803, time: "17:00", event: "Ciclismo: UAE Tour", sport: "Ciclismo", channel: "Eurosport 1" },
-          { id: 3804, time: "21:00", event: "Snooker: Segunda Ronda", sport: "Snooker", channel: "Eurosport 1" },
-          { id: 3901, time: "10:00", event: "JJOO: Patinaje Velocidad (Rep.)", sport: "JJOO 2026", channel: "Eurosport 2" },
-          { id: 3902, time: "14:00", event: "JJOO: Resumen Bobsleigh", sport: "JJOO 2026", channel: "Eurosport 2" },
-          { id: 3903, time: "18:00", event: "Vuelta a Andalucía: Etapa 5", sport: "Ciclismo", channel: "Eurosport 2" },
-          { id: 3904, time: "22:00", event: "Esquí Alpino: Diferido", sport: "Esquí", channel: "Eurosport 2" },
-          { id: 4001, time: "13:00", event: "Premier League Review", sport: "Fútbol", channel: "DAZN 1" },
-          { id: 4002, time: "17:00", event: "Liverpool - Nottingham (Rep.)", sport: "Fútbol", channel: "DAZN 1" },
-          { id: 4003, time: "20:00", event: "Netbusters", sport: "Programa", channel: "DAZN 1" },
-          { id: 4004, time: "21:00", event: "West Ham - Brentford", sport: "Fútbol", channel: "DAZN 1" },
-          { id: 4101, time: "12:00", event: "Liga F Highlights", sport: "Fútbol", channel: "DAZN 2" },
-          { id: 4102, time: "16:00", event: "La Central: Lunes", sport: "Programa", channel: "DAZN 2" },
-          { id: 4103, time: "19:00", event: "SBK Australia: Resumen", sport: "Motor", channel: "DAZN 2" },
-          { id: 4104, time: "21:00", event: "Documental Marc Márquez", sport: "Motor", channel: "DAZN 2" },
-          { id: 4201, time: "14:00", event: "Esport Club", sport: "Informativo", channel: "Esport3" },
-          { id: 4202, time: "16:00", event: "Lliga Asobal: Resum", sport: "Balonmano", channel: "Esport3" },
-          { id: 4203, time: "19:00", event: "Tot Costa", sport: "Informativo", channel: "Esport3" },
-          { id: 4204, time: "20:30", event: "Esport Club", sport: "Programa", channel: "Esport3" },
-          { id: 4205, time: "23:00", event: "Onze", sport: "Debate", channel: "Esport3" },
-          { id: 4206, time: "00:30", event: "3CatInfo Esports", sport: "Informativo", channel: "Esport3" },
-          { id: 4301, time: "13:00", event: "Antiguas civilizaciones", sport: "Historia", channel: "Canal Historia" },
-          { id: 4302, time: "16:00", event: "Forjado a fuego", sport: "Realidad", channel: "Canal Historia" },
-          { id: 4303, time: "21:00", event: "Segunda Guerra Mundial", sport: "Historia", channel: "Canal Historia" },
-          { id: 4401, time: "14:00", event: "Control de carreteras", sport: "Docureality", channel: "DMAX" },
-          { id: 4402, time: "16:00", event: "Alienígenas ancestrales", sport: "Documental", channel: "DMAX" },
-          { id: 4403, time: "22:00", event: "Curiosidades de la Tierra", sport: "Ciencia", channel: "DMAX" },
-          { id: 4501, time: "15:00", event: "Naturaleza: Reyes del hielo", sport: "Documental", channel: "Odisea" },
-          { id: 4502, time: "22:00", event: "Maestros de la ciencia", sport: "Divulgación", channel: "Odisea" }
-        ];
-
-        const CANALES_ORDENADOS = [
-          "Movistar Plus+", "Movistar LaLiga", "DAZN LaLiga", "Liga de Campeones",
-          "Deportes", "Deportes 2", "Vamos", "Teledeporte",
-          "Eurosport 1", "Eurosport 2", "DAZN 1", "DAZN 2",
-          "Esport3", "Canal Historia", "DMAX", "Odisea"
+        const CANALES_CONFIG = [
+            { nombre: 'Movistar Plus+',    epgId: 'MovistarPlus.es'         },
+            { nombre: 'Movistar LaLiga',   epgId: 'MovistarLaLiga.es'       },
+            { nombre: 'DAZN LaLiga',       epgId: 'DAZNLaLiga.es'           },
+            { nombre: 'Liga de Campeones', epgId: 'MovistarLigaCampeones.es' },
+            { nombre: 'Deportes',          epgId: 'MovistarDeportes.es'      },
+            { nombre: 'Deportes 2',        epgId: 'MovistarDeportes2.es'     },
+            { nombre: 'Vamos',             epgId: 'MovistarVamos.es'         },
+            { nombre: 'Teledeporte',       epgId: 'Teledeporte.es'           },
+            { nombre: 'Eurosport 1',       epgId: 'Eurosport1.es'           },
+            { nombre: 'Eurosport 2',       epgId: 'Eurosport2.es'           },
+            { nombre: 'DAZN 1',            epgId: 'DAZN1.es'                },
+            { nombre: 'DAZN 2',            epgId: 'DAZN2.es'                },
+            { nombre: 'Canal Historia',    epgId: 'CanalHistoria.es'        },
+            { nombre: 'DMAX',              epgId: 'DMAX.es'                 },
+            { nombre: 'Odisea',            epgId: 'Odisea.es'               },
         ];
 
         // =============================================
-        // COMPONENTE PARRILLA TV
+        // COMPONENTE PARRILLA TV — EPG en tiempo real
         // =============================================
         const ParrillaTV = ({ onBack }) => {
-            const [ahora] = useState(new Date());
-            const [diaSeleccionado, setDiaSeleccionado] = useState('hoy');
-            const scrollContainerRef = useRef(null);
+            const [ahora] = React.useState(new Date());
+            const [diaSeleccionado, setDiaSeleccionado] = React.useState('hoy');
+            const [eventos, setEventos] = React.useState({});
+            const [cargandoEPG, setCargandoEPG] = React.useState(true);
+            const [errorEPG, setErrorEPG] = React.useState('');
+            const scrollContainerRef = React.useRef(null);
 
-            const fechaHoy = new Date(ahora);
-            const fechaManana = new Date(ahora);
-            fechaManana.setDate(fechaManana.getDate() + 1);
+            // Carga y parsea el XML de EPG_dobleM
+            React.useEffect(() => {
+                const cargarEPG = async () => {
+                    setCargandoEPG(true);
+                    setErrorEPG('');
+                    try {
+                        // URL del XML sin comprimir (GitHub raw tiene CORS abierto)
+                        const PROXY = 'https://api.allorigins.win/raw?url=';
+                        const EPG_URL = 'https://raw.githubusercontent.com/davidmuma/EPG_dobleM/master/guiaiptv.xmltv';
+                        const res = await fetch(PROXY + encodeURIComponent(EPG_URL));
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                        const xml = await res.text();
+                        const parsed = parsearXMLTV(xml);
+                        setEventos(parsed);
+                    } catch (e) {
+                        console.error('EPG error:', e);
+                        setErrorEPG('No se pudo cargar la programacion en tiempo real. Reintenta mas tarde.');
+                    } finally {
+                        setCargandoEPG(false);
+                    }
+                };
+                cargarEPG();
+            }, []);
 
-            const dosHorasAntes = new Date(ahora.getTime() - 2 * 60 * 60 * 1000);
-            const eventosBase = diaSeleccionado === 'hoy' ? [...EVENTOS_HOY] : [...EVENTOS_MANANA];
+            // Parsea XMLTV y devuelve { channelId: [ {start, stop, title, desc} ] }
+            const parsearXMLTV = (xmlStr) => {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(xmlStr, 'text/xml');
+                const result = {};
 
-            const eventosFiltrados = eventosBase.filter(evento => {
-                if (diaSeleccionado === 'manana') return true;
-                const [hours, minutes] = evento.time.split(':');
-                const eventDate = new Date(ahora);
-                if (parseInt(hours, 10) < 5) eventDate.setDate(eventDate.getDate() + 1);
-                eventDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-                return eventDate >= dosHorasAntes;
-            });
+                // Mapea channel id -> nombre
+                const channelMap = {};
+                CANALES_CONFIG.forEach(c => { channelMap[c.epgId] = c.nombre; });
 
-            const getChannelHeaderStyle = (channel) => {
-                if (channel === "Movistar Plus+") return "bg-blue-800 text-white";
-                if (channel.includes("DAZN")) return "bg-yellow-400 text-slate-900";
-                if (channel.includes("Movistar") || channel === "Vamos" || channel.includes("Deportes") || channel === "Liga de Campeones") return "bg-blue-600 text-white";
-                if (channel === "Canal Historia") return "bg-slate-900 text-amber-500";
-                if (channel === "DMAX") return "bg-gray-800 text-white";
-                if (channel === "Odisea") return "bg-teal-700 text-white";
-                if (channel === "Esport3") return "bg-green-600 text-white";
-                if (channel.includes("Eurosport")) return "bg-red-600 text-white";
-                if (channel === "Teledeporte") return "bg-orange-500 text-white";
-                return "bg-slate-700 text-white";
+                const programmes = doc.querySelectorAll('programme');
+                programmes.forEach(prog => {
+                    const channel = prog.getAttribute('channel');
+                    if (!channelMap[channel]) return; // solo canales que nos interesan
+
+                    const startRaw = prog.getAttribute('start');
+                    const stopRaw  = prog.getAttribute('stop');
+                    const title    = prog.querySelector('title') ? prog.querySelector('title').textContent : '';
+
+                    if (!startRaw || !title) return;
+
+                    const start = xmltvFecha(startRaw);
+                    const stop  = stopRaw ? xmltvFecha(stopRaw) : null;
+
+                    const cname = channelMap[channel];
+                    if (!result[cname]) result[cname] = [];
+                    result[cname].push({ start, stop, title });
+                });
+
+                // Ordena cada canal por hora de inicio
+                Object.keys(result).forEach(c => {
+                    result[c].sort((a, b) => a.start - b.start);
+                });
+
+                return result;
             };
 
-            const isEnDirecto = (eventTime) => {
+            // Convierte fecha XMLTV "20260223143000 +0100" a Date
+            const xmltvFecha = (raw) => {
+                const s = raw.replace(/\s.*/, ''); // quita timezone
+                const y  = s.substring(0,4);
+                const mo = s.substring(4,6);
+                const d  = s.substring(6,8);
+                const h  = s.substring(8,10);
+                const mi = s.substring(10,12);
+                const se = s.substring(12,14) || '00';
+                // Obtiene offset del raw
+                const tzMatch = raw.match(/([+-])(\d{2})(\d{2})$/);
+                let offsetMs = 0;
+                if (tzMatch) {
+                    const sign = tzMatch[1] === '+' ? 1 : -1;
+                    offsetMs = sign * (parseInt(tzMatch[2]) * 60 + parseInt(tzMatch[3])) * 60000;
+                }
+                const utc = Date.UTC(y, mo-1, d, h, mi, se) - offsetMs;
+                return new Date(utc);
+            };
+
+            // Filtra eventos del dia seleccionado
+            const fechaHoy    = new Date(ahora); fechaHoy.setHours(0,0,0,0);
+            const fechaManana = new Date(fechaHoy); fechaManana.setDate(fechaManana.getDate() + 1);
+            const fechaPasado = new Date(fechaManana); fechaPasado.setDate(fechaPasado.getDate() + 1);
+
+            const desdeFecha = diaSeleccionado === 'hoy' ? fechaHoy : fechaManana;
+            const hastaFecha = diaSeleccionado === 'hoy' ? fechaManana : fechaPasado;
+
+            // Para "hoy" filtra desde 2h antes de ahora para mostrar lo que esta en curso
+            const desdeReal = diaSeleccionado === 'hoy'
+                ? new Date(ahora.getTime() - 2 * 60 * 60 * 1000)
+                : desdeFecha;
+
+            const eventosFiltrados = (canal) => {
+                const lista = eventos[canal] || [];
+                return lista.filter(e => e.start >= desdeReal && e.start < hastaFecha);
+            };
+
+            const isEnDirecto = (ev) => {
                 if (diaSeleccionado !== 'hoy') return false;
-                const [hours, minutes] = eventTime.split(':');
-                const eventDate = new Date(ahora);
-                if (parseInt(hours, 10) < 5) eventDate.setDate(eventDate.getDate() + 1);
-                eventDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-                const timeDiff = ahora.getTime() - eventDate.getTime();
-                return timeDiff >= 0 && timeDiff <= (120 * 60 * 1000);
+                if (!ev.stop) return false;
+                return ev.start <= ahora && ev.stop > ahora;
             };
 
-            const handleScroll = (direction) => {
-                const amount = 350;
-                if (!scrollContainerRef.current) return;
-                if (direction === 'left') scrollContainerRef.current.scrollBy({ left: -amount, behavior: 'smooth' });
-                else if (direction === 'right') scrollContainerRef.current.scrollBy({ left: amount, behavior: 'smooth' });
-                else if (direction === 'up') scrollContainerRef.current.scrollBy({ top: -amount, behavior: 'smooth' });
-                else if (direction === 'down') scrollContainerRef.current.scrollBy({ top: amount, behavior: 'smooth' });
+            const getHeaderStyle = (canal) => {
+                if (canal === 'Movistar Plus+') return 'bg-blue-800 text-white';
+                if (canal.includes('DAZN')) return 'bg-yellow-400 text-slate-900';
+                if (canal.includes('Movistar') || canal === 'Vamos' || canal.includes('Deportes') || canal === 'Liga de Campeones') return 'bg-blue-600 text-white';
+                if (canal === 'Canal Historia') return 'bg-slate-900 text-amber-500';
+                if (canal === 'DMAX') return 'bg-gray-800 text-white';
+                if (canal === 'Odisea') return 'bg-teal-700 text-white';
+                if (canal.includes('Eurosport')) return 'bg-red-600 text-white';
+                if (canal === 'Teledeporte') return 'bg-orange-500 text-white';
+                return 'bg-slate-700 text-white';
             };
+
+            const handleScroll = (dir) => {
+                const a = 350;
+                if (!scrollContainerRef.current) return;
+                if (dir === 'left')  scrollContainerRef.current.scrollBy({ left: -a, behavior: 'smooth' });
+                if (dir === 'right') scrollContainerRef.current.scrollBy({ left:  a, behavior: 'smooth' });
+                if (dir === 'up')    scrollContainerRef.current.scrollBy({ top: -a, behavior: 'smooth' });
+                if (dir === 'down')  scrollContainerRef.current.scrollBy({ top:  a, behavior: 'smooth' });
+            };
+
+            const formatHora = (date) => date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
             return (
                 <div className="animate-in fade-in duration-500 flex flex-col h-full">
-                    {/* Cabecera parrilla */}
+                    {/* Cabecera */}
                     <div className="bg-white/5 rounded-2xl border border-white/10 p-4 mb-4">
                         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
@@ -303,102 +206,108 @@
                                     <i className="fa-solid fa-arrow-left"></i>
                                 </button>
                                 <h2 className="text-xl font-bold flex items-center gap-2">
-                                    <i className="fa-solid fa-tv text-cyan-400"></i>
-                                    Parrilla TV 2026
+                                    <i className="fa-solid fa-tv text-purple-400"></i>
+                                    Parrilla TV
                                 </h2>
-                            </div>
-                            <div className="flex flex-wrap items-center gap-3">
-                                <div className="flex bg-black/40 p-1 rounded-lg border border-white/10">
-                                    <button
-                                        onClick={() => setDiaSeleccionado('hoy')}
-                                        className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${diaSeleccionado === 'hoy' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}
-                                    >
-                                        Hoy ({fechaHoy.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })})
-                                    </button>
-                                    <button
-                                        onClick={() => setDiaSeleccionado('manana')}
-                                        className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all ${diaSeleccionado === 'manana' ? 'bg-cyan-600 text-white' : 'text-gray-400 hover:text-white'}`}
-                                    >
-                                        Mañana ({fechaManana.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })})
-                                    </button>
-                                </div>
-                                <div className="flex items-center gap-2 bg-cyan-900/40 text-cyan-300 px-3 py-1.5 rounded-lg text-sm font-bold border border-cyan-500/30">
-                                    <i className="fa-solid fa-clock"></i>
+                                <span className="text-sm text-gray-400 font-mono">
                                     {ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                                </div>
+                                </span>
+                                {cargandoEPG && (
+                                    <span className="text-xs text-yellow-500 flex items-center gap-1">
+                                        <i className="fa-solid fa-spinner animate-spin text-xs"></i>
+                                        Cargando EPG...
+                                    </span>
+                                )}
+                                {!cargandoEPG && !errorEPG && (
+                                    <span className="text-xs text-green-500 flex items-center gap-1">
+                                        <i className="fa-solid fa-circle-check text-xs"></i>
+                                        EPG actualizado
+                                    </span>
+                                )}
+                            </div>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setDiaSeleccionado('hoy')}
+                                    className={'px-4 py-2 rounded-xl text-sm font-bold transition-all ' + (diaSeleccionado === 'hoy' ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10')}>
+                                    Hoy
+                                </button>
+                                <button
+                                    onClick={() => setDiaSeleccionado('manana')}
+                                    className={'px-4 py-2 rounded-xl text-sm font-bold transition-all ' + (diaSeleccionado === 'manana' ? 'bg-purple-600 text-white' : 'bg-white/5 text-gray-400 hover:bg-white/10')}>
+                                    Manana
+                                </button>
                             </div>
                         </div>
-                        <p className="text-gray-500 text-xs mt-3 text-center">
-                            <i className="fa-solid fa-arrow-right mr-1 text-cyan-500"></i>
-                            Desplázate horizontalmente entre los 16 canales
+                        {errorEPG && (
+                            <p className="text-xs text-red-400 mt-2">
+                                <i className="fa-solid fa-triangle-exclamation mr-1"></i>{errorEPG}
+                            </p>
+                        )}
+                        <p className="text-xs text-gray-600 mt-2">
+                            Desplazate horizontalmente entre los canales
                         </p>
                     </div>
 
-                    {/* D-Pad controls */}
-                    <div className="fixed bottom-8 right-6 z-50 flex flex-col items-center gap-1 bg-black/80 backdrop-blur-md p-2 rounded-xl border border-white/10 shadow-lg">
-                        <button onClick={() => handleScroll('up')} className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"><i className="fa-solid fa-arrow-up text-xs"></i></button>
-                        <div className="flex gap-1">
-                            <button onClick={() => handleScroll('left')} className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"><i className="fa-solid fa-arrow-left text-xs"></i></button>
-                            <button onClick={() => handleScroll('down')} className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"><i className="fa-solid fa-arrow-down text-xs"></i></button>
-                            <button onClick={() => handleScroll('right')} className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"><i className="fa-solid fa-arrow-right text-xs"></i></button>
-                        </div>
+                    {/* Controles scroll */}
+                    <div className="flex justify-between items-center mb-2 px-1">
+                        <button onClick={() => handleScroll('left')}  className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white transition-all"><i className="fa-solid fa-chevron-left"></i></button>
+                        <button onClick={() => handleScroll('up')}    className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white transition-all"><i className="fa-solid fa-chevron-up"></i></button>
+                        <button onClick={() => handleScroll('down')}  className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white transition-all"><i className="fa-solid fa-chevron-down"></i></button>
+                        <button onClick={() => handleScroll('right')} className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white transition-all"><i className="fa-solid fa-chevron-right"></i></button>
                     </div>
 
-                    {/* Grid canales */}
-                    <div ref={scrollContainerRef} className="flex-1 overflow-auto tv-scroll rounded-xl" style={{ maxHeight: 'calc(100vh - 300px)' }}>
-                        <div className="flex gap-3 h-max pb-6" style={{ width: 'max-content' }}>
-                            {CANALES_ORDENADOS.map(canal => {
-                                const eventosDelCanal = eventosFiltrados
-                                    .filter(e => e.channel === canal)
-                                    .sort((a, b) => {
-                                        const [hA] = a.time.split(':');
-                                        const [hB] = b.time.split(':');
-                                        const tA = parseInt(hA, 10) < 5 ? parseInt(hA, 10) + 24 : parseInt(hA, 10);
-                                        const tB = parseInt(hB, 10) < 5 ? parseInt(hB, 10) + 24 : parseInt(hB, 10);
-                                        return tA - tB || a.time.localeCompare(b.time);
-                                    });
-
+                    {/* Grid de canales */}
+                    <div ref={scrollContainerRef} className="flex gap-4 overflow-x-auto pb-4 flex-1 overflow-y-auto tv-scroll">
+                        {cargandoEPG ? (
+                            <div className="flex-1 flex items-center justify-center text-gray-500">
+                                <i className="fa-solid fa-spinner animate-spin mr-2"></i>
+                                Cargando programacion en tiempo real...
+                            </div>
+                        ) : (
+                            CANALES_CONFIG.map(canal => {
+                                const evs = eventosFiltrados(canal.nombre);
                                 return (
-                                    <div key={canal} className="w-64 flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-white/10 overflow-hidden">
-                                        <div className={`p-3 font-bold text-center text-sm ${getChannelHeaderStyle(canal)}`}>
-                                            {canal}
+                                    <div key={canal.nombre} className="w-64 flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-white/10 overflow-hidden">
+                                        <div className={'p-3 font-bold text-center text-sm ' + getHeaderStyle(canal.nombre)}>
+                                            {canal.nombre}
                                         </div>
-                                        <div className="p-2 flex-1 space-y-2">
-                                            {eventosDelCanal.length > 0 ? (
-                                                eventosDelCanal.map(evento => {
-                                                    const directo = isEnDirecto(evento.time);
+                                        <div className="flex flex-col gap-1 p-2 overflow-y-auto max-h-96 tv-scroll">
+                                            {evs.length === 0 ? (
+                                                <p className="text-xs text-gray-600 text-center p-4">Sin datos</p>
+                                            ) : (
+                                                evs.map((ev, i) => {
+                                                    const directo = isEnDirecto(ev);
                                                     return (
-                                                        <div key={evento.id} className={`p-3 rounded-lg border transition-all ${directo ? 'border-red-500/50 bg-red-950/40 ring-1 ring-red-500/30' : 'border-white/5 bg-white/5 hover:bg-white/10'}`}>
-                                                            <div className="flex items-center justify-between mb-1.5">
-                                                                <span className={`font-mono font-bold text-xs px-2 py-0.5 rounded ${directo ? 'bg-red-900/60 text-red-300' : 'bg-gray-800 text-gray-400'}`}>
-                                                                    {evento.time}
+                                                        <div key={i} className={'p-3 rounded-lg border transition-all ' + (directo ? 'border-red-500/50 bg-red-950/40 ring-1 ring-red-500/30' : 'border-white/5 bg-white/5 hover:bg-white/10')}>
+                                                            <div className="flex items-center justify-between gap-2 mb-1">
+                                                                <span className={'font-mono font-bold text-xs px-2 py-0.5 rounded ' + (directo ? 'bg-red-900/60 text-red-300' : 'bg-gray-800 text-gray-400')}>
+                                                                    {formatHora(ev.start)}
                                                                 </span>
                                                                 {directo && (
-                                                                    <span className="flex items-center gap-1 text-[9px] uppercase font-bold text-red-400 animate-pulse">
-                                                                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full inline-block"></span> En directo
+                                                                    <span className="flex items-center gap-1 text-red-400 text-xs font-bold">
+                                                                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full inline-block animate-pulse"></span>
+                                                                        Ahora
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <h3 className="font-semibold text-gray-100 text-xs leading-tight mb-1">{evento.event}</h3>
-                                                            <p className="text-[10px] text-gray-500 italic">{evento.sport}</p>
+                                                            <p className="text-xs text-gray-200 leading-tight">{ev.title}</p>
+                                                            {ev.stop && (
+                                                                <p className="text-xs text-gray-600 mt-1">hasta {formatHora(ev.stop)}</p>
+                                                            )}
                                                         </div>
                                                     );
                                                 })
-                                            ) : (
-                                                <div className="flex flex-col items-center justify-center h-24 text-gray-600 text-center p-4">
-                                                    <i className="fa-solid fa-circle-exclamation mb-2 opacity-50"></i>
-                                                    <span className="text-xs">Sin eventos programados</span>
-                                                </div>
                                             )}
                                         </div>
                                     </div>
                                 );
-                            })}
-                        </div>
+                            })
+                        )}
                     </div>
                 </div>
             );
         };
+
 
         // =============================================
         // FRASES CÉLEBRES — 4 APIs verificadas + banco local
@@ -630,7 +539,11 @@
                 const f = new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' });
                 return 'Es ' + f + '. Dame UNA frase celebre inspiradora. En castellano. Responde SOLO:\nFRASE: [la frase]\nAUTOR: [el autor]';
             };
-            const pPersonaje = (n) => 'Dame 5 frases de ' + n + ' en castellano. SOLO este formato repetido 5 veces:\nFRASE: [frase]\nAUTOR: ' + n + '\n';
+            const pPersonaje = (n) => 'Dame hasta 5 frases REALES y VERIFICADAS de ' + n + ' en castellano. ' +
+                'IMPORTANTE: solo incluye frases que puedas confirmar que son realmente de ' + n + '. ' +
+                'Si no tienes frases verificadas, pon solo las que conozcas con seguridad. ' +
+                'No inventes ni atribuyas frases de otros autores. ' +
+                'SOLO este formato, una por bloque:\nFRASE: [frase real]\nAUTOR: ' + n + '\n';
             const pTema = (t) => 'Dame 5 frases celebres sobre "' + t + '" en castellano, de autores distintos. SOLO este formato:\nFRASE: [frase]\nAUTOR: [autor]\n';
 
             // ACCIONES
