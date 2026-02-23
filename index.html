@@ -73,20 +73,36 @@
                 const cargarEPG = async () => {
                     setCargandoEPG(true);
                     setErrorEPG('');
-                    try {
-                        // URL del XML sin comprimir (GitHub raw tiene CORS abierto)
-                        const PROXY = 'https://api.allorigins.win/raw?url=';
-                        const EPG_URL = 'https://raw.githubusercontent.com/davidmuma/EPG_dobleM/master/guiaiptv.xmltv';
-                        const res = await fetch(PROXY + encodeURIComponent(EPG_URL));
-                        if (!res.ok) throw new Error('HTTP ' + res.status);
-                        const xml = await res.text();
-                        const parsed = parsearXMLTV(xml);
-                        setEventos(parsed);
-                    } catch (e) {
-                        console.error('EPG error:', e);
-                        setErrorEPG('No se pudo cargar la programacion en tiempo real. Reintenta mas tarde.');
-                    } finally {
-                        setCargandoEPG(false);
+                    const PROXIES = [
+                        'https://corsproxy.io/?',
+                        'https://api.allorigins.win/raw?url=',
+                        'https://api.codetabs.com/v1/proxy?quest=',
+                    ];
+                    const EPG_URL = 'https://raw.githubusercontent.com/davidmuma/EPG_dobleM/master/guiaiptv.xmltv';
+                    let loaded = false;
+                    for (const proxy of PROXIES) {
+                        try {
+                            console.log('[EPG] Probando proxy:', proxy);
+                            const url = proxy.includes('allorigins') || proxy.includes('codetabs')
+                                ? proxy + encodeURIComponent(EPG_URL)
+                                : proxy + EPG_URL;
+                            const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
+                            if (!res.ok) throw new Error('HTTP ' + res.status);
+                            const xml = await res.text();
+                            console.log('[EPG] XML recibido, bytes:', xml.length);
+                            if (xml.length < 1000) throw new Error('XML demasiado corto: ' + xml.substring(0,200));
+                            const parsed = parsearXMLTV(xml);
+                            const totalCanales = Object.keys(parsed).length;
+                            console.log('[EPG] Canales parseados:', totalCanales, Object.keys(parsed));
+                            setEventos(parsed);
+                            loaded = true;
+                            break;
+                        } catch (e) {
+                            console.warn('[EPG] Proxy fallido:', proxy, e.message);
+                        }
+                    }
+                    if (!loaded) {
+                        setErrorEPG('No se pudo cargar la programacion. Comprueba tu conexion.');
                     }
                 };
                 cargarEPG();
@@ -1262,7 +1278,7 @@
                                     <i className="fa-solid fa-graduation-cap"></i> Acceso a Cursos
                                 </a>
                             </div>
-                            <a href="https://buy.stripe.com/buy_btn_1Szc9xLMuCf9ela0GVyNo0PD" target="_blank" rel="noopener noreferrer"
+                            <a href="https://buy.stripe.com/4gMeVecnWgM35GPfZo8ww00" target="_blank" rel="noopener noreferrer"
                                 className="flex items-center gap-2 bg-purple-700 hover:bg-purple-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
                                 <i className="fa-solid fa-heart text-pink-300"></i> Donar
                             </a>
@@ -1270,7 +1286,7 @@
                         <div className="flex justify-center items-center gap-2 text-xs text-gray-500 font-mono">
                             <span>VISTAS TOTALES:</span>
                             <img 
-                                src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpedroguiraogil.github.io%2FCURSOS&label=VISITAS&countColor=%239333ea&labelColor=%23000000" 
+                                src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpedroguiraogil.github.io%2FCURSOS&label=%20&countColor=%239333ea&labelColor=%23000000" 
                                 alt="Contador de visitas estático" 
                                 className="h-5 rounded" 
                             />
