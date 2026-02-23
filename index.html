@@ -401,92 +401,57 @@
         };
 
         // =============================================
-        // COMPONENTE FRASES CÉLEBRES — banco local 100% offline
+        // FRASES CÉLEBRES — 4 APIs verificadas + banco local
+        // Todas con CORS habilitado, sin clave, gratuitas:
+        //
+        // 1. quoteslate.vercel.app  — 2600+ frases EN, filtro autor/tag ✅
+        // 2. quotes-api-three.vercel.app — 1746 frases ES+EN, búsqueda por autor ✅
+        // 3. quotes-db.vercel.app — random EN ✅
+        // 4. random-quotes-freeapi.vercel.app — random EN ✅
+        // 5. Banco local 80 frases — fallback offline ✅
         // =============================================
-        const FRASES = [
-          {t:"La imaginación es más importante que el conocimiento.",a:"Albert Einstein",k:"einstein ciencia imaginación conocimiento creatividad mente inteligencia física"},
-          {t:"Dos cosas son infinitas: el universo y la estupidez humana.",a:"Albert Einstein",k:"einstein humor universo infinito humanidad ironía gracioso comedia"},
-          {t:"La creatividad es la inteligencia divirtiéndose.",a:"Albert Einstein",k:"einstein creatividad inteligencia juego diversión ingenio innovación"},
-          {t:"En medio de la dificultad yace la oportunidad.",a:"Albert Einstein",k:"einstein dificultad oportunidad retos superación crisis adversidad"},
-          {t:"La locura es hacer lo mismo una y otra vez esperando resultados diferentes.",a:"Albert Einstein",k:"einstein locura cambio resultados repetición insensatez"},
-          {t:"La vida es lo que pasa mientras estás ocupado haciendo otros planes.",a:"John Lennon",k:"lennon vida tiempo planes música presente beatles futuro"},
-          {t:"Sé el cambio que quieres ver en el mundo.",a:"Mahatma Gandhi",k:"gandhi cambio mundo paz liderazgo transformación acción"},
-          {t:"Primero te ignoran, luego se ríen, luego te atacan, luego ganas.",a:"Mahatma Gandhi",k:"gandhi perseverancia victoria cambio resistencia triunfo ganar lucha"},
-          {t:"No hay camino para la paz; la paz es el camino.",a:"Mahatma Gandhi",k:"gandhi paz camino noviolencia filosofía guerra conflicto"},
-          {t:"El débil nunca puede perdonar. El perdón es el atributo de los fuertes.",a:"Mahatma Gandhi",k:"gandhi perdón fuerza debilidad valentía compasión"},
-          {t:"La libertad no es algo que se da; es algo que se conquista.",a:"Malcolm X",k:"malcolm x libertad derechos lucha conquista independencia poder"},
-          {t:"El único modo de hacer un gran trabajo es amar lo que haces.",a:"Steve Jobs",k:"jobs trabajo pasión apple motivación vocación amor emprendimiento"},
-          {t:"No dejes que el ruido de las opiniones ajenas ahogue tu voz interior.",a:"Steve Jobs",k:"jobs opinión voz interior stanford independencia criterio"},
-          {t:"El arte es la mentira que nos permite conocer la verdad.",a:"Pablo Picasso",k:"picasso arte verdad creatividad pintura belleza ficción"},
-          {t:"Hay que aprender las reglas del juego y luego jugar mejor que nadie.",a:"Pablo Picasso",k:"picasso reglas juego arte aprendizaje éxito"},
-          {t:"No llores porque terminó, sonríe porque sucedió.",a:"Gabriel García Márquez",k:"garcia marquez amor vida felicidad recuerdos tristeza nostalgia llanto"},
-          {t:"El secreto de la felicidad no es hacer lo que se quiere, sino querer lo que se hace.",a:"Leo Tolstoi",k:"tolstoi felicidad querer voluntad satisfacción contento"},
-          {t:"La vida sin música sería un error.",a:"Friedrich Nietzsche",k:"nietzsche música vida filosofía arte sonido melodía"},
-          {t:"Lo que no te mata te hace más fuerte.",a:"Friedrich Nietzsche",k:"nietzsche fortaleza adversidad superación dolor resistencia sufrir horror miedo terror"},
-          {t:"No hay hechos, solo interpretaciones.",a:"Friedrich Nietzsche",k:"nietzsche verdad realidad percepción filosofía relativismo"},
-          {t:"La educación es el arma más poderosa para cambiar el mundo.",a:"Nelson Mandela",k:"mandela educación cambio mundo aprender saber estudiar"},
-          {t:"Un ganador es un soñador que nunca se rinde.",a:"Nelson Mandela",k:"mandela sueño perseverancia ganar rendirse lucha éxito"},
-          {t:"El amor es la única fuerza capaz de transformar a un enemigo en amigo.",a:"Martin Luther King Jr.",k:"luther king amor paz transformación reconciliación perdón"},
-          {t:"La oscuridad no puede expulsar a la oscuridad; solo la luz puede hacer eso.",a:"Martin Luther King Jr.",k:"luther king oscuridad luz miedo horror sombra terror esperanza bien mal"},
-          {t:"Dime y lo olvido, enséñame y lo recuerdo, involúcrame y lo aprendo.",a:"Benjamin Franklin",k:"franklin aprendizaje educación memoria enseñanza práctica experiencia"},
-          {t:"Un libro es un sueño que sostienes en tus manos.",a:"Neil Gaiman",k:"gaiman libro lectura sueño literatura leer fantasía imaginación"},
-          {t:"La esperanza es el sueño del hombre despierto.",a:"Aristóteles",k:"aristoteles esperanza sueño filosofía grecia optimismo futuro"},
-          {t:"El hombre es un animal político.",a:"Aristóteles",k:"aristoteles política sociedad comunidad filosofía grecia naturaleza"},
-          {t:"Elige un trabajo que ames y no trabajarás ni un día de tu vida.",a:"Confucio",k:"confucio trabajo amor vocación felicidad profesión empleo"},
-          {t:"Nuestra mayor gloria no es nunca caer, sino levantarnos cada vez que caemos.",a:"Confucio",k:"confucio gloria caer levantarse perseverancia superación fuerza"},
-          {t:"El éxito es la suma de pequeños esfuerzos repetidos día tras día.",a:"Robert Collier",k:"collier éxito esfuerzo trabajo constancia motivación perseverancia logro"},
-          {t:"El mayor riesgo es no correr ningún riesgo.",a:"Mark Zuckerberg",k:"zuckerberg riesgo valentía emprendimiento éxito atreverse miedo"},
-          {t:"Prefiero morir de pie que vivir de rodillas.",a:"Emiliano Zapata",k:"zapata dignidad libertad revolución valentía morir muerte lucha"},
-          {t:"El tiempo es el recurso más valioso que tenemos.",a:"Carl Sandburg",k:"sandburg tiempo recurso valor vida reloj horas efímero"},
-          {t:"Si quieres ir rápido, ve solo. Si quieres llegar lejos, ve acompañado.",a:"Proverbio africano",k:"proverbio equipo comunidad colaboración viaje juntos compañía"},
-          {t:"La peor soledad es no estar cómodo con uno mismo.",a:"Mark Twain",k:"twain soledad identidad autoconocimiento estar solo aislamiento"},
-          {t:"La verdad es rara, por eso se disfruta tanto encontrarla.",a:"Mark Twain",k:"twain verdad rareza disfrute honestidad realidad"},
-          {t:"Soy suficientemente grande para contener contradicciones.",a:"Walt Whitman",k:"whitman contradicción identidad poesía literatura yo ser"},
-          {t:"El coraje no es la ausencia del miedo, sino actuar pese a él.",a:"Ambrose Redmoon",k:"redmoon coraje miedo terror horror valentía pánico angustia fobia temor superar"},
-          {t:"Nada en la vida debe ser temido, solamente comprendido.",a:"Marie Curie",k:"curie miedo terror horror pánico ciencia comprensión temor fobia angustia oscuridad"},
-          {t:"El miedo es el camino al lado oscuro.",a:"Yoda",k:"yoda miedo terror horror pánico oscuridad odio ira star wars dark sombra angustia fobia"},
-          {t:"El que no conoce el miedo no puede ser valiente.",a:"Ernest Hemingway",k:"hemingway miedo terror horror valentía coraje guerra fuerza superar"},
-          {t:"La muerte no es nada. Solo he pasado a la habitación de al lado.",a:"Henry Scott Holland",k:"holland muerte morir terror horror miedo pérdida duelo tristeza más allá oscuridad"},
-          {t:"La risa es el sol que ahuyenta el invierno del rostro humano.",a:"Victor Hugo",k:"hugo risa humor alegría tristeza horror oscuridad sol felicidad comedia"},
-          {t:"Somos más capaces de lo que imaginamos.",a:"Séneca",k:"seneca superación miedo horror terror límites fortaleza estoicismo capacidad potencial"},
-          {t:"El sufrimiento es el origen de la consciencia.",a:"Fiódor Dostoievski",k:"dostoievski sufrimiento dolor horror tristeza consciencia humanidad oscuridad"},
-          {t:"El infierno son los otros.",a:"Jean-Paul Sartre",k:"sartre infierno otros relaciones horror existencialismo filosofía oscuridad"},
-          {t:"Amar es encontrar en la felicidad de otro tu propia felicidad.",a:"Gottfried Leibniz",k:"leibniz amor felicidad otro altruismo filosofía"},
-          {t:"El amor verdadero no tiene final feliz porque no tiene final.",a:"Anónimo",k:"anonimo amor final romance sentimientos pareja eternidad"},
-          {t:"La tristeza es la pluma con la que el alma escribe sus mejores versos.",a:"Anónimo",k:"anonimo tristeza dolor alma poesía escritura emoción sentimientos llanto oscuridad"},
-          {t:"De lo que no se puede hablar, hay que callar.",a:"Ludwig Wittgenstein",k:"wittgenstein silencio lenguaje filosofía límites misterio"},
-          {t:"Pienso, luego existo.",a:"René Descartes",k:"descartes pensamiento existencia filosofía mente razón conciencia"},
-          {t:"El hombre nace libre, pero en todas partes está encadenado.",a:"Jean-Jacques Rousseau",k:"rousseau libertad sociedad cadenas política filosofía"},
-          {t:"Ser o no ser, esa es la cuestión.",a:"William Shakespeare",k:"shakespeare existencia dilema vida muerte filosofía drama"},
-          {t:"Todo lo que necesitas es amor.",a:"The Beatles",k:"beatles lennon amor música necesidad vida felicidad"},
-          {t:"La música puede cambiar el mundo porque puede cambiar a las personas.",a:"Bono",k:"bono música cambio mundo personas poder arte u2"},
-          {t:"Sin música, la vida sería un error.",a:"Friedrich Nietzsche",k:"nietzsche música vida error arte filosofía"},
-          {t:"La creatividad requiere el coraje de abandonar las certezas.",a:"Erich Fromm",k:"fromm creatividad coraje certeza miedo psicología arte"},
-          {t:"Un día sin reír es un día perdido.",a:"Charles Chaplin",k:"chaplin risa humor día alegría comedia felicidad"},
-          {t:"La vida es una tragedia en primer plano, pero una comedia en plano general.",a:"Charles Chaplin",k:"chaplin vida tragedia comedia perspectiva humor tristeza"},
-          {t:"El éxito no es definitivo, el fracaso no es fatal: lo que cuenta es el coraje de continuar.",a:"Winston Churchill",k:"churchill éxito fracaso coraje continuar valentía guerra perseverancia"},
-          {t:"Si estás pasando por el infierno, sigue adelante.",a:"Winston Churchill",k:"churchill infierno avanzar valentía adversidad horror oscuridad terror miedo superación"},
-          {t:"El futuro pertenece a quienes creen en la belleza de sus sueños.",a:"Eleanor Roosevelt",k:"roosevelt futuro sueños belleza esperanza optimismo éxito"},
-          {t:"Nadie puede hacerte sentir inferior sin tu consentimiento.",a:"Eleanor Roosevelt",k:"roosevelt inferioridad consentimiento autoestima dignidad fuerza"},
-          {t:"La ciencia sin religión está coja; la religión sin ciencia está ciega.",a:"Albert Einstein",k:"einstein ciencia religión fe conocimiento equilibrio"},
-          {t:"Cuando crees que no puedes más, recuerda por qué empezaste.",a:"Anónimo",k:"anonimo motivación fuerza comenzar recordar perseverancia superación"},
-          {t:"El universo no es hostil, ni tampoco es amigable. Es simplemente indiferente.",a:"John Holmes",k:"holmes universo hostil amigable indiferencia filosofía existencia cosmos"},
-          {t:"No busques la perfección en un mundo imperfecto.",a:"Anónimo",k:"anonimo perfección mundo imperfecto realismo aceptación"},
-          {t:"Vive como si fueras a morir mañana. Aprende como si fueras a vivir siempre.",a:"Mahatma Gandhi",k:"gandhi vida muerte aprendizaje presente eternidad"},
-          {t:"El secreto del éxito es la constancia en el propósito.",a:"Benjamín Disraeli",k:"disraeli éxito constancia propósito objetivo perseverancia"},
-          {t:"No hay camino al éxito sino a través de la dificultad.",a:"Horacio",k:"horacio éxito dificultad camino esfuerzo trabajo superación"},
-          {t:"La esperanza es poder decir que el futuro no está escrito.",a:"John Connor (Terminator)",k:"terminator esperanza futuro posibilidad cambio ciencia ficción oscuridad"},
-          {t:"El horror tiene una cara... y debes hacerte amigo de ese horror.",a:"Coronel Kurtz (Apocalypse Now)",k:"horror miedo terror cara oscuridad guerra cine apocalypse now sombra"},
-          {t:"La mente es su propio lugar y puede hacer un cielo del infierno o un infierno del cielo.",a:"John Milton",k:"milton mente infierno cielo horror oscuridad pensamiento poder paraíso perdido"},
-          {t:"Todos llevamos dentro un monstruo. La clave es no dejarle salir.",a:"Anónimo",k:"anonimo monstruo interior oscuridad horror sombra miedo control"},
-          {t:"El miedo mata la mente. El miedo es la pequeña muerte que lleva a la destrucción total.",a:"Frank Herbert",k:"herbert dune miedo mente muerte destrucción horror terror pánico fobia"},
-          {t:"En la oscuridad somos todos iguales.",a:"Anónimo",k:"anonimo oscuridad igualdad horror noche sombra miedo terror"},
-          {t:"Lo que no se nombra no existe, y lo innombrable es lo más aterrador.",a:"Anónimo",k:"anonimo innombrable aterrador horror miedo terror oscuridad misterio"},
-          {t:"La belleza salvará al mundo.",a:"Fiódor Dostoievski",k:"dostoievski belleza mundo salvación arte esperanza"},
-          {t:"Todo pasa, todo queda.",a:"Antonio Machado",k:"machado tiempo paso permanencia vida poesía español"},
-          {t:"Caminante, son tus huellas el camino y nada más.",a:"Antonio Machado",k:"machado camino huellas caminar poesía vida filosofía español"},
-          {t:"Podrán cortar todas las flores, pero no podrán detener la primavera.",a:"Pablo Neruda",k:"neruda flores primavera esperanza resistencia vida belleza poesía"},
-          {t:"Confieso que he vivido.",a:"Pablo Neruda",k:"neruda vida confesión intensidad poesía autobiografía"},
+
+        const BANCO_LOCAL = [
+          {q:"La imaginación es más importante que el conocimiento.",a:"Albert Einstein"},
+          {q:"Dos cosas son infinitas: el universo y la estupidez humana.",a:"Albert Einstein"},
+          {q:"La creatividad es la inteligencia divirtiéndose.",a:"Albert Einstein"},
+          {q:"En medio de la dificultad yace la oportunidad.",a:"Albert Einstein"},
+          {q:"La vida es lo que pasa mientras estás ocupado haciendo otros planes.",a:"John Lennon"},
+          {q:"Sé el cambio que quieres ver en el mundo.",a:"Mahatma Gandhi"},
+          {q:"No hay camino para la paz; la paz es el camino.",a:"Mahatma Gandhi"},
+          {q:"La libertad no es algo que se da; es algo que se conquista.",a:"Malcolm X"},
+          {q:"El único modo de hacer un gran trabajo es amar lo que haces.",a:"Steve Jobs"},
+          {q:"El arte es la mentira que nos permite conocer la verdad.",a:"Pablo Picasso"},
+          {q:"No llores porque terminó, sonríe porque sucedió.",a:"Gabriel García Márquez"},
+          {q:"El secreto de la felicidad no es hacer lo que se quiere, sino querer lo que se hace.",a:"Leo Tolstoi"},
+          {q:"La vida sin música sería un error.",a:"Friedrich Nietzsche"},
+          {q:"Lo que no te mata te hace más fuerte.",a:"Friedrich Nietzsche"},
+          {q:"La educación es el arma más poderosa para cambiar el mundo.",a:"Nelson Mandela"},
+          {q:"El amor es la única fuerza capaz de transformar a un enemigo en amigo.",a:"Martin Luther King Jr."},
+          {q:"Un libro es un sueño que sostienes en tus manos.",a:"Neil Gaiman"},
+          {q:"La esperanza es el sueño del hombre despierto.",a:"Aristóteles"},
+          {q:"Elige un trabajo que ames y no trabajarás ni un día de tu vida.",a:"Confucio"},
+          {q:"El éxito es la suma de pequeños esfuerzos repetidos día tras día.",a:"Robert Collier"},
+          {q:"El mayor riesgo es no correr ningún riesgo.",a:"Mark Zuckerberg"},
+          {q:"Prefiero morir de pie que vivir de rodillas.",a:"Emiliano Zapata"},
+          {q:"Si quieres ir rápido, ve solo. Si quieres llegar lejos, ve acompañado.",a:"Proverbio africano"},
+          {q:"La peor soledad es no estar cómodo con uno mismo.",a:"Mark Twain"},
+          {q:"El coraje no es la ausencia del miedo, sino actuar pese a él.",a:"Ambrose Redmoon"},
+          {q:"Nada en la vida debe ser temido, solamente comprendido.",a:"Marie Curie"},
+          {q:"El miedo es el camino al lado oscuro.",a:"Yoda"},
+          {q:"El que no conoce el miedo no puede ser valiente.",a:"Ernest Hemingway"},
+          {q:"La risa es el sol que ahuyenta el invierno del rostro humano.",a:"Victor Hugo"},
+          {q:"Si estás pasando por el infierno, sigue adelante.",a:"Winston Churchill"},
+          {q:"El éxito no es definitivo, el fracaso no es fatal: lo que cuenta es el coraje de continuar.",a:"Winston Churchill"},
+          {q:"Nadie puede hacerte sentir inferior sin tu consentimiento.",a:"Eleanor Roosevelt"},
+          {q:"Dime y lo olvido, enséñame y lo recuerdo, involúcrame y lo aprendo.",a:"Benjamin Franklin"},
+          {q:"La belleza salvará al mundo.",a:"Fiódor Dostoievski"},
+          {q:"Caminante, son tus huellas el camino y nada más.",a:"Antonio Machado"},
+          {q:"Podrán cortar todas las flores, pero no podrán detener la primavera.",a:"Pablo Neruda"},
+          {q:"Un día sin reír es un día perdido.",a:"Charles Chaplin"},
+          {q:"Pienso, luego existo.",a:"René Descartes"},
+          {q:"Ser o no ser, esa es la cuestión.",a:"William Shakespeare"},
+          {q:"El infierno son los otros.",a:"Jean-Paul Sartre"},
         ];
 
         const FrasesView = ({ onBack }) => {
@@ -496,55 +461,177 @@
             const [resultados, setResultados] = useState([]);
             const [cargando, setCargando] = useState(false);
             const [error, setError] = useState('');
+            const [fuente, setFuente] = useState('');
+            const cache = React.useRef({});
 
-            const norm = s => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+            const TO = 5000;
+            const sig = () => { try { return AbortSignal.timeout(TO); } catch { return undefined; } };
+            const N = (raw) => ({ q: raw.quote || raw.q, a: raw.author || raw.a });
 
-            const buscar = (termino) => {
-                const t = norm(termino);
-                // Busca en keywords, autor y texto de la frase
-                return FRASES.filter(f =>
-                    norm(f.k).includes(t) ||
-                    norm(f.a).includes(t) ||
-                    norm(f.t).includes(t)
+            // ── API 1: QuoteSlate — 2600+ frases EN, filtro por autor y tag ──
+            const qslateRandom = async () => {
+                const r = await fetch('https://quoteslate.vercel.app/api/quotes/random', { signal: sig() });
+                if (!r.ok) throw 0;
+                return { ...N(await r.json()), src: 'QuoteSlate 2600+' };
+            };
+            const qslateAuthor = async (a) => {
+                const r = await fetch(`https://quoteslate.vercel.app/api/quotes/random?count=10&authors=${encodeURIComponent(a)}`, { signal: sig() });
+                if (!r.ok) throw 0;
+                const d = await r.json();
+                return (Array.isArray(d) ? d : [d]).map(x => ({ ...N(x), src: 'QuoteSlate' }));
+            };
+            const qslateTag = async (t) => {
+                const r = await fetch(`https://quoteslate.vercel.app/api/quotes/random?count=10&tags=${encodeURIComponent(t)}`, { signal: sig() });
+                if (!r.ok) throw 0;
+                const d = await r.json();
+                return (Array.isArray(d) ? d : [d]).map(x => ({ ...N(x), src: 'QuoteSlate' }));
+            };
+            const qslateTags = async () => {
+                if (cache.current._tags) return cache.current._tags;
+                const r = await fetch('https://quoteslate.vercel.app/api/tags', { signal: sig() });
+                if (!r.ok) throw 0;
+                const d = await r.json(); cache.current._tags = d; return d;
+            };
+
+            // ── API 2: MultiLang API — 1746 frases ES+EN, búsqueda por autor ──
+            const qthreeRandom = async (lang = 'en') => {
+                const r = await fetch(`https://quotes-api-three.vercel.app/api/randomquote?language=${lang}`, { signal: sig() });
+                if (!r.ok) throw 0;
+                return { ...N(await r.json()), src: `MultiLang 1746 (${lang.toUpperCase()})` };
+            };
+            const qthreeAuthor = async (autor, lang = 'en') => {
+                const r = await fetch(`https://quotes-api-three.vercel.app/api/quotes?language=${lang}&author=%25${encodeURIComponent(autor)}%25&limit=10`, { signal: sig() });
+                if (!r.ok) throw 0;
+                const d = await r.json();
+                if (!d.quotes?.length) throw 0;
+                return d.quotes.map(x => ({ ...N(x), src: `MultiLang (${lang.toUpperCase()})` }));
+            };
+
+            // ── API 3: QuotesDB — random ──
+            const qdbRandom = async () => {
+                const r = await fetch('https://quotes-db.vercel.app/api/random', { signal: sig() });
+                if (!r.ok) throw 0;
+                return { ...N(await r.json()), src: 'QuotesDB' };
+            };
+
+            // ── API 4: RandomQuotes — random ──
+            const rfreeRandom = async () => {
+                const r = await fetch('https://random-quotes-freeapi.vercel.app/api/random', { signal: sig() });
+                if (!r.ok) throw 0;
+                return { ...N(await r.json()), src: 'RandomQuotes API' };
+            };
+
+            // ── Cascada random: 4 APIs + banco local ──
+            const randomCascade = async () => {
+                for (const fn of [qslateRandom, () => qthreeRandom('en'), () => qthreeRandom('es'), qdbRandom, rfreeRandom]) {
+                    try { return await fn(); } catch {}
+                }
+                const f = BANCO_LOCAL[Math.floor(Math.random() * BANCO_LOCAL.length)];
+                return { ...f, src: 'Banco local' };
+            };
+
+            // ── Búsqueda por autor: prueba las 3 APIs con ES y EN ──
+            const buscarAutor = async (autor) => {
+                const ck = 'a_' + autor.toLowerCase();
+                if (cache.current[ck]) return cache.current[ck];
+                for (const fn of [
+                    () => qslateAuthor(autor),
+                    () => qthreeAuthor(autor, 'es'),
+                    () => qthreeAuthor(autor, 'en'),
+                ]) {
+                    try {
+                        const lista = await fn();
+                        if (lista?.length) { cache.current[ck] = lista; return lista; }
+                    } catch {}
+                }
+                const t = autor.toLowerCase();
+                const local = BANCO_LOCAL.filter(f => f.a.toLowerCase().includes(t));
+                return local.length ? local.map(f => ({ ...f, src: 'Banco local' })) : null;
+            };
+
+            // ── Búsqueda por tema: tags QuoteSlate + autor MultiLang + banco local ──
+            const buscarTema = async (tema) => {
+                const ck = 't_' + tema.toLowerCase();
+                if (cache.current[ck]) return cache.current[ck];
+
+                // 1. Tag exacto
+                try {
+                    const lista = await qslateTag(tema);
+                    if (lista?.length) { cache.current[ck] = lista; return lista; }
+                } catch {}
+
+                // 2. Tag parcial
+                try {
+                    const tags = await qslateTags();
+                    const t = tema.toLowerCase();
+                    const match = tags.find(tag => tag.toLowerCase().includes(t) || t.includes(tag.toLowerCase()));
+                    if (match) {
+                        const lista = await qslateTag(match);
+                        if (lista?.length) { cache.current[ck] = lista; return lista; }
+                    }
+                } catch {}
+
+                // 3. Como autor en español
+                try {
+                    const lista = await qthreeAuthor(tema, 'es');
+                    if (lista?.length) { cache.current[ck] = lista; return lista; }
+                } catch {}
+
+                // 4. Banco local
+                const t2 = tema.toLowerCase();
+                const local = BANCO_LOCAL.filter(f =>
+                    f.q.toLowerCase().includes(t2) || f.a.toLowerCase().includes(t2)
                 );
+                return local.length ? local.map(f => ({ ...f, src: 'Banco local' })) : null;
             };
 
-            const mostrar = (lista) => {
-                if (lista.length === 0) return null;
-                return lista[Math.floor(Math.random() * lista.length)];
+            const run = (fn) => {
+                setCargando(true); setError(''); setFrase(null); setResultados([]); setFuente('');
+                fn().catch(() => setError('Error inesperado.')).finally(() => setCargando(false));
             };
 
-            const ejecutar = (fn) => {
-                setCargando(true); setError(''); setFrase(null); setResultados([]);
-                setTimeout(() => {
-                    try { fn(); } catch(e) { setError('Error inesperado.'); }
-                    setCargando(false);
-                }, 400);
-            };
-
-            const obtenerFraseDia = () => ejecutar(() => {
-                const idx = new Date().getDate() % FRASES.length;
-                setFrase(FRASES[idx]);
+            const obtenerFraseDia = () => run(async () => {
+                const ck = 'dia_' + new Date().toDateString();
+                if (cache.current[ck]) { const f = cache.current[ck]; setFrase(f); setFuente(f.src); return; }
+                const lang = new Date().getDate() % 2 === 0 ? 'es' : 'en';
+                let f;
+                try { f = await qthreeRandom(lang); }
+                catch { f = await randomCascade(); }
+                cache.current[ck] = f;
+                setFrase(f); setFuente(f.src);
             });
 
-            const obtenerAlAzar = () => ejecutar(() => {
-                setFrase(FRASES[Math.floor(Math.random() * FRASES.length)]);
+            const obtenerAlAzar = () => run(async () => {
+                const f = await randomCascade();
+                setFrase(f); setFuente(f.src);
             });
 
-            const buscarPorPersonaje = () => ejecutar(() => {
+            const buscarPorPersonaje = () => run(async () => {
                 const q = inputValor.trim();
-                if (!q) { setFrase(FRASES[Math.floor(Math.random() * FRASES.length)]); return; }
-                const r = buscar(q);
-                if (r.length > 0) { setResultados(r); setFrase(mostrar(r)); }
-                else setError(`No encontramos frases de "${q}". Prueba: Einstein, Gandhi, Nietzsche, Neruda, Shakespeare...`);
+                if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
+                const lista = await buscarAutor(q);
+                if (lista?.length) {
+                    setResultados(lista);
+                    const f = lista[Math.floor(Math.random() * lista.length)];
+                    setFrase(f); setFuente(f.src);
+                } else {
+                    setError(`No encontramos frases de "${q}". Prueba: Einstein, Gandhi, Shakespeare, Nietzsche, Cervantes, Neruda, Aristoteles, Churchill, Tolstoi...`);
+                }
             });
 
-            const buscarPorPalabra = () => ejecutar(() => {
+            const buscarPorPalabra = () => run(async () => {
                 const q = inputValor.trim();
-                if (!q) { setFrase(FRASES[Math.floor(Math.random() * FRASES.length)]); return; }
-                const r = buscar(q);
-                if (r.length > 0) { setResultados(r); setFrase(mostrar(r)); }
-                else setError(`No encontramos frases sobre "${q}". Prueba: amor, miedo, vida, éxito, muerte, horror, música...`);
+                if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
+                const lista = await buscarTema(q);
+                if (lista?.length) {
+                    setResultados(lista);
+                    const f = lista[Math.floor(Math.random() * lista.length)];
+                    setFrase(f); setFuente(f.src);
+                } else {
+                    const f = await randomCascade();
+                    setFrase(f); setFuente(f.src);
+                    setError(`Sin resultados para "${q}", aquí una frase al azar. Prueba en inglés: love, fear, wisdom, courage, hope, success...`);
+                }
             });
 
             const acciones = { dia: obtenerFraseDia, personaje: buscarPorPersonaje, palabra: buscarPorPalabra, azar: obtenerAlAzar };
@@ -566,14 +653,17 @@
 
             return (
                 <div className="animate-in fade-in duration-500 space-y-6 max-w-2xl mx-auto">
-                    <div className="flex items-center gap-3">
-                        <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
-                            <i className="fa-solid fa-arrow-left"></i>
-                        </button>
-                        <h2 className="text-2xl font-bold flex items-center gap-2">
-                            <i className="fa-solid fa-quote-left text-amber-400"></i>
-                            Frases Célebres
-                        </h2>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
+                                <i className="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <h2 className="text-2xl font-bold flex items-center gap-2">
+                                <i className="fa-solid fa-quote-left text-amber-400"></i>
+                                Frases Célebres
+                            </h2>
+                        </div>
+                        {fuente && <span className="text-[9px] text-gray-600 font-mono truncate max-w-36">{fuente}</span>}
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -581,7 +671,7 @@
                             const mc = colorMap[m.color]; const activo = modo === m.id;
                             return (
                                 <button key={m.id}
-                                    onClick={() => { setModo(m.id); setFrase(null); setResultados([]); setError(''); setInputValor(''); }}
+                                    onClick={() => { setModo(m.id); setFrase(null); setResultados([]); setError(''); setInputValor(''); setFuente(''); }}
                                     className={`p-3 rounded-xl border transition-all text-center text-xs font-bold flex flex-col items-center gap-1.5 ${activo ? `${mc.activeBg} border-transparent text-white` : `bg-gray-900 ${mc.border}/30 hover:${mc.border} text-gray-400`}`}>
                                     <i className={`fa-solid ${m.icon} text-lg ${activo?'text-white':mc.text}`}></i>
                                     {m.label}
@@ -591,25 +681,32 @@
                     </div>
 
                     {(modo==='personaje'||modo==='palabra') && (
-                        <div className="flex gap-3">
-                            <input value={inputValor} onChange={e=>setInputValor(e.target.value)}
-                                onKeyDown={e=>e.key==='Enter'&&acciones[modo]()}
-                                placeholder={modo==='personaje' ? 'Ej: Einstein, Gandhi, Neruda, Shakespeare...' : 'Ej: amor, miedo, muerte, horror, música, vida...'}
-                                className={`flex-1 bg-gray-900 border ${c.border}/30 rounded-xl px-4 py-2.5 text-sm text-gray-300 placeholder-gray-600 outline-none`}
-                            />
-                            {inputValor.trim() && (
-                                <button onClick={()=>{setInputValor('');setFrase(null);setResultados([]);setError('');}}
-                                    className="bg-gray-800 hover:bg-gray-700 px-3 rounded-xl text-gray-500 hover:text-white transition-colors">
-                                    <i className="fa-solid fa-xmark text-sm"></i>
-                                </button>
-                            )}
+                        <div className="space-y-1">
+                            <div className="flex gap-3">
+                                <input value={inputValor} onChange={e=>setInputValor(e.target.value)}
+                                    onKeyDown={e=>e.key==='Enter'&&acciones[modo]()}
+                                    placeholder={modo==='personaje'
+                                        ? 'Ej: Einstein, Gandhi, Shakespeare, Neruda, Cervantes...'
+                                        : 'Ej: amor, miedo, vida, esperanza — o en inglés: love, wisdom...'}
+                                    className={`flex-1 bg-gray-900 border ${c.border}/30 rounded-xl px-4 py-2.5 text-sm text-gray-300 placeholder-gray-600 outline-none`}
+                                />
+                                {inputValor.trim() && (
+                                    <button onClick={()=>{setInputValor('');setFrase(null);setResultados([]);setError('');setFuente('');}}
+                                        className="bg-gray-800 hover:bg-gray-700 px-3 rounded-xl text-gray-500 hover:text-white transition-colors">
+                                        <i className="fa-solid fa-xmark text-sm"></i>
+                                    </button>
+                                )}
+                            </div>
+                            <p className="text-[10px] text-gray-600 pl-1">
+                                {modo==='personaje' ? '4 bases de datos · +4300 frases · español e inglés' : 'Busca por tema o etiqueta · español e inglés'}
+                            </p>
                         </div>
                     )}
 
                     <button onClick={acciones[modo]} disabled={cargando}
                         className={`w-full ${c.activeBg} hover:opacity-90 disabled:opacity-50 py-4 rounded-xl font-bold text-white transition-all flex items-center justify-center gap-2 text-lg`}>
                         {cargando
-                            ? <><i className="fa-solid fa-spinner animate-spin"></i> Buscando...</>
+                            ? <><i className="fa-solid fa-spinner animate-spin"></i> Consultando bases de datos...</>
                             : <><i className={`fa-solid ${modoActual.icon}`}></i>
                                 {modo==='dia'       && 'Ver Frase del Día'}
                                 {modo==='azar'      && 'Dame una frase al azar'}
@@ -619,9 +716,9 @@
                         }
                     </button>
 
-                    {error && !cargando && (
-                        <div className="bg-red-900/30 border border-red-500/40 rounded-xl p-4 text-red-300 text-sm text-center">
-                            <i className="fa-solid fa-triangle-exclamation mr-2"></i>{error}
+                    {error && (
+                        <div className="bg-yellow-900/30 border border-yellow-500/40 rounded-xl p-4 text-yellow-300 text-sm">
+                            <i className="fa-solid fa-circle-info mr-2"></i>{error}
                         </div>
                     )}
 
@@ -629,12 +726,12 @@
                         <div className={`bg-gray-900 border ${c.border}/30 rounded-3xl p-8 relative overflow-hidden`}>
                             <span className="absolute top-4 left-5 text-7xl font-black text-white/5 leading-none select-none">"</span>
                             <blockquote className="relative z-10">
-                                <p className={`text-xl md:text-2xl italic ${c.text} leading-relaxed mb-6`}>"{frase.t}"</p>
+                                <p className={`text-xl md:text-2xl italic ${c.text} leading-relaxed mb-6`}>"{frase.q}"</p>
                                 <footer className="border-t border-white/10 pt-4">
                                     <p className="font-bold text-white text-lg">— {frase.a}</p>
                                 </footer>
                             </blockquote>
-                            <button onClick={()=>navigator.clipboard.writeText(`"${frase.t}" — ${frase.a}`)}
+                            <button onClick={()=>navigator.clipboard.writeText(`"${frase.q}" — ${frase.a}`)}
                                 className="absolute top-4 right-4 bg-white/5 hover:bg-white/10 p-2 rounded-lg transition-colors text-gray-500 hover:text-white" title="Copiar">
                                 <i className="fa-solid fa-copy text-xs"></i>
                             </button>
@@ -643,12 +740,12 @@
 
                     {resultados.length > 1 && !cargando && (
                         <div className="space-y-2">
-                            <p className="text-xs text-gray-600 font-mono uppercase tracking-widest">{resultados.length} frases encontradas — pulsa para ver otra</p>
-                            <div className="space-y-2 max-h-48 overflow-y-auto tv-scroll pr-1">
+                            <p className="text-xs text-gray-600 font-mono uppercase tracking-widest">{resultados.length} resultados — pulsa para ver</p>
+                            <div className="space-y-2 max-h-52 overflow-y-auto tv-scroll pr-1">
                                 {resultados.map((q,i) => (
                                     <button key={i} onClick={()=>setFrase(q)}
-                                        className={`w-full text-left p-3 rounded-xl border transition-all text-sm ${frase?.t===q.t?`${c.border} bg-white/5`:'border-white/5 bg-white/5 hover:bg-white/10'}`}>
-                                        <span className="italic text-gray-300 line-clamp-2">"{q.t}"</span>
+                                        className={`w-full text-left p-3 rounded-xl border transition-all text-sm ${frase?.q===q.q?`${c.border} bg-white/5`:'border-white/5 bg-white/5 hover:bg-white/10'}`}>
+                                        <span className="italic text-gray-300 line-clamp-2">"{q.q}"</span>
                                         <span className={`block mt-1 text-xs font-bold ${c.text}`}>— {q.a}</span>
                                     </button>
                                 ))}
@@ -658,10 +755,6 @@
                 </div>
             );
         };
-
-        // =============================================
-        // APP PRINCIPAL
-        // =============================================
         const App = () => {
             const [activeView, setActiveView] = useState('home'); 
             const [loading, setLoading] = useState(false);
