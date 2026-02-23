@@ -477,35 +477,26 @@
                 return coincidencias >= 2;
             };
 
-            // ── Traduce al español usando Anthropic API (disponible en claude.ai) ──
+            // ── Traduce al español usando Google Translate (gratuito, sin clave, CORS ok) ──
             const traducir = async (frase) => {
-                if (!esIngles(frase.q)) return frase; // Ya está en español
+                if (!esIngles(frase.q)) return frase;
                 const ck = 'tr_' + frase.q.substring(0, 40);
                 if (cache.current[ck]) return cache.current[ck];
                 try {
-                    const res = await fetch('https://api.anthropic.com/v1/messages', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            model: 'claude-sonnet-4-20250514',
-                            max_tokens: 300,
-                            messages: [{
-                                role: 'user',
-                                content: `Traduce esta frase célebre al español de forma natural y literaria. Devuelve SOLO la frase traducida, sin comillas, sin explicaciones, sin nada más.\n\nFrase: ${frase.q}`
-                            }]
-                        })
-                    });
+                    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=es&dt=t&q=${encodeURIComponent(frase.q)}`;
+                    const res = await fetch(url, { signal: sig() });
                     if (res.ok) {
                         const data = await res.json();
-                        const traducida = data.content?.[0]?.text?.trim();
+                        // El resultado es [[[traduccion, original, ...], ...], ...]
+                        const traducida = data?.[0]?.map(x => x?.[0]).filter(Boolean).join('').trim();
                         if (traducida) {
-                            const resultado = { ...frase, q: traducida, qOrig: frase.q, src: (frase.src || '') + ' · trad. ES' };
+                            const resultado = { ...frase, q: traducida, qOrig: frase.q, src: (frase.src || '') };
                             cache.current[ck] = resultado;
                             return resultado;
                         }
                     }
                 } catch {}
-                return frase; // Si falla la traducción, devuelve la original
+                return frase;
             };
 
             // ── Traduce una lista de frases (las primeras 10) ──
@@ -567,11 +558,18 @@
                 return { ...N(await r.json()), src: 'RandomQuotes API' };
             };
 
-            // ── Cascada random: 4 APIs + banco local ──
+            // ── Cascada random: español nativo primero, luego traduce ──
             const randomCascade = async () => {
-                for (const fn of [qslateRandom, () => qthreeRandom('en'), () => qthreeRandom('es'), qdbRandom, rfreeRandom]) {
-                    try { return await fn(); } catch {}
+                // 1. Español nativo
+                try { return await qthreeRandom('es'); } catch {}
+                // 2. Inglés con traducción automática
+                for (const fn of [qslateRandom, qdbRandom, rfreeRandom]) {
+                    try {
+                        const f = await fn();
+                        return await traducir(f);
+                    } catch {}
                 }
+                // 3. Banco local
                 const f = BANCO_LOCAL[Math.floor(Math.random() * BANCO_LOCAL.length)];
                 return { ...f, src: 'Banco local' };
             };
@@ -639,41 +637,22 @@
             const obtenerFraseDia = () => run(async () => {
                 const ck = 'dia_' + new Date().toDateString();
                 if (cache.current[ck]) { const f = cache.current[ck]; setFrase(f); setFuente(f.src); return; }
-                // Intenta primero español nativo
-                let f;
-                try { f = await qthreeRandom('es'); }
-                catch { f = await traducir(await randomCascade()); }
-                if (esIngles(f.q)) f = await traducir(f);
+                const f = await randomCascade();
                 cache.current[ck] = f;
                 setFrase(f); setFuente(f.src);
             });
 
             const obtenerAlAzar = () => run(async () => {
-                // Primero intenta español nativo, si no, traduce
-                let f;
-                try { f = await qthreeRandom('es'); }
-                catch { f = await randomCascade(); }
-                if (esIngles(f.q)) f = await traducir(f);
+                const f = await randomCascade();
                 setFrase(f); setFuente(f.src);
             });
 
             const buscarPorPersonaje = () => run(async () => {
                 const q = inputValor.trim();
-                if (!q) {
-                    let f;
-                    try { f = await qthreeRandom('es'); } catch { f = await randomCascade(); }
-                    if (esIngles(f.q)) f = await traducir(f);
-                    setFrase(f); setFuente(f.src); return;
-                }
-                // Intenta español primero
-                let lista;
-                try {
-                    lista = await qthreeAuthor(q, 'es');
-                } catch {}
-                if (!lista?.length) lista = await buscarAutor(q);
+                if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
 
+                let lista = await buscarAutor(q);
                 if (lista?.length) {
-                    // Traduce toda la lista en paralelo
                     const listaES = await traducirLista(lista);
                     setResultados(listaES);
                     const f = listaES[Math.floor(Math.random() * listaES.length)];
@@ -685,12 +664,7 @@
 
             const buscarPorPalabra = () => run(async () => {
                 const q = inputValor.trim();
-                if (!q) {
-                    let f;
-                    try { f = await qthreeRandom('es'); } catch { f = await randomCascade(); }
-                    if (esIngles(f.q)) f = await traducir(f);
-                    setFrase(f); setFuente(f.src); return;
-                }
+                if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
                 const lista = await buscarTema(q);
                 if (lista?.length) {
                     const listaES = await traducirLista(lista);
@@ -698,9 +672,7 @@
                     const f = listaES[Math.floor(Math.random() * listaES.length)];
                     setFrase(f); setFuente(f.src);
                 } else {
-                    let f;
-                    try { f = await qthreeRandom('es'); } catch { f = await randomCascade(); }
-                    if (esIngles(f.q)) f = await traducir(f);
+                    const f = await randomCascade();
                     setFrase(f); setFuente(f.src);
                     setError(`Sin resultados exactos para "${q}", aquí una frase al azar.`);
                 }
