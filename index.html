@@ -764,9 +764,16 @@
                                 <p className={'text-xl md:text-2xl italic leading-relaxed mb-6 ' + C.text}>
                                     "{frase.q}"
                                 </p>
-                                <footer className="border-t border-white/10 pt-4 flex items-end justify-between gap-4">
-                                    <p className="font-bold text-white text-lg">— {frase.a}</p>
-                                    {iaUsada && <span className="text-xs text-gray-600 shrink-0">{iaUsada}</span>}
+                                <footer className="border-t border-white/10 pt-4 space-y-2">
+                                    <div className="flex items-end justify-between gap-4">
+                                        <p className="font-bold text-white text-lg">— {frase.a}</p>
+                                        {iaUsada && <span className="text-xs text-gray-600 shrink-0">{iaUsada}</span>}
+                                    </div>
+                                    {iaUsada && iaUsada !== 'Banco local' && (
+                                        <p className="text-xs text-yellow-600/70 italic">
+                                            Las atribuciones pueden no ser exactas. Verifica antes de citar.
+                                        </p>
+                                    )}
                                 </footer>
                             </blockquote>
                             <button
