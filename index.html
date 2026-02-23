@@ -657,26 +657,26 @@
 
             // Llama en cascada: intenta cada proveedor en orden hasta obtener respuesta
             const llamarCascada = async (prompt) => {
-                const orden = ordenRef.current;
-                const errores = [];
-                for (const proveedor of orden) {
-                    // Salta proveedores sin clave configurada
-                    const clave = KEYS[proveedor.id.split('_')[0]];
-                    const sinClave = clave && clave.startsWith('TU_');
-                    if (sinClave && proveedor.id !== 'claude') continue;
+                // Primero Claude (funciona sin clave en claude.ai)
+                // Luego el resto en orden aleatorio si tienen clave configurada
+                const conClave = ordenRef.current.filter(p => {
+                    const k = KEYS[p.id.split('_')[0]];
+                    return k && !k.startsWith('TU_');
+                });
+                const orden = [
+                    PROVEEDORES.find(p => p.id === 'claude'),
+                    ...conClave.filter(p => p.id !== 'claude'),
+                ].filter(Boolean);
 
+                for (const proveedor of orden) {
                     try {
                         const { texto, ia } = await conTimeout(proveedor.llamar(prompt));
                         if (!texto || texto.length < 10) throw new Error('Respuesta vacía');
                         return { ...parsearRespuesta(texto), src: `✨ ${ia}` };
                     } catch (e) {
-                        errores.push(`${proveedor.nombre}: ${e.message}`);
-                        // Pequeña pausa antes de intentar el siguiente
                         await new Promise(r => setTimeout(r, 300));
                     }
                 }
-                // Todos fallaron → banco local
-                console.warn('Todos los proveedores fallaron:', errores);
                 return null;
             };
 
@@ -774,11 +774,12 @@
                     const lista = cache.current[ck];
                     setResultados(lista); setFrase(lista[0]); setFuente(lista[0].src); return;
                 }
-                // Llama en cascada y parsea lista completa
-                const orden = ordenRef.current;
-                for (const proveedor of orden) {
-                    const clave = KEYS[proveedor.id.split('_')[0]];
-                    if (clave?.startsWith('TU_') && proveedor.id !== 'claude') continue;
+                // Cascada inteligente: Claude primero, luego proveedores con clave
+                const ordenLista = [
+                    PROVEEDORES.find(p => p.id === 'claude'),
+                    ...ordenRef.current.filter(p => { const k = KEYS[p.id.split('_')[0]]; return p.id !== 'claude' && k && !k.startsWith('TU_'); })
+                ].filter(Boolean);
+                for (const proveedor of ordenLista) {
                     try {
                         const { texto, ia } = await conTimeout(proveedor.llamar(promptPersonaje(q)));
                         const lista = parsearLista(texto, ia);
@@ -801,10 +802,11 @@
                     const lista = cache.current[ck];
                     setResultados(lista); setFrase(lista[0]); setFuente(lista[0].src); return;
                 }
-                const orden = ordenRef.current;
-                for (const proveedor of orden) {
-                    const clave = KEYS[proveedor.id.split('_')[0]];
-                    if (clave?.startsWith('TU_') && proveedor.id !== 'claude') continue;
+                const ordenLista2 = [
+                    PROVEEDORES.find(p => p.id === 'claude'),
+                    ...ordenRef.current.filter(p => { const k = KEYS[p.id.split('_')[0]]; return p.id !== 'claude' && k && !k.startsWith('TU_'); })
+                ].filter(Boolean);
+                for (const proveedor of ordenLista2) {
                     try {
                         const { texto, ia } = await conTimeout(proveedor.llamar(promptTema(q)));
                         const lista = parsearLista(texto, ia);
@@ -818,10 +820,6 @@
                 }
                 const f = localRandom(); setFrase(f); setFuente(f.src);
             });
-
-            const acciones = { dia: obtenerFraseDia, personaje: buscarPorPersonaje, palabra: buscarPorPalabra, azar: obtenerAlAzar };
-
-            // ═══════════════════════════════════════════════════════
             // UI
             // ═══════════════════════════════════════════════════════
             const modos = [
@@ -852,7 +850,7 @@
                                 Frases Célebres
                             </h2>
                         </div>
-                        {fuente && <span className="text-[9px] text-gray-500 font-mono truncate max-w-44">{fuente}</span>}
+                        {fuente && <span className="text-[9px] text-gray-600 font-mono truncate max-w-44 hidden">{fuente}</span>}
                     </div>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -890,7 +888,7 @@
                                 )}
                             </div>
                             <p className="text-[10px] text-gray-600 pl-1">
-                                ✨ Multi-IA · Groq + Gemini + Mistral + OpenRouter + Claude · ~17.400 respuestas/día
+                                ✨ Generado por IA · en castellano
                             </p>
                         </div>
                     )}
@@ -920,8 +918,9 @@
                             <span className="absolute top-4 left-5 text-7xl font-black text-white/5 leading-none select-none">"</span>
                             <blockquote className="relative z-10">
                                 <p className={`text-xl md:text-2xl italic ${c.text} leading-relaxed mb-6`}>"{frase.q}"</p>
-                                <footer className="border-t border-white/10 pt-4">
+                                <footer className="border-t border-white/10 pt-4 flex items-end justify-between gap-2">
                                     <p className="font-bold text-white text-lg">— {frase.a}</p>
+                                    {frase.src && <span className="text-[10px] text-gray-600 font-mono shrink-0">{frase.src}</span>}
                                 </footer>
                             </blockquote>
                             <button onClick={() => navigator.clipboard.writeText(`"${frase.q}" — ${frase.a}`)}
