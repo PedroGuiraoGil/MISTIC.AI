@@ -468,6 +468,52 @@
             const sig = () => { try { return AbortSignal.timeout(TO); } catch { return undefined; } };
             const N = (raw) => ({ q: raw.quote || raw.q, a: raw.author || raw.a });
 
+            // ── Detecta si una frase está en inglés (heurística simple) ──
+            const esIngles = (texto) => {
+                if (!texto) return false;
+                const palabrasEN = ['the','is','are','was','were','have','has','you','your','this','that','with','from','not','can','will','what','when','who','do','does','did','be','been','being','it','its','they','them','their','we','our','he','she','his','her','if','but','and','or','for','of','in','on','at','to','a','an'];
+                const palabras = texto.toLowerCase().replace(/[^a-záéíóúñü\s]/g,'').split(/\s+/);
+                const coincidencias = palabras.filter(p => palabrasEN.includes(p)).length;
+                return coincidencias >= 2;
+            };
+
+            // ── Traduce al español usando Anthropic API (disponible en claude.ai) ──
+            const traducir = async (frase) => {
+                if (!esIngles(frase.q)) return frase; // Ya está en español
+                const ck = 'tr_' + frase.q.substring(0, 40);
+                if (cache.current[ck]) return cache.current[ck];
+                try {
+                    const res = await fetch('https://api.anthropic.com/v1/messages', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            model: 'claude-sonnet-4-20250514',
+                            max_tokens: 300,
+                            messages: [{
+                                role: 'user',
+                                content: `Traduce esta frase célebre al español de forma natural y literaria. Devuelve SOLO la frase traducida, sin comillas, sin explicaciones, sin nada más.\n\nFrase: ${frase.q}`
+                            }]
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const traducida = data.content?.[0]?.text?.trim();
+                        if (traducida) {
+                            const resultado = { ...frase, q: traducida, qOrig: frase.q, src: (frase.src || '') + ' · trad. ES' };
+                            cache.current[ck] = resultado;
+                            return resultado;
+                        }
+                    }
+                } catch {}
+                return frase; // Si falla la traducción, devuelve la original
+            };
+
+            // ── Traduce una lista de frases (las primeras 10) ──
+            const traducirLista = async (lista) => {
+                const primeras = lista.slice(0, 10);
+                return Promise.all(primeras.map(f => traducir(f)));
+            };
+
             // ── API 1: QuoteSlate — 2600+ frases EN, filtro por autor y tag ──
             const qslateRandom = async () => {
                 const r = await fetch('https://quoteslate.vercel.app/api/quotes/random', { signal: sig() });
@@ -593,44 +639,70 @@
             const obtenerFraseDia = () => run(async () => {
                 const ck = 'dia_' + new Date().toDateString();
                 if (cache.current[ck]) { const f = cache.current[ck]; setFrase(f); setFuente(f.src); return; }
-                const lang = new Date().getDate() % 2 === 0 ? 'es' : 'en';
+                // Intenta primero español nativo
                 let f;
-                try { f = await qthreeRandom(lang); }
-                catch { f = await randomCascade(); }
+                try { f = await qthreeRandom('es'); }
+                catch { f = await traducir(await randomCascade()); }
+                if (esIngles(f.q)) f = await traducir(f);
                 cache.current[ck] = f;
                 setFrase(f); setFuente(f.src);
             });
 
             const obtenerAlAzar = () => run(async () => {
-                const f = await randomCascade();
+                // Primero intenta español nativo, si no, traduce
+                let f;
+                try { f = await qthreeRandom('es'); }
+                catch { f = await randomCascade(); }
+                if (esIngles(f.q)) f = await traducir(f);
                 setFrase(f); setFuente(f.src);
             });
 
             const buscarPorPersonaje = () => run(async () => {
                 const q = inputValor.trim();
-                if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
-                const lista = await buscarAutor(q);
+                if (!q) {
+                    let f;
+                    try { f = await qthreeRandom('es'); } catch { f = await randomCascade(); }
+                    if (esIngles(f.q)) f = await traducir(f);
+                    setFrase(f); setFuente(f.src); return;
+                }
+                // Intenta español primero
+                let lista;
+                try {
+                    lista = await qthreeAuthor(q, 'es');
+                } catch {}
+                if (!lista?.length) lista = await buscarAutor(q);
+
                 if (lista?.length) {
-                    setResultados(lista);
-                    const f = lista[Math.floor(Math.random() * lista.length)];
+                    // Traduce toda la lista en paralelo
+                    const listaES = await traducirLista(lista);
+                    setResultados(listaES);
+                    const f = listaES[Math.floor(Math.random() * listaES.length)];
                     setFrase(f); setFuente(f.src);
                 } else {
-                    setError(`No encontramos frases de "${q}". Prueba: Einstein, Gandhi, Shakespeare, Nietzsche, Cervantes, Neruda, Aristoteles, Churchill, Tolstoi...`);
+                    setError(`No encontramos frases de "${q}". Prueba: Einstein, Gandhi, Shakespeare, Nietzsche, Cervantes, Neruda, Aristóteles, Churchill, Tolstói...`);
                 }
             });
 
             const buscarPorPalabra = () => run(async () => {
                 const q = inputValor.trim();
-                if (!q) { const f = await randomCascade(); setFrase(f); setFuente(f.src); return; }
+                if (!q) {
+                    let f;
+                    try { f = await qthreeRandom('es'); } catch { f = await randomCascade(); }
+                    if (esIngles(f.q)) f = await traducir(f);
+                    setFrase(f); setFuente(f.src); return;
+                }
                 const lista = await buscarTema(q);
                 if (lista?.length) {
-                    setResultados(lista);
-                    const f = lista[Math.floor(Math.random() * lista.length)];
+                    const listaES = await traducirLista(lista);
+                    setResultados(listaES);
+                    const f = listaES[Math.floor(Math.random() * listaES.length)];
                     setFrase(f); setFuente(f.src);
                 } else {
-                    const f = await randomCascade();
+                    let f;
+                    try { f = await qthreeRandom('es'); } catch { f = await randomCascade(); }
+                    if (esIngles(f.q)) f = await traducir(f);
                     setFrase(f); setFuente(f.src);
-                    setError(`Sin resultados para "${q}", aquí una frase al azar. Prueba en inglés: love, fear, wisdom, courage, hope, success...`);
+                    setError(`Sin resultados exactos para "${q}", aquí una frase al azar.`);
                 }
             });
 
@@ -687,7 +759,7 @@
                                     onKeyDown={e=>e.key==='Enter'&&acciones[modo]()}
                                     placeholder={modo==='personaje'
                                         ? 'Ej: Einstein, Gandhi, Shakespeare, Neruda, Cervantes...'
-                                        : 'Ej: amor, miedo, vida, esperanza — o en inglés: love, wisdom...'}
+                                        : 'Ej: amor, miedo, vida, esperanza, coraje, humor, sabiduría...'}
                                     className={`flex-1 bg-gray-900 border ${c.border}/30 rounded-xl px-4 py-2.5 text-sm text-gray-300 placeholder-gray-600 outline-none`}
                                 />
                                 {inputValor.trim() && (
@@ -698,7 +770,7 @@
                                 )}
                             </div>
                             <p className="text-[10px] text-gray-600 pl-1">
-                                {modo==='personaje' ? '4 bases de datos · +4300 frases · español e inglés' : 'Busca por tema o etiqueta · español e inglés'}
+                                {modo==='personaje' ? '4 bases de datos · +4300 frases · traducción automática' : 'Busca por tema o etiqueta · traducción automática al castellano'}
                             </p>
                         </div>
                     )}
@@ -743,7 +815,7 @@
                             <p className="text-xs text-gray-600 font-mono uppercase tracking-widest">{resultados.length} resultados — pulsa para ver</p>
                             <div className="space-y-2 max-h-52 overflow-y-auto tv-scroll pr-1">
                                 {resultados.map((q,i) => (
-                                    <button key={i} onClick={()=>setFrase(q)}
+                                    <button key={i} onClick={async()=>{ const f = esIngles(q.q)?await traducir(q):q; setFrase(f); setFuente(f.src); }}
                                         className={`w-full text-left p-3 rounded-xl border transition-all text-sm ${frase?.q===q.q?`${c.border} bg-white/5`:'border-white/5 bg-white/5 hover:bg-white/10'}`}>
                                         <span className="italic text-gray-300 line-clamp-2">"{q.q}"</span>
                                         <span className={`block mt-1 text-xs font-bold ${c.text}`}>— {q.a}</span>
