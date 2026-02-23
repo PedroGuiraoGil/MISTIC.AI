@@ -465,7 +465,7 @@
             const cache = React.useRef({});
 
             // ═══════════════════════════════════════════════════════
-            // 🔑 CLAVES API — pon aquí las tuyas (todas gratuitas)
+            // [CLAVES API] — pon aquí las tuyas (todas gratuitas)
             //    Groq:       console.groq.com → API Keys → Create
             //    Gemini:     aistudio.google.com → Get API Key
             //    Mistral:    console.mistral.ai → API Keys
@@ -498,7 +498,7 @@
                         });
                         if (!r.ok) throw new Error(`Groq ${r.status}`);
                         const d = await r.json();
-                        return { texto: d.choices[0].message.content.trim(), ia: 'Groq · Llama 4' };
+                        return { texto: d.choices[0].message.content.trim(), ia: 'Groq - Llama 4' };
                     }
                 },
                 {
@@ -517,7 +517,7 @@
                         });
                         if (!r.ok) throw new Error(`Groq/Qwen ${r.status}`);
                         const d = await r.json();
-                        return { texto: d.choices[0].message.content.trim(), ia: 'Groq · Qwen3' };
+                        return { texto: d.choices[0].message.content.trim(), ia: 'Groq - Qwen3' };
                     }
                 },
                 {
@@ -565,7 +565,7 @@
                                 'Content-Type': 'application/json',
                                 'Authorization': `Bearer ${KEYS.openrouter}`,
                                 'HTTP-Referer': 'https://mystica-ai.com',
-                                'X-Title': 'Mística AI'
+                                'X-Title': 'Mystica AI'
                             },
                             body: JSON.stringify({
                                 model: 'meta-llama/llama-3.1-8b-instruct:free',
@@ -575,7 +575,7 @@
                         });
                         if (!r.ok) throw new Error(`OpenRouter ${r.status}`);
                         const d = await r.json();
-                        return { texto: d.choices[0].message.content.trim(), ia: 'OpenRouter · Llama' };
+                        return { texto: d.choices[0].message.content.trim(), ia: 'OpenRouter - Llama' };
                     }
                 },
                 {
@@ -589,7 +589,7 @@
                                 'Content-Type': 'application/json',
                                 'Authorization': `Bearer ${KEYS.openrouter}`,
                                 'HTTP-Referer': 'https://mystica-ai.com',
-                                'X-Title': 'Mística AI'
+                                'X-Title': 'Mystica AI'
                             },
                             body: JSON.stringify({
                                 model: 'mistralai/mistral-7b-instruct:free',
@@ -599,7 +599,7 @@
                         });
                         if (!r.ok) throw new Error(`OpenRouter/Mistral ${r.status}`);
                         const d = await r.json();
-                        return { texto: d.choices[0].message.content.trim(), ia: 'OpenRouter · Mistral' };
+                        return { texto: d.choices[0].message.content.trim(), ia: 'OpenRouter - Mistral' };
                     }
                 },
                 {
@@ -637,16 +637,14 @@
                 ordenRef.current = orden;
             }
 
+            const limpiarComillas = (s) => s.replace(/^[\u0022\u00AB\u00BB\u201C\u201D\u2018\u2019]+|[\u0022\u00AB\u00BB\u201C\u201D\u2018\u2019]+$/g, '').trim();
             const parsearRespuesta = (texto) => {
-                // Intenta extraer FRASE: / AUTOR: del formato estructurado
                 const fraseLine = texto.match(/FRASE:\s*(.+)/)?.[1]?.trim();
                 const autorLine = texto.match(/AUTOR:\s*(.+)/)?.[1]?.trim();
-                if (fraseLine && autorLine) return { q: fraseLine.replace(/^["«»""]|["«»""]$/g,''), a: autorLine };
-                // Si no tiene formato, intenta "frase" — Autor
-                const guion = texto.match(/^["«»""]?(.+?)["«»""]?\s*[—–-]\s*(.+)$/m);
+                if (fraseLine && autorLine) return { q: limpiarComillas(fraseLine), a: autorLine };
+                const guion = texto.match(/^.{0,1}(.+?).{0,1}\s*[-\u2014\u2013]\s*(.+)$/m);
                 if (guion) return { q: guion[1].trim(), a: guion[2].trim() };
-                // Devuelve el texto como frase sin autor conocido
-                return { q: texto.replace(/^["«»""]|["«»""]$/g,'').trim(), a: 'Desconocido' };
+                return { q: limpiarComillas(texto), a: 'Desconocido' };
             };
 
             const TIMEOUT = 7000;
@@ -672,7 +670,7 @@
                     try {
                         const { texto, ia } = await conTimeout(proveedor.llamar(prompt));
                         if (!texto || texto.length < 10) throw new Error('Respuesta vacía');
-                        return { ...parsearRespuesta(texto), src: `✨ ${ia}` };
+                        return { ...parsearRespuesta(texto), src: 'IA: ' + ia };
                     } catch (e) {
                         await new Promise(r => setTimeout(r, 300));
                     }
@@ -707,7 +705,7 @@
             ];
             const localRandom = () => {
                 const f = BANCO[Math.floor(Math.random() * BANCO.length)];
-                return { ...f, src: '📚 Banco local' };
+                return { ...f, src: 'Banco local' };
             };
 
             // ═══════════════════════════════════════════════════════
@@ -735,12 +733,13 @@
                 for (const l of lineas) {
                     const mf = l.match(/^FRASE:\s*(.+)/);
                     const ma = l.match(/^AUTOR:\s*(.+)/);
-                    if (mf) q = mf[1].trim().replace(/^["«»""]|["«»""]$/g,'');
-                    if (ma && q) { frases.push({ q, a: ma[1].trim(), src: `✨ ${ia}` }); q = null; }
+                    if (mf) q = limpiarComillas(mf[1].trim());
+                    if (ma && q) { frases.push({ q, a: ma[1].trim(), src: 'IA: ' + ia }); q = null; }
                 }
                 return frases;
             };
 
+            // ACCIONES
             // ═══════════════════════════════════════════════════════
             // ACCIONES
             // ═══════════════════════════════════════════════════════
@@ -888,7 +887,7 @@
                                 )}
                             </div>
                             <p className="text-[10px] text-gray-600 pl-1">
-                                ✨ Generado por IA · en castellano
+                                Generado por IA - en castellano
                             </p>
                         </div>
                     )}
