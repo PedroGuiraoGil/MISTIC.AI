@@ -590,12 +590,16 @@
                 for (const p of ordenRef.current) {
                     if (p.id !== 'claude' && !tieneClave(p.id)) continue;
                     try {
-                        const { txt, ia } = await conTimeout(p.call(prompt));
+                        console.log('[IA] Intentando:', p.id);
+                        const { txt, ia } = await conTimeout(p.call(prompt), 15000);
+                        console.log('[IA] Respuesta de', p.id, ':', txt ? txt.substring(0,80) : 'VACIA');
                         if (txt && txt.length > 10) return { txt, ia };
                     } catch (e) {
+                        console.warn('[IA] Fallo', p.id, ':', e.message);
                         await new Promise(res => setTimeout(res, 200));
                     }
                 }
+                console.error('[IA] Todos los proveedores fallaron');
                 return null;
             };
 
@@ -645,15 +649,18 @@
                 for (const p of ordenRef.current) {
                     if (p.id !== 'claude' && !tieneClave(p.id)) continue;
                     try {
-                        const { txt, ia } = await conTimeout(p.call(prompt));
+                        console.log('[IA lista] Intentando:', p.id);
+                        const { txt, ia } = await conTimeout(p.call(prompt), 15000);
+                        console.log('[IA lista]', p.id, 'respuesta:', txt ? txt.substring(0,100) : 'VACIA');
                         const l = parsearLista(txt, ia);
+                        console.log('[IA lista] Frases parseadas:', l.length);
                         if (l.length > 0) {
                             cache.current[ck] = l;
                             setLista(l);
                             const f = l[Math.floor(Math.random() * l.length)];
                             setFrase(f); setIaUsada(ia); return;
                         }
-                    } catch {}
+                    } catch (e) { console.warn('[IA lista] Fallo', p.id, e.message); }
                 }
                 const f = { ...bancoRandom(), ia: 'Banco local' };
                 setFrase(f); setIaUsada(f.ia);
@@ -1326,7 +1333,7 @@
                                     <i className="fa-solid fa-graduation-cap"></i> Acceso a Cursos
                                 </a>
                             </div>
-                            <div className="transform scale-[0.80] md:scale-75 origin-center mt-2 hover:scale-[0.85] transition-transform">
+                            <div style={{width:'180px', overflow:'hidden', transform:'scale(0.55)', transformOrigin:'top center', height:'80px'}}>
                                 <stripe-buy-button
                                     buy-button-id="buy_btn_1Szc9xLMuCf9ela0GVyNo0PD"
                                     publishable-key="pk_live_51SzbaxLMuCf9ela0lFnv8OpenuCoG02c4crjmSRW1oq85DdwAaEhmMmIS0gYMH9wYbGr6AVXxzbJf7IdA6sptgxy00dKGPgVSc"
