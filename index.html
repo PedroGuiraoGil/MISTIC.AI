@@ -38,160 +38,147 @@
 
         const GROQ_KEY = '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';
 
-        const CANALES_TV = [
-            'Movistar Plus+', 'Movistar LaLiga', 'DAZN LaLiga', 'Liga de Campeones',
-            'Movistar Deportes', 'Movistar Deportes 2', 'Vamos', 'Teledeporte',
-            'Eurosport 1', 'Eurosport 2', 'DAZN 1', 'DAZN 2',
-            'Esport3', 'Canal Historia', 'DMAX', 'Odisea'
-        ];
+        // URL del JSON generado por la GitHub Action en el mismo repo
+        const EPG_JSON_URL = 'https://raw.githubusercontent.com/PedroGuiraoGil/MISTIC.AI/main/epg.json';
 
-        const ParrillaTV = ({ onBack, programacion, cargando, cargados, recargar }) => {
-            const [ahora] = React.useState(new Date());
-            const [error] = React.useState('');
+        const ParrillaTV = ({ onBack }) => {
+            const [programacion, setProgramacion] = React.useState({});
+            const [cargando, setCargando] = React.useState(true);
+            const [error, setError] = React.useState('');
+            const [actualizado, setActualizado] = React.useState('');
             const scrollRef = React.useRef(null);
+            const ahora = React.useMemo(() => new Date(), []);
 
-            const fechaStr = ahora.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-            const horaStr  = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            React.useEffect(() => {
+                fetch(EPG_JSON_URL + '?t=' + Date.now())
+                    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+                    .then(data => {
+                        setProgramacion(data.canales || {});
+                        if (data.actualizado) {
+                            const d = new Date(data.actualizado);
+                            setActualizado(d.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}) + 'h');
+                        }
+                        setCargando(false);
+                    })
+                    .catch(e => { setError(e.message); setCargando(false); });
+            }, []);
 
+            const toMin = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
+            const ahoraMin = ahora.getHours()*60 + ahora.getMinutes();
+            const isAhora = (ini, fin) => fin && toMin(ini) <= ahoraMin && ahoraMin < toMin(fin);
 
-            const toMin = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
-
-            const isAhora = (inicio, fin) => {
-                const ahoraMin = ahora.getHours() * 60 + ahora.getMinutes();
-                return toMin(inicio) <= ahoraMin && ahoraMin < toMin(fin);
+            const filtrar = progs => {
+                const limite = Math.max(0, ahoraMin - 60);
+                const f = progs.filter(p => toMin(p.fin || '23:59') > limite);
+                return f.length ? f : progs;
             };
 
-            // Muestra desde 1h antes de ahora hasta fin del dia
-            const filtrarProgs = (progs) => {
-                const limiteMin = Math.max(0, ahora.getHours() * 60 + ahora.getMinutes() - 60);
-                const filtrados = progs.filter(p => toMin(p.fin || '23:59') > limiteMin);
-                // Si no hay nada (todos pasados), muestra desde 00:00
-                return filtrados.length > 0 ? filtrados : progs;
+            const colores = {
+                'Movistar Plus+':'bg-sky-900 text-sky-200',
+                'Movistar LaLiga':'bg-sky-800 text-sky-100',
+                'DAZN LaLiga':'bg-blue-900 text-blue-200',
+                'Liga de Campeones':'bg-indigo-900 text-indigo-200',
+                'Movistar Deportes':'bg-sky-900 text-sky-200',
+                'Movistar Deportes 2':'bg-sky-800 text-sky-100',
+                'Vamos':'bg-emerald-900 text-emerald-200',
+                'Teledeporte':'bg-orange-800 text-orange-100',
+                'Eurosport 1':'bg-red-800 text-red-100',
+                'Eurosport 2':'bg-red-900 text-red-200',
+                'DAZN 1':'bg-blue-950 text-blue-200',
+                'DAZN 2':'bg-blue-900 text-blue-300',
+                'Esport3':'bg-purple-900 text-purple-200',
+                'Canal Historia':'bg-amber-900 text-amber-200',
+                'DMAX':'bg-gray-700 text-gray-100',
+                'Odisea':'bg-teal-900 text-teal-200',
             };
 
-            const getHeaderStyle = (canal) => {
-                if (canal === 'La 1' || canal === 'La 2') return 'bg-blue-700 text-white';
-                if (canal === 'Antena 3' || canal === 'Neox' || canal === 'Nova') return 'bg-orange-600 text-white';
-                if (canal === 'Telecinco' || canal === 'Cuatro' || canal === 'Energy' || canal === 'Boing') return 'bg-purple-700 text-white';
-                if (canal === 'La Sexta' || canal === 'Mega') return 'bg-green-700 text-white';
-                if (canal === 'Teledeporte') return 'bg-orange-500 text-white';
-                if (canal === 'Eurosport 1' || canal === 'Eurosport 2') return 'bg-red-600 text-white';
-                if (canal === 'Canal Historia') return 'bg-slate-800 text-amber-400';
-                if (canal === 'DMAX') return 'bg-gray-700 text-white';
-                if (canal === 'Odisea') return 'bg-teal-700 text-white';
-                if (canal === 'AXN') return 'bg-blue-900 text-white';
-                if (canal === 'AMC') return 'bg-stone-800 text-white';
-                return 'bg-slate-700 text-white';
-            };
+            const canales = Object.keys(programacion);
 
-            const handleScroll = (dir) => {
+            const handleScroll = dir => {
                 if (!scrollRef.current) return;
-                const a = 300;
-                if (dir === 'left')  scrollRef.current.scrollBy({ left: -a, behavior: 'smooth' });
-                if (dir === 'right') scrollRef.current.scrollBy({ left:  a, behavior: 'smooth' });
-                if (dir === 'up')    scrollRef.current.scrollBy({ top:  -a, behavior: 'smooth' });
-                if (dir === 'down')  scrollRef.current.scrollBy({ top:   a, behavior: 'smooth' });
+                scrollRef.current.scrollBy({ left: dir==='left' ? -300 : 300, behavior:'smooth' });
             };
-
-            const tieneDatos = Object.keys(programacion).length > 0;
 
             return (
-                <div className="animate-in fade-in duration-500 flex flex-col h-full">
+                <div className="flex flex-col animate-in fade-in duration-500" style={{height:"calc(100vh - 80px)"}}>
                     {/* Cabecera */}
-                    <div className="bg-white/5 rounded-2xl border border-white/10 p-4 mb-4">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div className="bg-white/5 rounded-2xl border border-white/10 p-4 mb-3">
+                        <div className="flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
                                     <i className="fa-solid fa-arrow-left"></i>
                                 </button>
                                 <h2 className="text-xl font-bold flex items-center gap-2">
-                                    <i className="fa-solid fa-tv text-purple-400"></i>
-                                    Parrilla TV
+                                    <i className="fa-solid fa-tv text-purple-400"></i> Parrilla TV
                                 </h2>
-                                <span className="text-sm text-gray-400 font-mono">{horaStr}</span>
-                                {cargando && (
-                                    <span className="text-xs text-yellow-400 flex items-center gap-1">
-                                        <i className="fa-solid fa-spinner animate-spin"></i>
-                                        Generando con IA... ({cargados.length}/{CANALES_TV.length})
-                                    </span>
-                                )}
+                                {cargando && <i className="fa-solid fa-spinner animate-spin text-purple-400"></i>}
                             </div>
-                            <button onClick={recargar} disabled={cargando}
-                                className="flex items-center gap-2 bg-purple-700 hover:bg-purple-600 disabled:opacity-50 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
-                                <i className={'fa-solid ' + (cargando ? 'fa-spinner animate-spin' : 'fa-wand-magic-sparkles')}></i>
-                                {tieneDatos ? 'Actualizar' : 'Generar programacion'}
-                            </button>
+                            <div className="flex items-center gap-3">
+                                {actualizado && <span className="text-xs text-gray-500">EPG actualizado: {actualizado}</span>}
+                                <button onClick={()=>handleScroll('left')}  className="bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-gray-400"><i className="fa-solid fa-chevron-left"></i></button>
+                                <button onClick={()=>handleScroll('right')} className="bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-gray-400"><i className="fa-solid fa-chevron-right"></i></button>
+                            </div>
                         </div>
-                        {tieneDatos && (
-                            <p className="text-xs text-yellow-600/70 italic mt-2">
-                                Programacion generada por IA. Puede no coincidir exactamente con la parrilla real.
+                        {error && (
+                            <p className="mt-2 text-xs text-red-400">
+                                Error cargando EPG: {error}. La GitHub Action puede no haberse ejecutado aún — ve a tu repo → Actions → "Actualizar EPG" → "Run workflow".
                             </p>
                         )}
-                        {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
                     </div>
 
-                    {!tieneDatos && !cargando && (
-                        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-gray-500">
-                            <i className="fa-solid fa-tv text-5xl text-gray-700"></i>
-                            <p className="text-sm">Pulsa "Generar programacion" para ver la parrilla de hoy</p>
-                            <p className="text-xs text-gray-600">Generado por IA - aproximado</p>
+                    {/* Parrilla */}
+                    {cargando ? (
+                        <div className="flex-1 flex items-center justify-center">
+                            <div className="text-center space-y-3">
+                                <i className="fa-solid fa-tv text-5xl text-gray-700"></i>
+                                <p className="text-gray-500 text-sm">Cargando programación real...</p>
+                            </div>
                         </div>
-                    )}
-
-                    {tieneDatos && (
-                        <>
-                            <div className="flex justify-between items-center mb-2 px-1">
-                                <button onClick={() => handleScroll('left')}  className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white"><i className="fa-solid fa-chevron-left"></i></button>
-                                <button onClick={() => handleScroll('up')}    className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white"><i className="fa-solid fa-chevron-up"></i></button>
-                                <button onClick={() => handleScroll('down')}  className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white"><i className="fa-solid fa-chevron-down"></i></button>
-                                <button onClick={() => handleScroll('right')} className="bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-400 hover:text-white"><i className="fa-solid fa-chevron-right"></i></button>
+                    ) : canales.length === 0 ? (
+                        <div className="flex-1 flex items-center justify-center">
+                            <div className="text-center space-y-3 max-w-sm">
+                                <i className="fa-solid fa-circle-exclamation text-4xl text-yellow-600"></i>
+                                <p className="text-yellow-400 text-sm font-bold">epg.json no encontrado</p>
+                                <p className="text-gray-500 text-xs">Sube los archivos al repo y ejecuta la GitHub Action manualmente la primera vez:<br/>
+                                <span className="font-mono text-gray-400">Actions → Actualizar EPG → Run workflow</span></p>
                             </div>
-
-                            <div ref={scrollRef} className="flex gap-3 overflow-x-auto overflow-y-hidden pb-2">
-                                {CANALES_TV.map(canal => {
-                                    const progs = programacion[canal] || [];
-                                    const cargandoEste = cargando && !cargados.includes(canal);
-                                    return (
-                                        <div key={canal} className="w-56 flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-white/10 overflow-hidden">
-                                            <div className={'p-2 font-bold text-center text-xs ' + getHeaderStyle(canal)}>
-                                                {canal}
-                                            </div>
-                                            <div className="flex flex-col gap-1 p-1.5 overflow-y-auto max-h-80">
-                                                {cargandoEste ? (
-                                                    <div className="text-center py-4 text-gray-600 text-xs">
-                                                        <i className="fa-solid fa-spinner animate-spin mr-1"></i>
-                                                        Cargando...
+                        </div>
+                    ) : (
+                        <div ref={scrollRef} className="flex gap-2 overflow-x-auto pb-2 tv-scroll" style={{height:'calc(100vh - 200px)'}}>
+                            {canales.map(canal => {
+                                const progs = filtrar(programacion[canal] || []);
+                                const color = colores[canal] || 'bg-slate-700 text-white';
+                                return (
+                                    <div key={canal} className="w-52 flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-white/10 overflow-hidden">
+                                        <div className={'p-2 font-bold text-center text-xs ' + color}>{canal}</div>
+                                        <div className="flex flex-col gap-1 p-1.5 overflow-y-auto tv-scroll flex-1">
+                                            {progs.length === 0 ? (
+                                                <p className="text-xs text-gray-600 text-center p-3">Sin datos hoy</p>
+                                            ) : progs.map((p,i) => {
+                                                const directo = isAhora(p.inicio, p.fin);
+                                                return (
+                                                    <div key={i} className={'p-2 rounded-lg border text-xs ' + (directo ? 'border-red-500/50 bg-red-950/40' : 'border-white/5 bg-white/5')}>
+                                                        <div className="flex items-center justify-between mb-0.5">
+                                                            <span className={'font-mono font-bold px-1.5 py-0.5 rounded text-xs ' + (directo ? 'bg-red-900/60 text-red-300' : 'bg-gray-800 text-gray-400')}>
+                                                                {p.inicio}
+                                                            </span>
+                                                            {directo && (
+                                                                <span className="flex items-center gap-1 text-red-400 text-xs font-bold">
+                                                                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse inline-block"></span>
+                                                                    Ahora
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-gray-200 leading-tight">{p.titulo}</p>
+                                                        {p.fin && <p className="text-gray-600 mt-0.5">hasta {p.fin}</p>}
                                                     </div>
-                                                ) : progs.length === 0 ? (
-                                                    <p className="text-xs text-gray-600 text-center p-3">Sin datos</p>
-                                                ) : (
-                                                    filtrarProgs(progs).map((p, i) => {
-                                                        const directo = p.fin && isAhora(p.inicio, p.fin);
-                                                        return (
-                                                            <div key={i} className={'p-2 rounded-lg border text-xs ' + (directo ? 'border-red-500/50 bg-red-950/40' : 'border-white/5 bg-white/5')}>
-                                                                <div className="flex items-center justify-between mb-0.5">
-                                                                    <span className={'font-mono font-bold px-1.5 py-0.5 rounded text-xs ' + (directo ? 'bg-red-900/60 text-red-300' : 'bg-gray-800 text-gray-400')}>
-                                                                        {p.inicio}
-                                                                    </span>
-                                                                    {directo && (
-                                                                        <span className="flex items-center gap-1 text-red-400 text-xs font-bold">
-                                                                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse inline-block"></span>
-                                                                            Ahora
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                                <p className="text-gray-200 leading-tight">{p.titulo}</p>
-                                                                {p.fin && <p className="text-gray-600 mt-0.5">hasta {p.fin}</p>}
-                                                            </div>
-                                                        );
-                                                    })
-                                                )}
-                                            </div>
+                                                );
+                                            })}
                                         </div>
-                                    );
-                                })}
-                            </div>
-                        </>
+                                    </div>
+                                );
+                            })}
+                        </div>
                     )}
                 </div>
             );
@@ -612,9 +599,7 @@
         const App = () => {
             const [activeView, setActiveView] = useState('home'); 
             const [loading, setLoading] = useState(false);
-            const [tvProgramacion, setTvProgramacion] = useState({});
-            const [tvCargando, setTvCargando] = useState(false);
-            const [tvCargados, setTvCargados] = useState([]);
+
             const [isMobile, setIsMobile] = useState(false);
 
             useEffect(() => {
@@ -629,50 +614,6 @@
                 return () => window.removeEventListener('resize', checkDevice);
             }, []);
             
-            // Carga programacion TV al arrancar la app
-            const llamarGroqTV = async (canal, fechaStr) => {
-                const prompt = 'Hoy es ' + fechaStr + '. Dame la programacion tipica de hoy para el canal de television espanol llamado: ' + canal + '. ' +
-                    'Dame entre 12 y 15 programas cubriendo todo el dia desde las 00:00 hasta las 23:59. ' +
-                    'IMPORTANTE: en el JSON pon exactamente este nombre de canal: ' + canal + '. ' +
-                    'SOLO JSON, sin texto ni markdown: {"canales":[{"nombre":"' + canal + '","programas":[{"inicio":"08:00","fin":"09:30","titulo":"Titulo del programa"}]}]}';
-                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_KEY },
-                    body: JSON.stringify({ model: 'meta-llama/llama-4-scout-17b-16e-instruct', max_tokens: 1500, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
-                });
-                if (!res.ok) throw new Error('Groq ' + res.status);
-                const d = await res.json();
-                const txt = d.choices[0].message.content.trim().replace(/```json|```/g, '').trim();
-                const data = JSON.parse(txt);
-                // Acepta el canal aunque el nombre no coincida exactamente
-                const progs = data.canales && data.canales[0] && data.canales[0].programas;
-                if (!progs || progs.length === 0) throw new Error('Sin programas');
-                return progs;
-            };
-
-            const cargarTV = async () => {
-                if (tvCargando || Object.keys(tvProgramacion).length > 0) return;
-                setTvCargando(true);
-                setTvCargados([]);
-                const ahora = new Date();
-                const fechaStr = ahora.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-                // Todas en paralelo - mucho mas rapido
-                const promesas = CANALES_TV.map(async (canal) => {
-                    for (let intento = 0; intento < 2; intento++) {
-                        try {
-                            if (intento > 0) await new Promise(r => setTimeout(r, 1500));
-                            const progs = await llamarGroqTV(canal, fechaStr);
-                            setTvProgramacion(prev => ({ ...prev, [canal]: progs }));
-                            setTvCargados(prev => [...prev, canal]);
-                            return;
-                        } catch (e) { console.warn('TV intento', intento+1, canal, e.message); }
-                    }
-                });
-                await Promise.all(promesas);
-                setTvCargando(false);
-            };
-
-            useEffect(() => { cargarTV(); }, []);
 
             const [selectedSign, setSelectedSign] = useState(null);
             const [prediction, setPrediction] = useState('');
@@ -923,12 +864,12 @@
                         )}
                     </nav>
 
-                    <main className="flex-1 max-w-4xl w-full mx-auto p-4 py-8">
+                    <main className={"flex-1 w-full mx-auto p-4 py-8 " + (activeView === "parrilla" ? "" : "max-w-4xl")}>
                         {activeView === 'home' && renderHome()}
 
                         {/* NUEVA VISTA: PARRILLA TV */}
                         {activeView === 'parrilla' && (
-                            <ParrillaTV onBack={resetView} programacion={tvProgramacion} cargando={tvCargando} cargados={tvCargados} recargar={cargarTV} />
+                            <ParrillaTV onBack={resetView} />
                         )}
 
                         {/* VISTA: FRASES CÉLEBRES */}
@@ -1189,6 +1130,26 @@
 
                     <footer className="mt-auto border-t border-white/10 bg-black/80 backdrop-blur-md py-6 px-4 text-center">
                         <div className="flex flex-col justify-center items-center gap-4 mb-6">
+                            {/* Redes sociales */}
+                            <div className="flex flex-wrap justify-center gap-3">
+                                <a href="https://www.instagram.com/pedroguirao" target="_blank" rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                                    <i className="fa-brands fa-instagram"></i> Instagram
+                                </a>
+                                <a href="https://www.tiktok.com/@pedro.guirao" target="_blank" rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-black border border-white/20 hover:border-white/50 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                                    <i className="fa-brands fa-tiktok"></i> TikTok
+                                </a>
+                                <a href="https://www.facebook.com/pedro.guirao" target="_blank" rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                                    <i className="fa-brands fa-facebook"></i> Facebook
+                                </a>
+                                <a href="https://www.youtube.com/@HERNANNEWSTV" target="_blank" rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                                    <i className="fa-brands fa-youtube"></i> YouTube
+                                </a>
+                            </div>
+                            {/* Contacto y cursos */}
                             <div className="flex flex-col md:flex-row gap-4 md:gap-8">
                                 <a href="mailto:pedro.guirao@gmail.com" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2 text-sm font-mono">
                                     <i className="fa-solid fa-envelope"></i> pedro.guirao@gmail.com
