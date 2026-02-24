@@ -240,129 +240,132 @@
           {q:"El infierno son los otros.",a:"Jean-Paul Sartre"},
         ];
 
-        // URL del banco de frases generado por GitHub Action
-        const FRASES_JSON_URL = 'https://raw.githubusercontent.com/PedroGuiraoGil/MISTIC.AI/main/frases.json';
-
-        // Banco local mínimo de emergencia (si el JSON del repo no está disponible aún)
-        const BANCO_EMERGENCIA = [
-            {q:'La imaginación es más importante que el conocimiento.',a:'Albert Einstein',cat:'ciencia'},
-            {q:'El único modo de hacer un gran trabajo es amar lo que haces.',a:'Steve Jobs',cat:'motivacion'},
-            {q:'Sé el cambio que quieres ver en el mundo.',a:'Mahatma Gandhi',cat:'motivacion'},
-            {q:'Si puedes soñarlo, puedes hacerlo.',a:'Walt Disney',cat:'motivacion'},
-            {q:'Lo que no te mata te hace más fuerte.',a:'Friedrich Nietzsche',cat:'motivacion'},
-            {q:'La vida es lo que pasa mientras estás ocupado haciendo otros planes.',a:'John Lennon',cat:'vida'},
-            {q:'La educación es el arma más poderosa para cambiar el mundo.',a:'Nelson Mandela',cat:'ciencia'},
-            {q:'El secreto para salir adelante es empezar.',a:'Mark Twain',cat:'motivacion'},
-            {q:'El tiempo es oro.',a:'Benjamin Franklin',cat:'tiempo'},
-            {q:'Carpe diem.',a:'Horacio',cat:'tiempo'},
-            {q:'En medio de la dificultad reside la oportunidad.',a:'Albert Einstein',cat:'sabiduria'},
-            {q:'Conócete a ti mismo.',a:'Sócrates',cat:'sabiduria'},
-            {q:'El arte es la mentira que nos permite conocer la verdad.',a:'Pablo Picasso',cat:'arte'},
-            {q:'La creatividad es la inteligencia divirtiéndose.',a:'Albert Einstein',cat:'arte'},
-            {q:'No llores porque terminó, sonríe porque sucedió.',a:'Gabriel García Márquez',cat:'amor'},
-            {q:'Amar no es mirarse el uno al otro, es mirar juntos en la misma dirección.',a:'Antoine de Saint-Exupéry',cat:'amor'},
-            {q:'Si está pasando por el infierno, siga adelante.',a:'Winston Churchill',cat:'perseverancia'},
-            {q:'No cuentes los días, haz que los días cuenten.',a:'Muhammad Ali',cat:'motivacion'},
-            {q:'Cae siete veces, levántate ocho.',a:'Proverbio japonés',cat:'perseverancia'},
-            {q:'Solo sé que no sé nada.',a:'Sócrates',cat:'sabiduria'},
-        ];
-
         const FrasesView = ({ onBack }) => {
             const [modo, setModo] = React.useState('dia');
             const [input, setInput] = React.useState('');
             const [frase, setFrase] = React.useState(null);
             const [lista, setLista] = React.useState([]);
             const [cargando, setCargando] = React.useState(false);
-            const [banco, setBanco] = React.useState([]);
-            const [bancoCargado, setBancoCargado] = React.useState(false);
             const [fuente, setFuente] = React.useState('');
 
-            // Cargar el banco de frases del repo al montar el componente
-            React.useEffect(() => {
-                fetch(FRASES_JSON_URL + '?t=' + Date.now())
-                    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-                    .then(data => {
-                        setBanco(data.frases || []);
-                        setBancoCargado(true);
-                        console.log('[Frases] Banco cargado:', data.total, 'frases');
-                    })
-                    .catch(e => {
-                        console.warn('[Frases] No se pudo cargar frases.json, usando banco de emergencia:', e.message);
-                        setBanco(BANCO_EMERGENCIA);
-                        setBancoCargado(true);
-                    });
-            }, []);
+            const BANCO = [
+                {q:'La imaginación es más importante que el conocimiento.',a:'Albert Einstein',cat:'ciencia'},
+                {q:'El único modo de hacer un gran trabajo es amar lo que haces.',a:'Steve Jobs',cat:'motivacion'},
+                {q:'Sé el cambio que quieres ver en el mundo.',a:'Mahatma Gandhi',cat:'motivacion'},
+                {q:'Lo que no te mata te hace más fuerte.',a:'Friedrich Nietzsche',cat:'motivacion'},
+                {q:'La vida es lo que pasa mientras estás ocupado haciendo otros planes.',a:'John Lennon',cat:'vida'},
+                {q:'El secreto para salir adelante es empezar.',a:'Mark Twain',cat:'motivacion'},
+                {q:'En medio de la dificultad reside la oportunidad.',a:'Albert Einstein',cat:'sabiduria'},
+                {q:'Conócete a ti mismo.',a:'Sócrates',cat:'sabiduria'},
+                {q:'Solo sé que no sé nada.',a:'Sócrates',cat:'sabiduria'},
+                {q:'El arte es la mentira que nos permite conocer la verdad.',a:'Pablo Picasso',cat:'arte'},
+                {q:'La creatividad es la inteligencia divirtiéndose.',a:'Albert Einstein',cat:'arte'},
+                {q:'No llores porque terminó, sonríe porque sucedió.',a:'Gabriel García Márquez',cat:'amor'},
+                {q:'Carpe diem.',a:'Horacio',cat:'tiempo'},
+                {q:'Si está pasando por el infierno, siga adelante.',a:'Winston Churchill',cat:'perseverancia'},
+                {q:'Cae siete veces, levántate ocho.',a:'Proverbio japonés',cat:'perseverancia'},
+                {q:'La educación es el arma más poderosa para cambiar el mundo.',a:'Nelson Mandela',cat:'motivacion'},
+                {q:'Todo parece imposible hasta que se hace.',a:'Nelson Mandela',cat:'motivacion'},
+                {q:'Pienso, luego existo.',a:'René Descartes',cat:'sabiduria'},
+                {q:'La vida sin música sería un error.',a:'Friedrich Nietzsche',cat:'arte'},
+                {q:'Amar no es mirarse el uno al otro, es mirar juntos en la misma dirección.',a:'Antoine de Saint-Exupéry',cat:'amor'},
+            ];
 
-            const bancoActivo = banco.length > 0 ? banco : BANCO_EMERGENCIA;
+            const aleatorio = arr => arr[Math.floor(Math.random() * arr.length)];
 
-            const aleatorio = (arr) => arr[Math.floor(Math.random() * arr.length)];
-
-            // Busca frases por autor (fuzzy) o categoría
-            const buscarPorAutor = (nombre) => {
-                const n = nombre.toLowerCase();
-                return bancoActivo.filter(f => f.a.toLowerCase().includes(n));
-            };
-            const buscarPorPalabra = (palabra) => {
-                const p = palabra.toLowerCase();
-                // buscar en texto de la frase, autor o categoría
-                return bancoActivo.filter(f =>
-                    f.q.toLowerCase().includes(p) ||
-                    f.a.toLowerCase().includes(p) ||
-                    (f.cat || '').toLowerCase().includes(p)
-                );
-            };
             const fraseDia = () => {
-                // Usa el día del año como semilla para que sea distinta cada día pero fija el mismo día
                 const hoy = new Date();
                 const seed = hoy.getFullYear() * 1000 + Math.floor((hoy - new Date(hoy.getFullYear(),0,0)) / 86400000);
-                return bancoActivo[seed % bancoActivo.length];
+                return BANCO[seed % BANCO.length];
             };
 
-            const run = (fn) => { setCargando(true); setFrase(null); setLista([]); setFuente(''); fn(); setCargando(false); };
+            // Busca en Wikiquote ES usando la API MediaWiki con CORS abierto (origin=*)
+            const buscarWikiquote = async (termino) => {
+                // Paso 1: buscar la página más relevante
+                const searchUrl = `https://es.wikiquote.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(termino)}&srlimit=3&format=json&origin=*`;
+                const sRes = await fetch(searchUrl, { signal: AbortSignal.timeout(10000) });
+                if (!sRes.ok) throw new Error('HTTP ' + sRes.status);
+                const sData = await sRes.json();
+                const resultados = sData.query?.search || [];
+                if (resultados.length === 0) return [];
 
-            const onDia = () => run(() => {
-                const f = fraseDia();
-                setFrase(f); setFuente('Banco local');
+                // Paso 2: obtener el contenido de la mejor página
+                const titulo = resultados[0].title;
+                const pageUrl = `https://es.wikiquote.org/w/api.php?action=parse&page=${encodeURIComponent(titulo)}&prop=wikitext&format=json&origin=*`;
+                const pRes = await fetch(pageUrl, { signal: AbortSignal.timeout(10000) });
+                if (!pRes.ok) throw new Error('HTTP ' + pRes.status);
+                const pData = await pRes.json();
+                const wikitext = pData.parse?.wikitext?.['*'] || '';
+
+                // Extraer frases: líneas que empiezan con * y tienen texto suficiente
+                const lineas = wikitext.split('
+');
+                const frases = [];
+                for (const l of lineas) {
+                    if (!l.startsWith('*') || l.startsWith('**')) continue;
+                    // Limpiar sintaxis wiki: quitar [[...]], {{...}}, ''...'', etc.
+                    let txt = l.replace(/^\*+\s*/, '')
+                        .replace(/\[\[([^\]|]+\|)?([^\]]+)\]\]/g, '$2')
+                        .replace(/\{\{[^}]+\}\}/g, '')
+                        .replace(/'{2,}/g, '')
+                        .replace(/<[^>]+>/g, '')
+                        .replace(/&nbsp;/g, ' ')
+                        .trim();
+                    if (txt.length > 20 && txt.length < 500) {
+                        frases.push({ q: txt, a: titulo, cat: 'general' });
+                    }
+                }
+                return frases;
+            };
+
+            const run = async (fn) => {
+                setCargando(true); setFrase(null); setLista([]); setFuente('');
+                try { await fn(); } catch(e) { console.error(e); }
+                setCargando(false);
+            };
+
+            const onDia = () => run(async () => {
+                setFrase(fraseDia()); setFuente('Banco local');
             });
 
-            const onAzar = () => run(() => {
-                // Elige aleatoriamente entre 3 fuentes distintas del banco para más variedad
-                const idx1 = Math.floor(Math.random() * bancoActivo.length);
-                const idx2 = Math.floor(Math.random() * bancoActivo.length);
-                const idx3 = Math.floor(Math.random() * bancoActivo.length);
-                const candidatos = [bancoActivo[idx1], bancoActivo[idx2], bancoActivo[idx3]];
-                const f = aleatorio(candidatos);
-                setFrase(f); setFuente('Banco verificado');
+            const onAzar = () => run(async () => {
+                setFrase(aleatorio(BANCO)); setFuente('Banco local');
             });
 
-            const onPersonaje = () => run(() => {
+            const onPersonaje = () => run(async () => {
                 const q = input.trim();
-                if (!q) { onAzar(); return; }
-                const resultados = buscarPorAutor(q);
-                if (resultados.length > 0) {
-                    setLista(resultados);
-                    setFrase(aleatorio(resultados));
-                    setFuente('Banco verificado (' + resultados.length + ' frases)');
+                if (!q) { setFrase(aleatorio(BANCO)); setFuente('Banco local'); return; }
+                setFuente('Buscando en Wikiquote...');
+                const frases = await buscarWikiquote(q);
+                if (frases.length > 0) {
+                    setLista(frases);
+                    setFrase(aleatorio(frases));
+                    setFuente('Wikiquote ES (' + frases.length + ' frases encontradas)');
                 } else {
-                    // No encontrado en banco — mostrar mensaje útil
-                    setFrase({ q: 'No tenemos frases de "' + q + '" en el banco local. Prueba con el nombre completo o un autor más conocido.', a: '', cat: 'info' });
+                    setFrase({ q: 'No encontramos a "' + q + '" en Wikiquote ES. Prueba con el nombre completo o en español.', a: '', cat: 'info' });
                     setFuente('Sin resultados');
                 }
             });
 
-            const onTema = () => run(() => {
+            const onTema = () => run(async () => {
                 const q = input.trim();
-                if (!q) { onAzar(); return; }
-                const resultados = buscarPorPalabra(q);
-                if (resultados.length > 0) {
-                    // Mezclar para mostrar variedad
-                    const mezclados = [...resultados].sort(() => Math.random() - 0.5).slice(0, 8);
+                if (!q) { setFrase(aleatorio(BANCO)); setFuente('Banco local'); return; }
+                setFuente('Buscando en Wikiquote...');
+                const frases = await buscarWikiquote(q);
+                if (frases.length > 0) {
+                    const mezclados = [...frases].sort(() => Math.random() - 0.5).slice(0, 8);
                     setLista(mezclados);
                     setFrase(aleatorio(mezclados));
-                    setFuente('Banco verificado (' + resultados.length + ' coincidencias)');
+                    setFuente('Wikiquote ES (' + frases.length + ' frases encontradas)');
                 } else {
-                    setFrase({ q: 'No encontramos frases sobre "' + q + '" en el banco. Prueba con otra palabra clave.', a: '', cat: 'info' });
-                    setFuente('Sin resultados');
+                    // Buscar en banco local como fallback
+                    const local = BANCO.filter(f => f.q.toLowerCase().includes(q.toLowerCase()) || f.cat.includes(q.toLowerCase()));
+                    if (local.length > 0) {
+                        setLista(local); setFrase(aleatorio(local)); setFuente('Banco local');
+                    } else {
+                        setFrase({ q: 'No encontramos frases sobre "' + q + '". Prueba con otra palabra.', a: '', cat: 'info' });
+                        setFuente('Sin resultados');
+                    }
                 }
             });
 
@@ -378,14 +381,12 @@
                 blue:   { ring:'ring-blue-500',   text:'text-blue-400',   btn:'bg-blue-600 hover:bg-blue-500',   activeBg:'bg-blue-600 text-white',   inactiveBg:'bg-gray-900 text-gray-400' },
                 green:  { ring:'ring-green-500',  text:'text-green-400',  btn:'bg-green-600 hover:bg-green-500', activeBg:'bg-green-600 text-white',  inactiveBg:'bg-gray-900 text-gray-400' },
             };
-
             const modoActual = MODOS.find(m => m.id === modo) || MODOS[0];
             const C = COLORS[modoActual.color];
             const needsInput = modo === 'personaje' || modo === 'palabra';
 
             return (
                 <div className="animate-in fade-in duration-500 space-y-6 max-w-2xl mx-auto">
-                    {/* Cabecera */}
                     <div className="flex items-center gap-3">
                         <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
                             <i className="fa-solid fa-arrow-left"></i>
@@ -394,13 +395,8 @@
                             <i className="fa-solid fa-quote-left text-purple-400"></i>
                             Frases Célebres
                         </h2>
-                        {!bancoCargado && <i className="fa-solid fa-spinner animate-spin text-gray-500 text-sm"></i>}
-                        {bancoCargado && banco.length > 0 && (
-                            <span className="text-xs text-gray-600">{banco.length} frases verificadas</span>
-                        )}
                     </div>
 
-                    {/* Botones de modo */}
                     <div className="grid grid-cols-2 gap-2">
                         {MODOS.map(m => {
                             const isActive = modo === m.id;
@@ -417,26 +413,21 @@
                         })}
                     </div>
 
-                    {/* Input para personaje/palabra */}
                     {needsInput && (
                         <div className="flex gap-2">
-                            <input
-                                value={input}
-                                onChange={e => setInput(e.target.value)}
+                            <input value={input} onChange={e => setInput(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && modoActual.accion()}
-                                placeholder={modo === 'personaje' ? 'Ej: Einstein, Gandhi, Dalí...' : 'Ej: amor, éxito, tiempo...'}
-                                className={'flex-1 bg-black/30 border rounded-xl px-4 py-3 text-sm outline-none focus:' + C.ring + ' ' + C.ring.replace('ring','border') + '/30'}
-                            />
-                            <button onClick={modoActual.accion}
-                                className={'px-5 py-3 rounded-xl font-bold text-white ' + C.btn}>
-                                <i className="fa-solid fa-magnifying-glass"></i>
+                                placeholder={modo === 'personaje' ? 'Ej: Poincaré, Borges, Darwin...' : 'Ej: amor, tiempo, libertad...'}
+                                className={'flex-1 bg-black/30 border rounded-xl px-4 py-3 text-sm outline-none focus:' + C.ring + ' border-white/10'} />
+                            <button onClick={modoActual.accion} disabled={cargando}
+                                className={'px-5 py-3 rounded-xl font-bold text-white disabled:opacity-50 ' + C.btn}>
+                                {cargando ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-magnifying-glass"></i>}
                             </button>
                         </div>
                     )}
 
-                    {/* Botón principal (modos sin input) */}
                     {!needsInput && (
-                        <button onClick={modoActual.accion} disabled={cargando || !bancoCargado}
+                        <button onClick={modoActual.accion} disabled={cargando}
                             className={'w-full py-3 rounded-xl font-bold text-white disabled:opacity-50 transition-all ' + C.btn}>
                             {cargando ? <i className="fa-solid fa-spinner animate-spin"></i> : (
                                 <><i className={'fa-solid ' + modoActual.icon + ' mr-2'}></i>{modoActual.label}</>
@@ -444,29 +435,26 @@
                         </button>
                     )}
 
-                    {/* Frase principal */}
                     {frase && frase.cat !== 'info' && (
                         <div className={'bg-black/30 rounded-2xl p-6 border ' + C.ring + '/30 space-y-4'}>
                             <i className={'fa-solid fa-quote-left text-2xl ' + C.text + ' opacity-50'}></i>
                             <p className="text-xl font-light leading-relaxed text-white italic">{frase.q}</p>
                             {frase.a && <p className={'text-right font-semibold ' + C.text}>— {frase.a}</p>}
-                            {fuente && <p className="text-xs text-gray-600 text-right">Fuente: {fuente}</p>}
+                            {fuente && <p className="text-xs text-gray-600 text-right mt-1">{fuente}</p>}
                         </div>
                     )}
 
-                    {/* Mensaje sin resultados */}
                     {frase && frase.cat === 'info' && (
                         <div className="bg-yellow-950/30 rounded-2xl p-5 border border-yellow-700/30">
                             <p className="text-yellow-400 text-sm">{frase.q}</p>
                         </div>
                     )}
 
-                    {/* Lista de frases (personaje/tema) */}
                     {lista.length > 1 && (
                         <div className="space-y-3">
                             <p className="text-xs text-gray-500 uppercase tracking-wider">Más frases ({lista.length})</p>
                             {lista.map((f, i) => (
-                                <button key={i} onClick={() => { setFrase(f); setFuente('Banco verificado'); }}
+                                <button key={i} onClick={() => setFrase(f)}
                                     className="w-full text-left bg-white/5 hover:bg-white/10 rounded-xl p-4 border border-white/5 hover:border-white/15 transition-all">
                                     <p className="text-sm text-gray-200 italic">"{f.q}"</p>
                                     {f.a && <p className="text-xs text-gray-500 mt-1">— {f.a}</p>}
