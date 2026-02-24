@@ -37,8 +37,6 @@
         const { useState, useEffect, useRef } = React;
 
         const GROQ_KEY = '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';
-
-        // URL del JSON generado por la GitHub Action en el mismo repo
         const EPG_JSON_URL = 'https://raw.githubusercontent.com/PedroGuiraoGil/MISTIC.AI/main/epg.json';
 
         const CANALES_TV = [
@@ -230,7 +228,6 @@
                 {q:'El único modo de hacer un gran trabajo es amar lo que haces.',a:'Steve Jobs'},
                 {q:'El arte es la mentira que nos permite conocer la verdad.',a:'Pablo Picasso'},
                 {q:'No llores porque terminó, sonríe porque sucedió.',a:'Gabriel García Márquez'},
-                {q:'El secreto de la felicidad no es hacer lo que se quiere, sino querer lo que se hace.',a:'Leo Tolstoi'},
                 {q:'La vida sin música sería un error.',a:'Friedrich Nietzsche'},
                 {q:'Lo que no te mata te hace más fuerte.',a:'Friedrich Nietzsche'},
                 {q:'La educación es el arma más poderosa para cambiar el mundo.',a:'Nelson Mandela'},
@@ -260,7 +257,7 @@
                 return BANCO[seed % BANCO.length];
             };
 
-            // ── FUENTE 1: Wikiquote ES — CORS nativo con origin=* ──────────────
+            // FUENTE 1: Wikiquote ES (CORS nativo con origin=*)
             const buscarWikiquote = async (termino) => {
                 const sRes = await fetch(
                     'https://es.wikiquote.org/w/api.php?action=query&list=search&srsearch=' +
@@ -268,8 +265,7 @@
                     { signal: AbortSignal.timeout(8000) }
                 );
                 if (!sRes.ok) throw new Error('Wikiquote ' + sRes.status);
-                const sData = await sRes.json();
-                const hits = sData.query?.search || [];
+                const hits = (await sRes.json()).query?.search || [];
                 if (!hits.length) return [];
 
                 const titulo = hits[0].title;
@@ -279,42 +275,54 @@
                     { signal: AbortSignal.timeout(8000) }
                 );
                 if (!pRes.ok) throw new Error('Wikiquote parse ' + pRes.status);
-                const pData = await pRes.json();
-                const wikitext = pData.parse?.wikitext?.['*'] || '';
+                const wikitext = (await pRes.json()).parse?.wikitext?.['*'] || '';
 
-                const limpiarW = s => s
+                const limpiar = s => s
                     .replace(/^\*+\s*/, '')
+                    .replace(/\[https?:\/\/[^\]]*\]/g, '')
                     .replace(/\[\[([^\]|]+\|)?([^\]]+)\]\]/g, '$2')
-                    .replace(/\{\{[^}]+\}\}/g, '')
-                    .replace(/'{2,3}/g, '')
+                    .replace(/\{\{[^}]*\}\}/g, '')
+                    .replace(/'{2,}/g, '')
                     .replace(/<[^>]+>/g, '')
                     .replace(/&nbsp;/g, ' ')
                     .replace(/\([^)]*\d{4}[^)]*\)/g, '')
-                    .replace(/[«»]/g, '')
+                    .replace(/En [A-Z][^.]{0,80}\./g, '')
+                    .replace(/[«»""]/g, '')
+                    .replace(/\s{2,}/g, ' ')
                     .trim();
 
                 const lineas = wikitext.split('\n');
                 const frases = [];
+                const tieneSecciones = /^==[^=]/.test(wikitext);
                 let autorActual = titulo;
+
                 for (const l of lineas) {
                     const sec = l.match(/^==+\s*(.+?)\s*==+$/);
                     if (sec) {
-                        const a = limpiarW(sec[1]);
-                        if (!a.startsWith('Sobre') && !a.startsWith('Véase') && a.length < 60) autorActual = a;
+                        const candidato = limpiar(sec[1]);
+                        if (candidato && !candidato.startsWith('Sobre') &&
+                            !candidato.startsWith('Véase') && !candidato.startsWith('Ver') &&
+                            candidato.length > 1 && candidato.length < 60) {
+                            autorActual = candidato;
+                        }
                         continue;
                     }
                     if (!l.startsWith('*') || l.startsWith('**')) continue;
-                    const txt = limpiarW(l);
-                    if (txt.length > 20 && txt.length < 450) frases.push({ q: txt, a: autorActual });
+                    const txt = limpiar(l);
+                    if (txt.length < 15 || txt.length > 350) continue;
+                    if (txt.includes('isbn') || txt.includes('ISBN') || txt.includes('http')) continue;
+                    // Si la página no tiene secciones de autor, el autor ES el título
+                    const autor = tieneSecciones ? autorActual : titulo;
+                    frases.push({ q: txt, a: autor });
                 }
                 return frases;
             };
 
-            // ── FUENTE 2: Claude API — fallback universal ──────────────────────
+            // FUENTE 2: Claude API — fallback universal
             const buscarClaude = async (termino, esTema) => {
                 const prompt = esTema
-                    ? `Dame 5 frases célebres de autores distintos sobre el tema "${termino}". Solo frases reales. Responde ÚNICAMENTE en JSON: [{"q":"frase","a":"Autor"}]`
-                    : `Dame hasta 5 frases célebres y verificadas de ${termino}. Solo frases reales. Responde ÚNICAMENTE en JSON: [{"q":"frase","a":"${termino}"}]`;
+                    ? `Dame 5 frases célebres de autores distintos sobre el tema "${termino}". Solo frases reales y verificadas. Responde ÚNICAMENTE en JSON sin texto extra: [{"q":"frase","a":"Nombre Autor"}]`
+                    : `Dame hasta 5 frases célebres y verificadas de ${termino}. Solo frases reales. Responde ÚNICAMENTE en JSON sin texto extra: [{"q":"frase","a":"${termino}"}]`;
                 const res = await fetch('https://api.anthropic.com/v1/messages', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
@@ -322,8 +330,7 @@
                     signal: AbortSignal.timeout(15000)
                 });
                 if (!res.ok) throw new Error('Claude ' + res.status);
-                const d = await res.json();
-                const txt = d.content[0].text.trim();
+                const txt = (await res.json()).content[0].text.trim();
                 const match = txt.match(/\[[\s\S]*\]/);
                 if (!match) return [];
                 return JSON.parse(match[0]).filter(f => f.q && f.a && f.q.length > 10);
@@ -336,8 +343,7 @@
             };
 
             const onDia = () => run(async () => {
-                const f = fraseDia();
-                setFrase(f); setIaUsada('Banco local');
+                setFrase(fraseDia()); setIaUsada('Banco local');
             });
 
             const onAzar = () => run(async () => {
@@ -352,7 +358,7 @@
                 try { frases = await buscarWikiquote(q); } catch(e) {}
                 if (frases.length > 0) {
                     setLista(frases); setFrase(aleatorio(frases));
-                    setIaUsada('Wikiquote ES (' + frases.length + ' frases)'); return;
+                    setIaUsada('Wikiquote ES — ' + frases.length + ' frases'); return;
                 }
                 setIaUsada('Consultando base de conocimiento...');
                 try { frases = await buscarClaude(q, false); } catch(e) {}
@@ -374,7 +380,7 @@
                 if (frases.length > 0) {
                     const mezclados = [...frases].sort(() => Math.random() - 0.5).slice(0, 8);
                     setLista(mezclados); setFrase(aleatorio(mezclados));
-                    setIaUsada('Wikiquote ES (' + frases.length + ' frases)'); return;
+                    setIaUsada('Wikiquote ES — ' + frases.length + ' frases'); return;
                 }
                 setIaUsada('Consultando base de conocimiento...');
                 try { frases = await buscarClaude(q, true); } catch(e) {}
@@ -474,48 +480,17 @@
                                 <p className={'text-xl md:text-2xl italic leading-relaxed mb-6 ' + C.text}>
                                     "{frase.q}"
                                 </p>
-                                <footer className="mt-auto border-t border-white/10 bg-black/80 backdrop-blur-md py-6 px-4 text-center">
-                        <div className="flex flex-col justify-center items-center gap-4 mb-6">
-                            <div className="flex flex-wrap justify-center gap-3">
-                                <a href="https://www.instagram.com/pedroguirao" target="_blank" rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
-                                    <i className="fa-brands fa-instagram"></i> Instagram
-                                </a>
-                                <a href="https://www.tiktok.com/@pedro.guirao" target="_blank" rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-black border border-white/20 hover:border-white/50 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
-                                    <i className="fa-brands fa-tiktok"></i> TikTok
-                                </a>
-                                <a href="https://www.facebook.com/pedro.guirao" target="_blank" rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
-                                    <i className="fa-brands fa-facebook"></i> Facebook
-                                </a>
-                                <a href="https://www.youtube.com/@HERNANNEWSTV" target="_blank" rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
-                                    <i className="fa-brands fa-youtube"></i> YouTube
-                                </a>
-                            </div>
-                            <div className="flex flex-col md:flex-row gap-4 md:gap-8">
-                                <a href="mailto:pedro.guirao@gmail.com" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2 text-sm font-mono">
-                                    <i className="fa-solid fa-envelope"></i> pedro.guirao@gmail.com
-                                </a>
-                                <a href="https://pedroguiraogil.github.io/CURSOS/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors flex items-center gap-2 text-sm font-mono">
-                                    <i className="fa-solid fa-graduation-cap"></i> Acceso a Cursos
-                                </a>
-                            </div>
-                            <a href="https://buy.stripe.com/4gMeVecnWgM35GPfZo8ww00" target="_blank" rel="noopener noreferrer"
-                                className="flex items-center gap-2 bg-purple-700 hover:bg-purple-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
-                                <i className="fa-solid fa-heart text-pink-300"></i> Donar
-                            </a>
-                        </div>
-                        <div className="flex justify-center items-center gap-2 text-xs text-gray-500 font-mono">
-                            <span>VISTAS TOTALES:</span>
-                            <img 
-                                src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpedroguiraogil.github.io%2FCURSOS&label=%20&countColor=%239333ea&labelColor=%23000000" 
-                                alt="Contador de visitas" 
-                                className="h-5 rounded" 
-                            />
-                        </div>
-                    </footer>
+                                <footer className="border-t border-white/10 pt-4 space-y-2">
+                                    <div className="flex items-end justify-between gap-4">
+                                        <p className="font-bold text-white text-lg">— {frase.a}</p>
+                                        {iaUsada && <span className="text-xs text-gray-600 shrink-0">{iaUsada}</span>}
+                                    </div>
+                                    {iaUsada && iaUsada !== 'Banco local' && (
+                                        <p className="text-xs text-yellow-600/70 italic">
+                                            Las atribuciones pueden no ser exactas. Verifica antes de citar.
+                                        </p>
+                                    )}
+                                </footer>
                             </blockquote>
                             <button
                                 onClick={() => navigator.clipboard.writeText('"' + frase.q + '" - ' + frase.a)}
@@ -1127,6 +1102,12 @@
 
                     <footer className="mt-auto border-t border-white/10 bg-black/80 backdrop-blur-md py-6 px-4 text-center">
                         <div className="flex flex-col justify-center items-center gap-4 mb-6">
+                            <div className="flex flex-wrap justify-center gap-3">
+                                <a href="https://www.instagram.com/pedroguirao" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all"><i className="fa-brands fa-instagram"></i> Instagram</a>
+                                <a href="https://www.tiktok.com/@pedro.guirao" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-black border border-white/20 hover:border-white/50 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all"><i className="fa-brands fa-tiktok"></i> TikTok</a>
+                                <a href="https://www.facebook.com/pedro.guirao" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all"><i className="fa-brands fa-facebook"></i> Facebook</a>
+                                <a href="https://www.youtube.com/@HERNANNEWSTV" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all"><i className="fa-brands fa-youtube"></i> YouTube</a>
+                            </div>
                             <div className="flex flex-col md:flex-row gap-4 md:gap-8">
                                 <a href="mailto:pedro.guirao@gmail.com" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2 text-sm font-mono">
                                     <i className="fa-solid fa-envelope"></i> pedro.guirao@gmail.com
