@@ -1,0 +1,207 @@
+name: Actualizar Banco de Frases
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'   # Cada lunes a las 3h UTC (las frases no cambian cada día)
+  workflow_dispatch:        # También se puede lanzar a mano
+
+jobs:
+  build-quotes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Construir banco de frases desde fuentes públicas
+        run: |
+          python3 << 'PYEOF'
+          import json, urllib.request, random, time
+
+          frases = []
+
+          def add(q, a, cat='general'):
+              if q and a and len(q) > 10:
+                  frases.append({'q': q.strip(), 'a': a.strip(), 'cat': cat})
+
+          # ── FUENTE 1: random-quotes-freeapi.vercel.app ──────────────────────────
+          # API verificada que funciona. Descargamos 80 frases de golpe.
+          print("Descargando fuente 1: random-quotes-freeapi...")
+          try:
+              for _ in range(80):
+                  url = 'https://random-quotes-freeapi.vercel.app/api/random'
+                  req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+                  with urllib.request.urlopen(req, timeout=10) as r:
+                      d = json.loads(r.read())
+                      add(d.get('quote',''), d.get('author',''), 'general')
+                  time.sleep(0.15)
+              print(f"  Fuente 1 OK: {len(frases)} frases")
+          except Exception as e:
+              print(f"  Fuente 1 error: {e}")
+
+          # ── FUENTE 2: Banco manual curado — frases célebres verificadas ──────────
+          # Frases clásicas bien conocidas, agrupadas por categoría
+          print("Añadiendo banco curado...")
+          CURADO = [
+              # Motivación / Éxito
+              ('La imaginación es más importante que el conocimiento.', 'Albert Einstein', 'motivacion'),
+              ('El único modo de hacer un gran trabajo es amar lo que haces.', 'Steve Jobs', 'motivacion'),
+              ('Sé el cambio que quieres ver en el mundo.', 'Mahatma Gandhi', 'motivacion'),
+              ('Si puedes soñarlo, puedes hacerlo.', 'Walt Disney', 'motivacion'),
+              ('El éxito es la suma de pequeños esfuerzos repetidos día tras día.', 'Robert Collier', 'motivacion'),
+              ('No importa lo despacio que vayas, siempre que no te detengas.', 'Confucio', 'motivacion'),
+              ('La vida es lo que pasa mientras estás ocupado haciendo otros planes.', 'John Lennon', 'motivacion'),
+              ('Vive como si fueras a morir mañana. Aprende como si fueras a vivir siempre.', 'Mahatma Gandhi', 'motivacion'),
+              ('Lo que no te mata te hace más fuerte.', 'Friedrich Nietzsche', 'motivacion'),
+              ('El secreto para salir adelante es empezar.', 'Mark Twain', 'motivacion'),
+              ('Cae siete veces, levántate ocho.', 'Proverbio japonés', 'motivacion'),
+              ('No cuentes los días, haz que los días cuenten.', 'Muhammad Ali', 'motivacion'),
+              ('Todo parece imposible hasta que se hace.', 'Nelson Mandela', 'motivacion'),
+              ('El futuro pertenece a quienes creen en la belleza de sus sueños.', 'Eleanor Roosevelt', 'motivacion'),
+              ('Primero lo hacen ignorarte, luego se ríen de ti, luego te atacan, luego ganas.', 'Mahatma Gandhi', 'motivacion'),
+              # Sabiduría / Filosofía
+              ('Conócete a ti mismo.', 'Sócrates', 'sabiduria'),
+              ('Pienso, luego existo.', 'René Descartes', 'sabiduria'),
+              ('La vida sin examen no merece la pena ser vivida.', 'Sócrates', 'sabiduria'),
+              ('Ser o no ser, esa es la cuestión.', 'William Shakespeare', 'sabiduria'),
+              ('El hombre es la medida de todas las cosas.', 'Protágoras', 'sabiduria'),
+              ('La sabiduría empieza en la admiración.', 'Sócrates', 'sabiduria'),
+              ('Solo sé que no sé nada.', 'Sócrates', 'sabiduria'),
+              ('Dao ke dao, fei chang dao.', 'Lao Tse', 'sabiduria'),
+              ('El que no sabe lo que busca no reconoce lo que encuentra.', 'Claude Bernard', 'sabiduria'),
+              ('La duda es el principio de la sabiduría.', 'Aristóteles', 'sabiduria'),
+              ('En medio de la dificultad reside la oportunidad.', 'Albert Einstein', 'sabiduria'),
+              ('La vida debe vivirse hacia adelante, pero solo puede entenderse mirando hacia atrás.', 'Søren Kierkegaard', 'sabiduria'),
+              ('Lo que sabemos es una gota, lo que ignoramos es un océano.', 'Isaac Newton', 'sabiduria'),
+              # Amor / Relaciones
+              ('El amor todo lo puede.', 'William Shakespeare', 'amor'),
+              ('Donde hay amor hay vida.', 'Mahatma Gandhi', 'amor'),
+              ('Amar y ser amado es sentir el sol por ambos lados.', 'David Viscott', 'amor'),
+              ('El amor es ciego, pero el matrimonio le devuelve la vista.', 'Georg C. Lichtenberg', 'amor'),
+              ('No llores porque terminó, sonríe porque sucedió.', 'Gabriel García Márquez', 'amor'),
+              ('En el principio era el amor, y el amor era con Dios.', 'San Juan', 'amor'),
+              ('Amar no es mirarse el uno al otro, es mirar juntos en la misma dirección.', 'Antoine de Saint-Exupéry', 'amor'),
+              ('Quien busca un amigo sin defectos se queda sin amigos.', 'Proverbio turco', 'amor'),
+              # Ciencia / Conocimiento
+              ('Saber que no sabemos nada es la forma más alta de inteligencia.', 'Jiddu Krishnamurti', 'ciencia'),
+              ('Si he podido ver más lejos, es porque he subido a hombros de gigantes.', 'Isaac Newton', 'ciencia'),
+              ('La ciencia no tiene patria, pero el científico sí debe tenerla.', 'Louis Pasteur', 'ciencia'),
+              ('Dios no juega a los dados.', 'Albert Einstein', 'ciencia'),
+              ('La educación es el arma más poderosa para cambiar el mundo.', 'Nelson Mandela', 'ciencia'),
+              ('Una inversión en conocimiento siempre paga los mejores intereses.', 'Benjamin Franklin', 'ciencia'),
+              ('La inteligencia es la capacidad de adaptarse al cambio.', 'Stephen Hawking', 'ciencia'),
+              ('El universo no está obligado a tener sentido para ti.', 'Neil deGrasse Tyson', 'ciencia'),
+              # Arte / Creatividad
+              ('La creatividad es la inteligencia divirtiéndose.', 'Albert Einstein', 'arte'),
+              ('El arte es la mentira que nos permite conocer la verdad.', 'Pablo Picasso', 'arte'),
+              ('La música da alma al universo, alas a la mente, vuelo a la imaginación.', 'Platón', 'arte'),
+              ('La vida sin música sería un error.', 'Friedrich Nietzsche', 'arte'),
+              ('Pinto lo que no puedo fotografiar, fotografío lo que no puedo pintar.', 'Man Ray', 'arte'),
+              ('La imaginación es el principio de la creación.', 'George Bernard Shaw', 'arte'),
+              ('Un artista que no puede soñar no es un artista.', 'Salvador Dalí', 'arte'),
+              # Tiempo / Vida
+              ('El tiempo es oro.', 'Benjamin Franklin', 'tiempo'),
+              ('Carpe diem.', 'Horacio', 'tiempo'),
+              ('Memento mori.', 'Epicteto', 'tiempo'),
+              ('La vida es breve, el arte es largo.', 'Hipócrates', 'tiempo'),
+              ('El tiempo que disfrutas perdiendo no es tiempo perdido.', 'Bertrand Russell', 'tiempo'),
+              ('No hay camino para la paz; la paz es el camino.', 'Mahatma Gandhi', 'tiempo'),
+              ('El hoy que descuidas no volverá mañana.', 'Proverbio árabe', 'tiempo'),
+              # Liderazgo / Política
+              ('El liderazgo no es una posición o un título, es acción e influencia.', 'Donald McGannon', 'liderazgo'),
+              ('Si quieres ir rápido, ve solo. Si quieres llegar lejos, ve acompañado.', 'Proverbio africano', 'liderazgo'),
+              ('Un líder es aquel que conoce el camino, lo recorre y lo muestra.', 'John C. Maxwell', 'liderazgo'),
+              ('La calidad nunca es un accidente; siempre es el resultado del esfuerzo inteligente.', 'John Ruskin', 'liderazgo'),
+              ('No preguntes lo que tu país puede hacer por ti, sino lo que tú puedes hacer por tu país.', 'John F. Kennedy', 'liderazgo'),
+              ('Si está pasando por el infierno, siga adelante.', 'Winston Churchill', 'liderazgo'),
+              ('El poder corrompe; el poder absoluto corrompe absolutamente.', 'Lord Acton', 'liderazgo'),
+              # Perseverancia
+              ('Nuestra mayor gloria no está en no caer nunca, sino en levantarnos cada vez que caemos.', 'Confucio', 'perseverancia'),
+              ('El genio es un uno por ciento de inspiración y un noventa y nueve por ciento de transpiración.', 'Thomas Edison', 'perseverancia'),
+              ('He fallado más de 9000 tiros en mi carrera. He perdido casi 300 partidos. Eso es por qué tengo éxito.', 'Michael Jordan', 'perseverancia'),
+              ('No es que sea tan listo, es que me quedo con los problemas más tiempo.', 'Albert Einstein', 'perseverancia'),
+              ('El éxito es aprender a ir de fracaso en fracaso sin desesperarse.', 'Winston Churchill', 'perseverancia'),
+          ]
+          for q, a, cat in CURADO:
+              add(q, a, cat)
+          print(f"  Banco curado añadido: {len(frases)} frases en total")
+
+          # ── FUENTE 3: Wikiquote API (MediaWiki) — autores famosos ────────────────
+          # Wikiquote tiene API pública sin CORS. Buscamos citas de autores clave.
+          AUTORES_WIKI = [
+              'Albert Einstein', 'Oscar Wilde', 'Mark Twain', 'Winston Churchill',
+              'Nelson Mandela', 'Mahatma Gandhi', 'Steve Jobs', 'Stephen Hawking',
+              'Marie Curie', 'Aristotle', 'Plato', 'Confucius', 'Friedrich Nietzsche',
+              'Voltaire', 'Victor Hugo', 'Jorge Luis Borges', 'Pablo Neruda',
+              'Gabriel García Márquez', 'Miguel de Cervantes', 'Federico García Lorca',
+          ]
+          print("Descargando fuente 3: Wikiquote...")
+          wikiquote_ok = 0
+          for autor in AUTORES_WIKI:
+              try:
+                  slug = autor.replace(' ', '_')
+                  url = f'https://en.wikiquote.org/w/api.php?action=query&titles={slug}&prop=extracts&exintro=true&format=json'
+                  req = urllib.request.Request(url, headers={'User-Agent': 'MisticaAI/1.0'})
+                  with urllib.request.urlopen(req, timeout=8) as r:
+                      d = json.loads(r.read())
+                  pages = d.get('query', {}).get('pages', {})
+                  for pid, page in pages.items():
+                      if pid == '-1': continue
+                      extract = page.get('extract', '')
+                      # Extraer líneas que parecen citas (entre <li> o entre comillas)
+                      import re
+                      citas = re.findall(r'<li>(.*?)</li>', extract)
+                      for c in citas[:3]:  # máximo 3 por autor
+                          c_clean = re.sub(r'<[^>]+>', '', c).strip()
+                          if 20 < len(c_clean) < 300:
+                              add(c_clean, autor, 'general')
+                              wikiquote_ok += 1
+                  time.sleep(0.3)
+              except Exception as e:
+                  pass  # Silencioso — no bloqueante
+          print(f"  Wikiquote: {wikiquote_ok} frases añadidas")
+
+          # Deduplicar
+          vistos = set()
+          unicas = []
+          for f in frases:
+              key = f['q'][:50].lower()
+              if key not in vistos:
+                  vistos.add(key)
+                  unicas.append(f)
+
+          random.shuffle(unicas)
+          print(f"\nTotal frases únicas: {len(unicas)}")
+
+          # Construir índices por autor y categoría para búsqueda rápida
+          por_autor = {}
+          por_cat   = {}
+          for f in unicas:
+              a = f['a'].lower()
+              c = f['cat']
+              por_autor.setdefault(a, []).append(f)
+              por_cat.setdefault(c, []).append(f)
+
+          output = {
+              'actualizado': __import__('datetime').datetime.utcnow().isoformat(),
+              'total': len(unicas),
+              'frases': unicas,
+              'autores': list(por_autor.keys()),
+              'categorias': list(por_cat.keys()),
+          }
+
+          with open('frases.json', 'w', encoding='utf-8') as f:
+              json.dump(output, f, ensure_ascii=False, indent=2)
+
+          print(f"frases.json generado: {len(unicas)} frases de {len(por_autor)} autores")
+          PYEOF
+
+      - name: Commit y push
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add frases.json
+          git diff --staged --quiet || git commit -m "Banco de frases actualizado $(date -u '+%Y-%m-%d')"
+          git push
