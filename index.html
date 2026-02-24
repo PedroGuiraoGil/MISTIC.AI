@@ -277,43 +277,59 @@
                 if (!pRes.ok) throw new Error('Wikiquote parse ' + pRes.status);
                 const wikitext = (await pRes.json()).parse?.wikitext?.['*'] || '';
 
-                const limpiar = s => s
-                    .replace(/^\*+\s*/, '')
-                    .replace(/\[https?:\/\/[^\]]*\]/g, '')
-                    .replace(/\[\[([^\]|]+\|)?([^\]]+)\]\]/g, '$2')
-                    .replace(/\{\{[^}]*\}\}/g, '')
-                    .replace(/'{2,}/g, '')
-                    .replace(/<[^>]+>/g, '')
-                    .replace(/&nbsp;/g, ' ')
-                    .replace(/\([^)]*\d{4}[^)]*\)/g, '')
-                    .replace(/En [A-Z][^.]{0,80}\./g, '')
-                    .replace(/[«»""]/g, '')
-                    .replace(/\s{2,}/g, ' ')
-                    .trim();
+                // Páginas de persona: frases en * sin autor al final → autor = título
+                // Páginas temáticas: formato «frase».[N] Autor → extraer autor del final
+                const parsearLinea = (l) => {
+                    let raw = l.replace(/^\*+\s*/, '');
+
+                    // Extraer autor del final: ".[N] Nombre Apellido" o ".[N][M] Nombre"
+                    let autor = titulo;
+                    const mAutor = raw.match(/\.\[\d+\](?:\[\d+\])*\s+([A-ZÁÉÍÓÚÜÑ][^.\[<\n]{2,50})$/);
+                    if (mAutor) {
+                        autor = mAutor[1].trim().replace(/\s*\[\d+\].*$/, '').trim();
+                        raw = raw.slice(0, mAutor.index + 1); // quitar la parte del autor
+                    }
+
+                    const txt = raw
+                        .replace(/\[https?:\/\/[^\]]*\]/g, '')
+                        .replace(/\[\[\s*([^\]|]+\|)?([^\]]+)\]\]/g, '$2')
+                        .replace(/\{\{[^}]*\}\}/g, '')
+                        .replace(/\[\d+\]/g, '')            // referencias [1], [2]...
+                        .replace(/'{2,}/g, '')
+                        .replace(/<[^>]+>/g, '')
+                        .replace(/&nbsp;/g, ' ')
+                        .replace(/,?\s*p\.\s*\d+[^.]*\./g, '')   // , p. 429.
+                        .replace(/,?\s*p[áa]g?\.\s*\d+[^.]*\./g, '')
+                        .replace(/\([^)]*\d{4}[^)]*\)/g, '')
+                        .replace(/[«»""]/g, '')
+                        .replace(/\s{2,}/g, ' ')
+                        .trim()
+                        .replace(/[,;]\s*$/, '')            // coma o punto y coma al final
+                        .trim();
+
+                    return { txt, autor };
+                };
 
                 const lineas = wikitext.split('\n');
                 const frases = [];
-                const tieneSecciones = /^==[^=]/.test(wikitext);
-                let autorActual = titulo;
+                let autorSeccion = titulo; // para páginas con secciones == Autor ==
 
                 for (const l of lineas) {
                     const sec = l.match(/^==+\s*(.+?)\s*==+$/);
                     if (sec) {
-                        const candidato = limpiar(sec[1]);
-                        if (candidato && !candidato.startsWith('Sobre') &&
-                            !candidato.startsWith('Véase') && !candidato.startsWith('Ver') &&
-                            candidato.length > 1 && candidato.length < 60) {
-                            autorActual = candidato;
-                        }
+                        const s = sec[1].replace(/\[\[[^\]]*\]\]/g, '').replace(/'{2,}/g,'').trim();
+                        if (s && !s.startsWith('Sobre') && !s.startsWith('Véase') && s.length < 60)
+                            autorSeccion = s;
                         continue;
                     }
                     if (!l.startsWith('*') || l.startsWith('**')) continue;
-                    const txt = limpiar(l);
+                    const { txt, autor } = parsearLinea(l);
                     if (txt.length < 15 || txt.length > 350) continue;
-                    if (txt.includes('isbn') || txt.includes('ISBN') || txt.includes('http')) continue;
-                    // Si la página no tiene secciones de autor, el autor ES el título
-                    const autor = tieneSecciones ? autorActual : titulo;
-                    frases.push({ q: txt, a: autor });
+                    if (/isbn|ISBN|http|\bpág\b|\bp\.\s*\d/.test(txt)) continue;
+                    // Si el autor extraído sigue siendo el título (no había autor en la línea),
+                    // intentar usar la sección actual si la hay
+                    const autorFinal = (autor === titulo && autorSeccion !== titulo) ? autorSeccion : autor;
+                    frases.push({ q: txt, a: autorFinal });
                 }
                 return frases;
             };
