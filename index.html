@@ -41,144 +41,158 @@
         // URL del JSON generado por la GitHub Action en el mismo repo
         const EPG_JSON_URL = 'https://raw.githubusercontent.com/PedroGuiraoGil/MISTIC.AI/main/epg.json';
 
-        const ParrillaTV = ({ onBack }) => {
-            const [programacion, setProgramacion] = React.useState({});
-            const [cargando, setCargando] = React.useState(true);
-            const [error, setError] = React.useState('');
-            const [actualizado, setActualizado] = React.useState('');
+        const CANALES_TV = [
+            'Movistar Plus+', 'Movistar LaLiga', 'DAZN LaLiga', 'Liga de Campeones',
+            'Movistar Deportes', 'Movistar Deportes 2', 'Vamos', 'Teledeporte',
+            'Eurosport 1', 'Eurosport 2', 'DAZN 1', 'DAZN 2',
+            'Esport3', 'Canal Historia', 'DMAX', 'Odisea'
+        ];
+
+        const ParrillaTV = ({ onBack, programacion, cargando, cargados, recargar }) => {
+            const [ahora] = React.useState(new Date());
+            const [error] = React.useState('');
             const scrollRef = React.useRef(null);
-            const ahora = React.useMemo(() => new Date(), []);
 
-            React.useEffect(() => {
-                fetch(EPG_JSON_URL + '?t=' + Date.now())
-                    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-                    .then(data => {
-                        setProgramacion(data.canales || {});
-                        if (data.actualizado) {
-                            const d = new Date(data.actualizado);
-                            setActualizado(d.toLocaleTimeString('es-ES', {hour:'2-digit', minute:'2-digit'}) + 'h');
-                        }
-                        setCargando(false);
-                    })
-                    .catch(e => { setError(e.message); setCargando(false); });
-            }, []);
+            const fechaStr = ahora.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+            const horaStr  = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
-            const toMin = t => { const [h,m] = t.split(':').map(Number); return h*60+m; };
-            const ahoraMin = ahora.getHours()*60 + ahora.getMinutes();
-            const isAhora = (ini, fin) => fin && toMin(ini) <= ahoraMin && ahoraMin < toMin(fin);
 
-            const filtrar = progs => {
-                const limite = Math.max(0, ahoraMin - 60);
-                const f = progs.filter(p => toMin(p.fin || '23:59') > limite);
-                return f.length ? f : progs;
+            const toMin = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+
+            const isAhora = (inicio, fin) => {
+                const ahoraMin = ahora.getHours() * 60 + ahora.getMinutes();
+                return toMin(inicio) <= ahoraMin && ahoraMin < toMin(fin);
             };
 
-            const colores = {
-                'Movistar Plus+':'bg-sky-900 text-sky-200',
-                'Movistar LaLiga':'bg-sky-800 text-sky-100',
-                'DAZN LaLiga':'bg-blue-900 text-blue-200',
-                'Liga de Campeones':'bg-indigo-900 text-indigo-200',
-                'Movistar Deportes':'bg-sky-900 text-sky-200',
-                'Movistar Deportes 2':'bg-sky-800 text-sky-100',
-                'Vamos':'bg-emerald-900 text-emerald-200',
-                'Teledeporte':'bg-orange-800 text-orange-100',
-                'Eurosport 1':'bg-red-800 text-red-100',
-                'Eurosport 2':'bg-red-900 text-red-200',
-                'DAZN 1':'bg-blue-950 text-blue-200',
-                'DAZN 2':'bg-blue-900 text-blue-300',
-                'Esport3':'bg-purple-900 text-purple-200',
-                'Canal Historia':'bg-amber-900 text-amber-200',
-                'DMAX':'bg-gray-700 text-gray-100',
-                'Odisea':'bg-teal-900 text-teal-200',
+            // Muestra desde 1h antes de ahora hasta fin del dia
+            const filtrarProgs = (progs) => {
+                const limiteMin = Math.max(0, ahora.getHours() * 60 + ahora.getMinutes() - 60);
+                const filtrados = progs.filter(p => toMin(p.fin || '23:59') > limiteMin);
+                // Si no hay nada (todos pasados), muestra desde 00:00
+                return filtrados.length > 0 ? filtrados : progs;
             };
 
-            const canales = Object.keys(programacion);
+            const getHeaderStyle = (canal) => {
+                if (canal === 'La 1' || canal === 'La 2') return 'bg-blue-700 text-white';
+                if (canal === 'Antena 3' || canal === 'Neox' || canal === 'Nova') return 'bg-orange-600 text-white';
+                if (canal === 'Telecinco' || canal === 'Cuatro' || canal === 'Energy' || canal === 'Boing') return 'bg-purple-700 text-white';
+                if (canal === 'La Sexta' || canal === 'Mega') return 'bg-green-700 text-white';
+                if (canal === 'Teledeporte') return 'bg-orange-500 text-white';
+                if (canal === 'Eurosport 1' || canal === 'Eurosport 2') return 'bg-red-600 text-white';
+                if (canal === 'Canal Historia') return 'bg-slate-800 text-amber-400';
+                if (canal === 'DMAX') return 'bg-gray-700 text-white';
+                if (canal === 'Odisea') return 'bg-teal-700 text-white';
+                if (canal === 'AXN') return 'bg-blue-900 text-white';
+                if (canal === 'AMC') return 'bg-stone-800 text-white';
+                return 'bg-slate-700 text-white';
+            };
 
-            const handleScroll = dir => {
+            const handleScroll = (dir) => {
                 if (!scrollRef.current) return;
-                scrollRef.current.scrollBy({ left: dir==='left' ? -300 : 300, behavior:'smooth' });
+                const a = 300;
+                if (dir === 'left')  scrollRef.current.scrollBy({ left: -a, behavior: 'smooth' });
+                if (dir === 'right') scrollRef.current.scrollBy({ left:  a, behavior: 'smooth' });
+                if (dir === 'up')    scrollRef.current.scrollBy({ top:  -a, behavior: 'smooth' });
+                if (dir === 'down')  scrollRef.current.scrollBy({ top:   a, behavior: 'smooth' });
             };
+
+            const tieneDatos = Object.keys(programacion).length > 0;
 
             return (
-                <div className="flex flex-col animate-in fade-in duration-500" style={{height:"calc(100vh - 80px)"}}>
+                <div className="animate-in fade-in duration-500 flex flex-col" style={{height:"calc(100vh - 80px)"}}>
                     {/* Cabecera */}
-                    <div className="bg-white/5 rounded-2xl border border-white/10 p-4 mb-3">
-                        <div className="flex items-center justify-between">
+                    <div className="bg-white/5 rounded-2xl border border-white/10 p-4 mb-4">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
                                 <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
                                     <i className="fa-solid fa-arrow-left"></i>
                                 </button>
                                 <h2 className="text-xl font-bold flex items-center gap-2">
-                                    <i className="fa-solid fa-tv text-purple-400"></i> Parrilla TV
+                                    <i className="fa-solid fa-tv text-purple-400"></i>
+                                    Parrilla TV
                                 </h2>
-                                {cargando && <i className="fa-solid fa-spinner animate-spin text-purple-400"></i>}
+                                <span className="text-sm text-gray-400 font-mono">{horaStr}</span>
+                                {cargando && (
+                                    <span className="text-xs text-yellow-400 flex items-center gap-1">
+                                        <i className="fa-solid fa-spinner animate-spin"></i>
+                                        Generando con IA... ({cargados.length}/{CANALES_TV.length})
+                                    </span>
+                                )}
                             </div>
-                            <div className="flex items-center gap-3">
-                                {actualizado && <span className="text-xs text-gray-500">EPG actualizado: {actualizado}</span>}
-                                <button onClick={()=>handleScroll('left')}  className="bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-gray-400"><i className="fa-solid fa-chevron-left"></i></button>
-                                <button onClick={()=>handleScroll('right')} className="bg-white/5 hover:bg-white/10 px-3 py-1.5 rounded-lg text-gray-400"><i className="fa-solid fa-chevron-right"></i></button>
-                            </div>
+                            <button onClick={recargar} disabled={cargando}
+                                className="flex items-center gap-2 bg-purple-700 hover:bg-purple-600 disabled:opacity-50 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors">
+                                <i className={'fa-solid ' + (cargando ? 'fa-spinner animate-spin' : 'fa-wand-magic-sparkles')}></i>
+                                {tieneDatos ? 'Actualizar' : 'Generar programacion'}
+                            </button>
                         </div>
-                        {error && (
-                            <p className="mt-2 text-xs text-red-400">
-                                Error cargando EPG: {error}. La GitHub Action puede no haberse ejecutado aún — ve a tu repo → Actions → "Actualizar EPG" → "Run workflow".
+                        {tieneDatos && (
+                            <p className="text-xs text-yellow-600/70 italic mt-2">
+                                Programacion generada por IA. Puede no coincidir exactamente con la parrilla real.
                             </p>
                         )}
+                        {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
                     </div>
 
-                    {/* Parrilla */}
-                    {cargando ? (
-                        <div className="flex-1 flex items-center justify-center">
-                            <div className="text-center space-y-3">
-                                <i className="fa-solid fa-tv text-5xl text-gray-700"></i>
-                                <p className="text-gray-500 text-sm">Cargando programación real...</p>
-                            </div>
+                    {!tieneDatos && !cargando && (
+                        <div className="flex-1 flex flex-col items-center justify-center gap-4 text-gray-500">
+                            <i className="fa-solid fa-tv text-5xl text-gray-700"></i>
+                            <p className="text-sm">Pulsa "Generar programacion" para ver la parrilla de hoy</p>
+                            <p className="text-xs text-gray-600">Generado por IA - aproximado</p>
                         </div>
-                    ) : canales.length === 0 ? (
-                        <div className="flex-1 flex items-center justify-center">
-                            <div className="text-center space-y-3 max-w-sm">
-                                <i className="fa-solid fa-circle-exclamation text-4xl text-yellow-600"></i>
-                                <p className="text-yellow-400 text-sm font-bold">epg.json no encontrado</p>
-                                <p className="text-gray-500 text-xs">Sube los archivos al repo y ejecuta la GitHub Action manualmente la primera vez:<br/>
-                                <span className="font-mono text-gray-400">Actions → Actualizar EPG → Run workflow</span></p>
+                    )}
+
+                    {tieneDatos && (
+                        <>
+                            <div className="flex gap-2 mb-2">
+                                <button onClick={() => handleScroll('left')}  className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-gray-400 hover:text-white"><i className="fa-solid fa-chevron-left"></i></button>
+                                <button onClick={() => handleScroll('right')} className="bg-white/5 hover:bg-white/10 px-4 py-2 rounded-lg text-gray-400 hover:text-white"><i className="fa-solid fa-chevron-right"></i></button>
                             </div>
-                        </div>
-                    ) : (
-                        <div ref={scrollRef} className="flex gap-2 overflow-x-auto pb-2 tv-scroll" style={{height:'calc(100vh - 200px)'}}>
-                            {canales.map(canal => {
-                                const progs = filtrar(programacion[canal] || []);
-                                const color = colores[canal] || 'bg-slate-700 text-white';
-                                return (
-                                    <div key={canal} className="w-52 flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-white/10 overflow-hidden">
-                                        <div className={'p-2 font-bold text-center text-xs ' + color}>{canal}</div>
-                                        <div className="flex flex-col gap-1 p-1.5 overflow-y-auto tv-scroll flex-1">
-                                            {progs.length === 0 ? (
-                                                <p className="text-xs text-gray-600 text-center p-3">Sin datos hoy</p>
-                                            ) : progs.map((p,i) => {
-                                                const directo = isAhora(p.inicio, p.fin);
-                                                return (
-                                                    <div key={i} className={'p-2 rounded-lg border text-xs ' + (directo ? 'border-red-500/50 bg-red-950/40' : 'border-white/5 bg-white/5')}>
-                                                        <div className="flex items-center justify-between mb-0.5">
-                                                            <span className={'font-mono font-bold px-1.5 py-0.5 rounded text-xs ' + (directo ? 'bg-red-900/60 text-red-300' : 'bg-gray-800 text-gray-400')}>
-                                                                {p.inicio}
-                                                            </span>
-                                                            {directo && (
-                                                                <span className="flex items-center gap-1 text-red-400 text-xs font-bold">
-                                                                    <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse inline-block"></span>
-                                                                    Ahora
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <p className="text-gray-200 leading-tight">{p.titulo}</p>
-                                                        {p.fin && <p className="text-gray-600 mt-0.5">hasta {p.fin}</p>}
+
+                            <div ref={scrollRef} className="flex gap-2 overflow-x-auto pb-2" style={{height:'calc(100vh - 200px)'}}>
+                                {CANALES_TV.map(canal => {
+                                    const progs = programacion[canal] || [];
+                                    const cargandoEste = cargando && !cargados.includes(canal);
+                                    return (
+                                        <div key={canal} className="w-56 flex-shrink-0 flex flex-col bg-gray-900 rounded-xl border border-white/10 overflow-hidden" style={{height:"100%"}}>
+                                            <div className={'p-2 font-bold text-center text-xs ' + getHeaderStyle(canal)}>
+                                                {canal}
+                                            </div>
+                                            <div className="flex flex-col gap-1 p-1.5 overflow-y-auto" style={{height:"calc(100vh - 260px)"}}>
+                                                {cargandoEste ? (
+                                                    <div className="text-center py-4 text-gray-600 text-xs">
+                                                        <i className="fa-solid fa-spinner animate-spin mr-1"></i>
+                                                        Cargando...
                                                     </div>
-                                                );
-                                            })}
+                                                ) : progs.length === 0 ? (
+                                                    <p className="text-xs text-gray-600 text-center p-3">Sin datos</p>
+                                                ) : (
+                                                    filtrarProgs(progs).map((p, i) => {
+                                                        const directo = p.fin && isAhora(p.inicio, p.fin);
+                                                        return (
+                                                            <div key={i} className={'p-2 rounded-lg border text-xs ' + (directo ? 'border-red-500/50 bg-red-950/40' : 'border-white/5 bg-white/5')}>
+                                                                <div className="flex items-center justify-between mb-0.5">
+                                                                    <span className={'font-mono font-bold px-1.5 py-0.5 rounded text-xs ' + (directo ? 'bg-red-900/60 text-red-300' : 'bg-gray-800 text-gray-400')}>
+                                                                        {p.inicio}
+                                                                    </span>
+                                                                    {directo && (
+                                                                        <span className="flex items-center gap-1 text-red-400 text-xs font-bold">
+                                                                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse inline-block"></span>
+                                                                            Ahora
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                <p className="text-gray-200 leading-tight">{p.titulo}</p>
+                                                                {p.fin && <p className="text-gray-600 mt-0.5">hasta {p.fin}</p>}
+                                                            </div>
+                                                        );
+                                                    })
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                                    );
+                                })}
+                            </div>
+                        </>
                     )}
                 </div>
             );
@@ -195,50 +209,6 @@
         // 3. quotes-db.vercel.app — random EN ✅
         // 4. random-quotes-freeapi.vercel.app — random EN ✅
         // 5. Banco local 80 frases — fallback offline ✅
-        // =============================================
-
-        const BANCO_LOCAL = [
-          {q:"La imaginación es más importante que el conocimiento.",a:"Albert Einstein"},
-          {q:"Dos cosas son infinitas: el universo y la estupidez humana.",a:"Albert Einstein"},
-          {q:"La creatividad es la inteligencia divirtiéndose.",a:"Albert Einstein"},
-          {q:"En medio de la dificultad yace la oportunidad.",a:"Albert Einstein"},
-          {q:"La vida es lo que pasa mientras estás ocupado haciendo otros planes.",a:"John Lennon"},
-          {q:"Sé el cambio que quieres ver en el mundo.",a:"Mahatma Gandhi"},
-          {q:"No hay camino para la paz; la paz es el camino.",a:"Mahatma Gandhi"},
-          {q:"La libertad no es algo que se da; es algo que se conquista.",a:"Malcolm X"},
-          {q:"El único modo de hacer un gran trabajo es amar lo que haces.",a:"Steve Jobs"},
-          {q:"El arte es la mentira que nos permite conocer la verdad.",a:"Pablo Picasso"},
-          {q:"No llores porque terminó, sonríe porque sucedió.",a:"Gabriel García Márquez"},
-          {q:"El secreto de la felicidad no es hacer lo que se quiere, sino querer lo que se hace.",a:"Leo Tolstoi"},
-          {q:"La vida sin música sería un error.",a:"Friedrich Nietzsche"},
-          {q:"Lo que no te mata te hace más fuerte.",a:"Friedrich Nietzsche"},
-          {q:"La educación es el arma más poderosa para cambiar el mundo.",a:"Nelson Mandela"},
-          {q:"El amor es la única fuerza capaz de transformar a un enemigo en amigo.",a:"Martin Luther King Jr."},
-          {q:"Un libro es un sueño que sostienes en tus manos.",a:"Neil Gaiman"},
-          {q:"La esperanza es el sueño del hombre despierto.",a:"Aristóteles"},
-          {q:"Elige un trabajo que ames y no trabajarás ni un día de tu vida.",a:"Confucio"},
-          {q:"El éxito es la suma de pequeños esfuerzos repetidos día tras día.",a:"Robert Collier"},
-          {q:"El mayor riesgo es no correr ningún riesgo.",a:"Mark Zuckerberg"},
-          {q:"Prefiero morir de pie que vivir de rodillas.",a:"Emiliano Zapata"},
-          {q:"Si quieres ir rápido, ve solo. Si quieres llegar lejos, ve acompañado.",a:"Proverbio africano"},
-          {q:"La peor soledad es no estar cómodo con uno mismo.",a:"Mark Twain"},
-          {q:"El coraje no es la ausencia del miedo, sino actuar pese a él.",a:"Ambrose Redmoon"},
-          {q:"Nada en la vida debe ser temido, solamente comprendido.",a:"Marie Curie"},
-          {q:"El miedo es el camino al lado oscuro.",a:"Yoda"},
-          {q:"El que no conoce el miedo no puede ser valiente.",a:"Ernest Hemingway"},
-          {q:"La risa es el sol que ahuyenta el invierno del rostro humano.",a:"Victor Hugo"},
-          {q:"Si estás pasando por el infierno, sigue adelante.",a:"Winston Churchill"},
-          {q:"El éxito no es definitivo, el fracaso no es fatal: lo que cuenta es el coraje de continuar.",a:"Winston Churchill"},
-          {q:"Nadie puede hacerte sentir inferior sin tu consentimiento.",a:"Eleanor Roosevelt"},
-          {q:"Dime y lo olvido, enséñame y lo recuerdo, involúcrame y lo aprendo.",a:"Benjamin Franklin"},
-          {q:"La belleza salvará al mundo.",a:"Fiódor Dostoievski"},
-          {q:"Caminante, son tus huellas el camino y nada más.",a:"Antonio Machado"},
-          {q:"Podrán cortar todas las flores, pero no podrán detener la primavera.",a:"Pablo Neruda"},
-          {q:"Un día sin reír es un día perdido.",a:"Charles Chaplin"},
-          {q:"Pienso, luego existo.",a:"René Descartes"},
-          {q:"Ser o no ser, esa es la cuestión.",a:"William Shakespeare"},
-          {q:"El infierno son los otros.",a:"Jean-Paul Sartre"},
-        ];
 
         const FrasesView = ({ onBack }) => {
             const [modo, setModo] = React.useState('dia');
@@ -246,29 +216,40 @@
             const [frase, setFrase] = React.useState(null);
             const [lista, setLista] = React.useState([]);
             const [cargando, setCargando] = React.useState(false);
-            const [fuente, setFuente] = React.useState('');
+            const [iaUsada, setIaUsada] = React.useState('');
+            const cache = React.useRef({});
 
             const BANCO = [
-                {q:'La imaginación es más importante que el conocimiento.',a:'Albert Einstein',cat:'ciencia'},
-                {q:'El único modo de hacer un gran trabajo es amar lo que haces.',a:'Steve Jobs',cat:'motivacion'},
-                {q:'Sé el cambio que quieres ver en el mundo.',a:'Mahatma Gandhi',cat:'motivacion'},
-                {q:'Lo que no te mata te hace más fuerte.',a:'Friedrich Nietzsche',cat:'motivacion'},
-                {q:'La vida es lo que pasa mientras estás ocupado haciendo otros planes.',a:'John Lennon',cat:'vida'},
-                {q:'El secreto para salir adelante es empezar.',a:'Mark Twain',cat:'motivacion'},
-                {q:'En medio de la dificultad reside la oportunidad.',a:'Albert Einstein',cat:'sabiduria'},
-                {q:'Conócete a ti mismo.',a:'Sócrates',cat:'sabiduria'},
-                {q:'Solo sé que no sé nada.',a:'Sócrates',cat:'sabiduria'},
-                {q:'El arte es la mentira que nos permite conocer la verdad.',a:'Pablo Picasso',cat:'arte'},
-                {q:'La creatividad es la inteligencia divirtiéndose.',a:'Albert Einstein',cat:'arte'},
-                {q:'No llores porque terminó, sonríe porque sucedió.',a:'Gabriel García Márquez',cat:'amor'},
-                {q:'Carpe diem.',a:'Horacio',cat:'tiempo'},
-                {q:'Si está pasando por el infierno, siga adelante.',a:'Winston Churchill',cat:'perseverancia'},
-                {q:'Cae siete veces, levántate ocho.',a:'Proverbio japonés',cat:'perseverancia'},
-                {q:'La educación es el arma más poderosa para cambiar el mundo.',a:'Nelson Mandela',cat:'motivacion'},
-                {q:'Todo parece imposible hasta que se hace.',a:'Nelson Mandela',cat:'motivacion'},
-                {q:'Pienso, luego existo.',a:'René Descartes',cat:'sabiduria'},
-                {q:'La vida sin música sería un error.',a:'Friedrich Nietzsche',cat:'arte'},
-                {q:'Amar no es mirarse el uno al otro, es mirar juntos en la misma dirección.',a:'Antoine de Saint-Exupéry',cat:'amor'},
+                {q:'La imaginación es más importante que el conocimiento.',a:'Albert Einstein'},
+                {q:'Dos cosas son infinitas: el universo y la estupidez humana.',a:'Albert Einstein'},
+                {q:'La creatividad es la inteligencia divirtiéndose.',a:'Albert Einstein'},
+                {q:'La vida es lo que pasa mientras estás ocupado haciendo otros planes.',a:'John Lennon'},
+                {q:'Sé el cambio que quieres ver en el mundo.',a:'Mahatma Gandhi'},
+                {q:'No hay camino para la paz; la paz es el camino.',a:'Mahatma Gandhi'},
+                {q:'La libertad no es algo que se da; es algo que se conquista.',a:'Malcolm X'},
+                {q:'El único modo de hacer un gran trabajo es amar lo que haces.',a:'Steve Jobs'},
+                {q:'El arte es la mentira que nos permite conocer la verdad.',a:'Pablo Picasso'},
+                {q:'No llores porque terminó, sonríe porque sucedió.',a:'Gabriel García Márquez'},
+                {q:'El secreto de la felicidad no es hacer lo que se quiere, sino querer lo que se hace.',a:'Leo Tolstoi'},
+                {q:'La vida sin música sería un error.',a:'Friedrich Nietzsche'},
+                {q:'Lo que no te mata te hace más fuerte.',a:'Friedrich Nietzsche'},
+                {q:'La educación es el arma más poderosa para cambiar el mundo.',a:'Nelson Mandela'},
+                {q:'El amor es la única fuerza capaz de transformar a un enemigo en amigo.',a:'Martin Luther King Jr.'},
+                {q:'Nada en la vida debe ser temido, solamente comprendido.',a:'Marie Curie'},
+                {q:'Un día sin reír es un día perdido.',a:'Charles Chaplin'},
+                {q:'Pienso, luego existo.',a:'René Descartes'},
+                {q:'Ser o no ser, esa es la cuestión.',a:'William Shakespeare'},
+                {q:'El infierno son los otros.',a:'Jean-Paul Sartre'},
+                {q:'Si estás pasando por el infierno, sigue adelante.',a:'Winston Churchill'},
+                {q:'Nadie puede hacerte sentir inferior sin tu consentimiento.',a:'Eleanor Roosevelt'},
+                {q:'La belleza salvará al mundo.',a:'Fiódor Dostoievski'},
+                {q:'Caminante, son tus huellas el camino y nada más.',a:'Antonio Machado'},
+                {q:'Podrán cortar todas las flores, pero no podrán detener la primavera.',a:'Pablo Neruda'},
+                {q:'Prefiero morir de pie que vivir de rodillas.',a:'Emiliano Zapata'},
+                {q:'Elige un trabajo que ames y no trabajarás ni un día de tu vida.',a:'Confucio'},
+                {q:'Cae siete veces, levántate ocho.',a:'Proverbio japonés'},
+                {q:'La esperanza es el sueño del hombre despierto.',a:'Aristóteles'},
+                {q:'El éxito no es definitivo, el fracaso no es fatal: lo que cuenta es el coraje de continuar.',a:'Winston Churchill'},
             ];
 
             const aleatorio = arr => arr[Math.floor(Math.random() * arr.length)];
@@ -279,134 +260,174 @@
                 return BANCO[seed % BANCO.length];
             };
 
-            // Busca en Wikiquote ES usando la API MediaWiki con CORS abierto (origin=*)
+            // ── FUENTE 1: Wikiquote ES — CORS nativo con origin=* ──────────────
             const buscarWikiquote = async (termino) => {
-                // Paso 1: buscar la página más relevante
-                const searchUrl = `https://es.wikiquote.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(termino)}&srlimit=3&format=json&origin=*`;
-                const sRes = await fetch(searchUrl, { signal: AbortSignal.timeout(10000) });
-                if (!sRes.ok) throw new Error('HTTP ' + sRes.status);
+                const sRes = await fetch(
+                    'https://es.wikiquote.org/w/api.php?action=query&list=search&srsearch=' +
+                    encodeURIComponent(termino) + '&srlimit=3&format=json&origin=*',
+                    { signal: AbortSignal.timeout(8000) }
+                );
+                if (!sRes.ok) throw new Error('Wikiquote ' + sRes.status);
                 const sData = await sRes.json();
-                const resultados = sData.query?.search || [];
-                if (resultados.length === 0) return [];
+                const hits = sData.query?.search || [];
+                if (!hits.length) return [];
 
-                // Paso 2: obtener el contenido de la mejor página
-                const titulo = resultados[0].title;
-                const pageUrl = `https://es.wikiquote.org/w/api.php?action=parse&page=${encodeURIComponent(titulo)}&prop=wikitext&format=json&origin=*`;
-                const pRes = await fetch(pageUrl, { signal: AbortSignal.timeout(10000) });
-                if (!pRes.ok) throw new Error('HTTP ' + pRes.status);
+                const titulo = hits[0].title;
+                const pRes = await fetch(
+                    'https://es.wikiquote.org/w/api.php?action=parse&page=' +
+                    encodeURIComponent(titulo) + '&prop=wikitext&format=json&origin=*',
+                    { signal: AbortSignal.timeout(8000) }
+                );
+                if (!pRes.ok) throw new Error('Wikiquote parse ' + pRes.status);
                 const pData = await pRes.json();
                 const wikitext = pData.parse?.wikitext?.['*'] || '';
 
-                // Extraer frases: líneas que empiezan con * y tienen texto suficiente
-                const lineas = wikitext.split('
-');
+                const limpiarW = s => s
+                    .replace(/^\*+\s*/, '')
+                    .replace(/\[\[([^\]|]+\|)?([^\]]+)\]\]/g, '$2')
+                    .replace(/\{\{[^}]+\}\}/g, '')
+                    .replace(/'{2,3}/g, '')
+                    .replace(/<[^>]+>/g, '')
+                    .replace(/&nbsp;/g, ' ')
+                    .replace(/\([^)]*\d{4}[^)]*\)/g, '')
+                    .replace(/[«»]/g, '')
+                    .trim();
+
+                const lineas = wikitext.split('\n');
                 const frases = [];
+                let autorActual = titulo;
                 for (const l of lineas) {
-                    if (!l.startsWith('*') || l.startsWith('**')) continue;
-                    // Limpiar sintaxis wiki: quitar [[...]], {{...}}, ''...'', etc.
-                    let txt = l.replace(/^\*+\s*/, '')
-                        .replace(/\[\[([^\]|]+\|)?([^\]]+)\]\]/g, '$2')
-                        .replace(/\{\{[^}]+\}\}/g, '')
-                        .replace(/'{2,}/g, '')
-                        .replace(/<[^>]+>/g, '')
-                        .replace(/&nbsp;/g, ' ')
-                        .trim();
-                    if (txt.length > 20 && txt.length < 500) {
-                        frases.push({ q: txt, a: titulo, cat: 'general' });
+                    const sec = l.match(/^==+\s*(.+?)\s*==+$/);
+                    if (sec) {
+                        const a = limpiarW(sec[1]);
+                        if (!a.startsWith('Sobre') && !a.startsWith('Véase') && a.length < 60) autorActual = a;
+                        continue;
                     }
+                    if (!l.startsWith('*') || l.startsWith('**')) continue;
+                    const txt = limpiarW(l);
+                    if (txt.length > 20 && txt.length < 450) frases.push({ q: txt, a: autorActual });
                 }
                 return frases;
             };
 
+            // ── FUENTE 2: Claude API — fallback universal ──────────────────────
+            const buscarClaude = async (termino, esTema) => {
+                const prompt = esTema
+                    ? `Dame 5 frases célebres de autores distintos sobre el tema "${termino}". Solo frases reales. Responde ÚNICAMENTE en JSON: [{"q":"frase","a":"Autor"}]`
+                    : `Dame hasta 5 frases célebres y verificadas de ${termino}. Solo frases reales. Responde ÚNICAMENTE en JSON: [{"q":"frase","a":"${termino}"}]`;
+                const res = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'anthropic-dangerous-direct-browser-access': 'true' },
+                    body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 600, messages: [{ role: 'user', content: prompt }] }),
+                    signal: AbortSignal.timeout(15000)
+                });
+                if (!res.ok) throw new Error('Claude ' + res.status);
+                const d = await res.json();
+                const txt = d.content[0].text.trim();
+                const match = txt.match(/\[[\s\S]*\]/);
+                if (!match) return [];
+                return JSON.parse(match[0]).filter(f => f.q && f.a && f.q.length > 10);
+            };
+
             const run = async (fn) => {
-                setCargando(true); setFrase(null); setLista([]); setFuente('');
-                try { await fn(); } catch(e) { console.error(e); }
+                setCargando(true); setFrase(null); setLista([]); setIaUsada('');
+                try { await fn(); } catch(e) { console.error('[Frases]', e.message); }
                 setCargando(false);
             };
 
             const onDia = () => run(async () => {
-                setFrase(fraseDia()); setFuente('Banco local');
+                const f = fraseDia();
+                setFrase(f); setIaUsada('Banco local');
             });
 
             const onAzar = () => run(async () => {
-                setFrase(aleatorio(BANCO)); setFuente('Banco local');
+                setFrase(aleatorio(BANCO)); setIaUsada('Banco local');
             });
 
             const onPersonaje = () => run(async () => {
                 const q = input.trim();
-                if (!q) { setFrase(aleatorio(BANCO)); setFuente('Banco local'); return; }
-                setFuente('Buscando en Wikiquote...');
-                const frases = await buscarWikiquote(q);
+                if (!q) { setFrase(aleatorio(BANCO)); setIaUsada('Banco local'); return; }
+                setIaUsada('Buscando en Wikiquote...');
+                let frases = [];
+                try { frases = await buscarWikiquote(q); } catch(e) {}
                 if (frases.length > 0) {
-                    setLista(frases);
-                    setFrase(aleatorio(frases));
-                    setFuente('Wikiquote ES (' + frases.length + ' frases encontradas)');
+                    setLista(frases); setFrase(aleatorio(frases));
+                    setIaUsada('Wikiquote ES (' + frases.length + ' frases)'); return;
+                }
+                setIaUsada('Consultando base de conocimiento...');
+                try { frases = await buscarClaude(q, false); } catch(e) {}
+                if (frases.length > 0) {
+                    setLista(frases); setFrase(aleatorio(frases));
+                    setIaUsada('Base de conocimiento');
                 } else {
-                    setFrase({ q: 'No encontramos a "' + q + '" en Wikiquote ES. Prueba con el nombre completo o en español.', a: '', cat: 'info' });
-                    setFuente('Sin resultados');
+                    setFrase({ q: 'No encontramos frases verificadas de "' + q + '". Prueba con el nombre completo.', a: '', cat: 'info' });
+                    setIaUsada('Sin resultados');
                 }
             });
 
             const onTema = () => run(async () => {
                 const q = input.trim();
-                if (!q) { setFrase(aleatorio(BANCO)); setFuente('Banco local'); return; }
-                setFuente('Buscando en Wikiquote...');
-                const frases = await buscarWikiquote(q);
+                if (!q) { setFrase(aleatorio(BANCO)); setIaUsada('Banco local'); return; }
+                setIaUsada('Buscando en Wikiquote...');
+                let frases = [];
+                try { frases = await buscarWikiquote(q); } catch(e) {}
                 if (frases.length > 0) {
                     const mezclados = [...frases].sort(() => Math.random() - 0.5).slice(0, 8);
-                    setLista(mezclados);
-                    setFrase(aleatorio(mezclados));
-                    setFuente('Wikiquote ES (' + frases.length + ' frases encontradas)');
+                    setLista(mezclados); setFrase(aleatorio(mezclados));
+                    setIaUsada('Wikiquote ES (' + frases.length + ' frases)'); return;
+                }
+                setIaUsada('Consultando base de conocimiento...');
+                try { frases = await buscarClaude(q, true); } catch(e) {}
+                if (frases.length > 0) {
+                    setLista(frases); setFrase(aleatorio(frases));
+                    setIaUsada('Base de conocimiento');
                 } else {
-                    // Buscar en banco local como fallback
-                    const local = BANCO.filter(f => f.q.toLowerCase().includes(q.toLowerCase()) || f.cat.includes(q.toLowerCase()));
-                    if (local.length > 0) {
-                        setLista(local); setFrase(aleatorio(local)); setFuente('Banco local');
-                    } else {
-                        setFrase({ q: 'No encontramos frases sobre "' + q + '". Prueba con otra palabra.', a: '', cat: 'info' });
-                        setFuente('Sin resultados');
-                    }
+                    const local = BANCO.filter(f => f.q.toLowerCase().includes(q.toLowerCase()));
+                    if (local.length > 0) { setLista(local); setFrase(aleatorio(local)); setIaUsada('Banco local'); }
+                    else { setFrase({ q: 'No encontramos frases sobre "' + q + '". Prueba con otra palabra.', a: '', cat: 'info' }); setIaUsada('Sin resultados'); }
                 }
             });
 
             const MODOS = [
-                { id: 'dia',       label: 'Frase del Día',  icon: 'fa-sun',              color: 'amber',  accion: onDia       },
+                { id: 'dia',       label: 'Frase del Dia',  icon: 'fa-sun',              color: 'amber',  accion: onDia       },
                 { id: 'personaje', label: 'Por Personaje',  icon: 'fa-user',             color: 'purple', accion: onPersonaje },
                 { id: 'palabra',   label: 'Por Palabra',    icon: 'fa-magnifying-glass', color: 'blue',   accion: onTema      },
                 { id: 'azar',      label: 'Al Azar',        icon: 'fa-shuffle',          color: 'green',  accion: onAzar      },
             ];
             const COLORS = {
-                amber:  { ring:'ring-amber-500',  text:'text-amber-400',  btn:'bg-amber-600 hover:bg-amber-500',  activeBg:'bg-amber-600 text-white',  inactiveBg:'bg-gray-900 text-gray-400' },
-                purple: { ring:'ring-purple-500', text:'text-purple-400', btn:'bg-purple-600 hover:bg-purple-500', activeBg:'bg-purple-600 text-white', inactiveBg:'bg-gray-900 text-gray-400' },
-                blue:   { ring:'ring-blue-500',   text:'text-blue-400',   btn:'bg-blue-600 hover:bg-blue-500',   activeBg:'bg-blue-600 text-white',   inactiveBg:'bg-gray-900 text-gray-400' },
-                green:  { ring:'ring-green-500',  text:'text-green-400',  btn:'bg-green-600 hover:bg-green-500', activeBg:'bg-green-600 text-white',  inactiveBg:'bg-gray-900 text-gray-400' },
+                amber:  { ring: 'ring-amber-500',  text: 'text-amber-400',  btn: 'bg-amber-600',  activeBg: 'bg-amber-600  text-white', inactiveBg: 'bg-gray-900 text-gray-400' },
+                purple: { ring: 'ring-purple-500', text: 'text-purple-400', btn: 'bg-purple-600', activeBg: 'bg-purple-600 text-white', inactiveBg: 'bg-gray-900 text-gray-400' },
+                blue:   { ring: 'ring-blue-500',   text: 'text-blue-400',   btn: 'bg-blue-600',   activeBg: 'bg-blue-600   text-white', inactiveBg: 'bg-gray-900 text-gray-400' },
+                green:  { ring: 'ring-green-500',  text: 'text-green-400',  btn: 'bg-green-600',  activeBg: 'bg-green-600  text-white', inactiveBg: 'bg-gray-900 text-gray-400' },
             };
+
             const modoActual = MODOS.find(m => m.id === modo) || MODOS[0];
             const C = COLORS[modoActual.color];
             const needsInput = modo === 'personaje' || modo === 'palabra';
 
             return (
                 <div className="animate-in fade-in duration-500 space-y-6 max-w-2xl mx-auto">
+
                     <div className="flex items-center gap-3">
                         <button onClick={onBack} className="text-gray-500 hover:text-white transition-colors">
                             <i className="fa-solid fa-arrow-left"></i>
                         </button>
-                        <h2 className="text-xl font-bold flex items-center gap-2">
-                            <i className="fa-solid fa-quote-left text-purple-400"></i>
-                            Frases Célebres
+                        <h2 className="text-2xl font-bold">
+                            <i className="fa-solid fa-quote-left text-amber-400 mr-2"></i>
+                            Frases Celebres
                         </h2>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                         {MODOS.map(m => {
-                            const isActive = modo === m.id;
                             const mc = COLORS[m.color];
+                            const isActive = modo === m.id;
+                            const bgClass = isActive ? mc.activeBg : mc.inactiveBg;
                             return (
                                 <button key={m.id}
-                                    onClick={() => { setModo(m.id); setFrase(null); setLista([]); }}
-                                    className={'flex items-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all border ' +
-                                        (isActive ? mc.activeBg + ' border-transparent' : mc.inactiveBg + ' border-white/10 hover:border-white/20')}>
-                                    <i className={'fa-solid ' + m.icon}></i>
+                                    onClick={() => { setModo(m.id); setFrase(null); setLista([]); setInput(''); setIaUsada(''); }}
+                                    className={'p-3 rounded-xl border transition-all text-center text-xs font-bold flex flex-col items-center gap-1.5 ' + bgClass}>
+                                    <i className={'fa-solid ' + m.icon + ' text-lg ' + (isActive ? 'text-white' : mc.text)}></i>
                                     {m.label}
                                 </button>
                             );
@@ -415,62 +436,123 @@
 
                     {needsInput && (
                         <div className="flex gap-2">
-                            <input value={input} onChange={e => setInput(e.target.value)}
+                            <input
+                                value={input}
+                                onChange={e => setInput(e.target.value)}
                                 onKeyDown={e => e.key === 'Enter' && modoActual.accion()}
-                                placeholder={modo === 'personaje' ? 'Ej: Poincaré, Borges, Darwin...' : 'Ej: amor, tiempo, libertad...'}
-                                className={'flex-1 bg-black/30 border rounded-xl px-4 py-3 text-sm outline-none focus:' + C.ring + ' border-white/10'} />
-                            <button onClick={modoActual.accion} disabled={cargando}
-                                className={'px-5 py-3 rounded-xl font-bold text-white disabled:opacity-50 ' + C.btn}>
-                                {cargando ? <i className="fa-solid fa-spinner animate-spin"></i> : <i className="fa-solid fa-magnifying-glass"></i>}
+                                placeholder={modo === 'personaje' ? 'Cualquier persona: Poincare, Sun Tzu, Frida...' : 'Cualquier tema: horror, amor, guerra, caos...'}
+                                className="flex-1 bg-gray-900 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-300 placeholder-gray-600 outline-none"
+                            />
+                            {input && (
+                                <button onClick={() => { setInput(''); setFrase(null); setLista([]); setIaUsada(''); }}
+                                    className="bg-gray-800 hover:bg-gray-700 px-3 rounded-xl text-gray-500 hover:text-white">
+                                    <i className="fa-solid fa-xmark"></i>
+                                </button>
+                            )}
+                        </div>
+                    )}
+
+                    <button onClick={modoActual.accion} disabled={cargando}
+                        className={'w-full ' + C.btn + ' hover:opacity-90 disabled:opacity-50 py-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 text-lg'}>
+                        {cargando
+                            ? React.createElement('span', null,
+                                React.createElement('i', { className: 'fa-solid fa-spinner animate-spin mr-2' }),
+                                'Consultando IA...')
+                            : React.createElement('span', { className: 'flex items-center gap-2' },
+                                React.createElement('i', { className: 'fa-solid ' + modoActual.icon }),
+                                modo === 'dia'       ? 'Ver Frase del Dia' :
+                                modo === 'azar'      ? 'Dame una frase al azar' :
+                                modo === 'personaje' ? (input.trim() ? 'Frases de "' + input + '"' : 'Frase de un personaje') :
+                                                       (input.trim() ? 'Frases sobre "' + input + '"' : 'Frase sobre cualquier tema')
+                              )
+                        }
+                    </button>
+
+                    {frase && !cargando && (
+                        <div className={'bg-gray-900 border rounded-3xl p-8 relative overflow-hidden ' + C.ring + ' ring-1'}>
+                            <blockquote>
+                                <p className={'text-xl md:text-2xl italic leading-relaxed mb-6 ' + C.text}>
+                                    "{frase.q}"
+                                </p>
+                                <footer className="mt-auto border-t border-white/10 bg-black/80 backdrop-blur-md py-6 px-4 text-center">
+                        <div className="flex flex-col justify-center items-center gap-4 mb-6">
+                            <div className="flex flex-wrap justify-center gap-3">
+                                <a href="https://www.instagram.com/pedroguirao" target="_blank" rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                                    <i className="fa-brands fa-instagram"></i> Instagram
+                                </a>
+                                <a href="https://www.tiktok.com/@pedro.guirao" target="_blank" rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-black border border-white/20 hover:border-white/50 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                                    <i className="fa-brands fa-tiktok"></i> TikTok
+                                </a>
+                                <a href="https://www.facebook.com/pedro.guirao" target="_blank" rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                                    <i className="fa-brands fa-facebook"></i> Facebook
+                                </a>
+                                <a href="https://www.youtube.com/@HERNANNEWSTV" target="_blank" rel="noopener noreferrer"
+                                    className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
+                                    <i className="fa-brands fa-youtube"></i> YouTube
+                                </a>
+                            </div>
+                            <div className="flex flex-col md:flex-row gap-4 md:gap-8">
+                                <a href="mailto:pedro.guirao@gmail.com" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2 text-sm font-mono">
+                                    <i className="fa-solid fa-envelope"></i> pedro.guirao@gmail.com
+                                </a>
+                                <a href="https://pedroguiraogil.github.io/CURSOS/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-400 transition-colors flex items-center gap-2 text-sm font-mono">
+                                    <i className="fa-solid fa-graduation-cap"></i> Acceso a Cursos
+                                </a>
+                            </div>
+                            <a href="https://buy.stripe.com/4gMeVecnWgM35GPfZo8ww00" target="_blank" rel="noopener noreferrer"
+                                className="flex items-center gap-2 bg-purple-700 hover:bg-purple-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors">
+                                <i className="fa-solid fa-heart text-pink-300"></i> Donar
+                            </a>
+                        </div>
+                        <div className="flex justify-center items-center gap-2 text-xs text-gray-500 font-mono">
+                            <span>VISTAS TOTALES:</span>
+                            <img 
+                                src="https://api.visitorbadge.io/api/visitors?path=https%3A%2F%2Fpedroguiraogil.github.io%2FCURSOS&label=%20&countColor=%239333ea&labelColor=%23000000" 
+                                alt="Contador de visitas" 
+                                className="h-5 rounded" 
+                            />
+                        </div>
+                    </footer>
+                            </blockquote>
+                            <button
+                                onClick={() => navigator.clipboard.writeText('"' + frase.q + '" - ' + frase.a)}
+                                className="absolute top-4 right-4 bg-white/5 hover:bg-white/10 p-2 rounded-lg text-gray-500 hover:text-white">
+                                <i className="fa-solid fa-copy text-xs"></i>
                             </button>
                         </div>
                     )}
 
-                    {!needsInput && (
-                        <button onClick={modoActual.accion} disabled={cargando}
-                            className={'w-full py-3 rounded-xl font-bold text-white disabled:opacity-50 transition-all ' + C.btn}>
-                            {cargando ? <i className="fa-solid fa-spinner animate-spin"></i> : (
-                                <><i className={'fa-solid ' + modoActual.icon + ' mr-2'}></i>{modoActual.label}</>
-                            )}
-                        </button>
-                    )}
-
-                    {frase && frase.cat !== 'info' && (
-                        <div className={'bg-black/30 rounded-2xl p-6 border ' + C.ring + '/30 space-y-4'}>
-                            <i className={'fa-solid fa-quote-left text-2xl ' + C.text + ' opacity-50'}></i>
-                            <p className="text-xl font-light leading-relaxed text-white italic">{frase.q}</p>
-                            {frase.a && <p className={'text-right font-semibold ' + C.text}>— {frase.a}</p>}
-                            {fuente && <p className="text-xs text-gray-600 text-right mt-1">{fuente}</p>}
-                        </div>
-                    )}
-
-                    {frase && frase.cat === 'info' && (
-                        <div className="bg-yellow-950/30 rounded-2xl p-5 border border-yellow-700/30">
-                            <p className="text-yellow-400 text-sm">{frase.q}</p>
-                        </div>
-                    )}
-
-                    {lista.length > 1 && (
-                        <div className="space-y-3">
-                            <p className="text-xs text-gray-500 uppercase tracking-wider">Más frases ({lista.length})</p>
-                            {lista.map((f, i) => (
-                                <button key={i} onClick={() => setFrase(f)}
-                                    className="w-full text-left bg-white/5 hover:bg-white/10 rounded-xl p-4 border border-white/5 hover:border-white/15 transition-all">
-                                    <p className="text-sm text-gray-200 italic">"{f.q}"</p>
-                                    {f.a && <p className="text-xs text-gray-500 mt-1">— {f.a}</p>}
-                                </button>
-                            ))}
+                    {lista.length > 1 && !cargando && (
+                        <div className="space-y-2">
+                            <p className="text-xs text-gray-600 uppercase tracking-widest">{lista.length} frases — pulsa para ver</p>
+                            <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                                {lista.map((item, i) => {
+                                    const isSelected = frase && frase.q === item.q;
+                                    const rowClass = 'w-full text-left p-3 rounded-xl border transition-all text-sm ' +
+                                        (isSelected ? C.ring + ' ring-1 bg-white/5' : 'border-white/5 bg-white/5 hover:bg-white/10');
+                                    return (
+                                        <button key={i} onClick={() => { setFrase(item); setIaUsada(item.ia || ''); }}
+                                            className={rowClass}>
+                                            <span className="italic text-gray-300 line-clamp-2">"{item.q}"</span>
+                                            <span className={'block mt-1 text-xs font-bold ' + C.text}>— {item.a}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
                     )}
                 </div>
             );
         };
-
-
         const App = () => {
             const [activeView, setActiveView] = useState('home'); 
             const [loading, setLoading] = useState(false);
-
+            const [tvProgramacion, setTvProgramacion] = useState({});
+            const [tvCargando, setTvCargando] = useState(false);
+            const [tvCargados, setTvCargados] = useState([]);
             const [isMobile, setIsMobile] = useState(false);
 
             useEffect(() => {
@@ -485,6 +567,50 @@
                 return () => window.removeEventListener('resize', checkDevice);
             }, []);
             
+            // Carga programacion TV al arrancar la app
+            const llamarGroqTV = async (canal, fechaStr) => {
+                const prompt = 'Hoy es ' + fechaStr + '. Dame la programacion tipica de hoy para el canal de television espanol llamado: ' + canal + '. ' +
+                    'Dame entre 12 y 15 programas cubriendo todo el dia desde las 00:00 hasta las 23:59. ' +
+                    'IMPORTANTE: en el JSON pon exactamente este nombre de canal: ' + canal + '. ' +
+                    'SOLO JSON, sin texto ni markdown: {"canales":[{"nombre":"' + canal + '","programas":[{"inicio":"08:00","fin":"09:30","titulo":"Titulo del programa"}]}]}';
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + GROQ_KEY },
+                    body: JSON.stringify({ model: 'meta-llama/llama-4-scout-17b-16e-instruct', max_tokens: 1500, temperature: 0.2, messages: [{ role: 'user', content: prompt }] })
+                });
+                if (!res.ok) throw new Error('Groq ' + res.status);
+                const d = await res.json();
+                const txt = d.choices[0].message.content.trim().replace(/```json|```/g, '').trim();
+                const data = JSON.parse(txt);
+                // Acepta el canal aunque el nombre no coincida exactamente
+                const progs = data.canales && data.canales[0] && data.canales[0].programas;
+                if (!progs || progs.length === 0) throw new Error('Sin programas');
+                return progs;
+            };
+
+            const cargarTV = async () => {
+                if (tvCargando || Object.keys(tvProgramacion).length > 0) return;
+                setTvCargando(true);
+                setTvCargados([]);
+                const ahora = new Date();
+                const fechaStr = ahora.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                // Todas en paralelo - mucho mas rapido
+                const promesas = CANALES_TV.map(async (canal) => {
+                    for (let intento = 0; intento < 3; intento++) {
+                        try {
+                            if (intento > 0) await new Promise(r => setTimeout(r, 2000));
+                            const progs = await llamarGroqTV(canal, fechaStr);
+                            setTvProgramacion(prev => ({ ...prev, [canal]: progs }));
+                            setTvCargados(prev => [...prev, canal]);
+                            return;
+                        } catch (e) { console.warn('TV intento', intento+1, canal, e.message); }
+                    }
+                });
+                await Promise.all(promesas);
+                setTvCargando(false);
+            };
+
+            useEffect(() => { cargarTV(); }, []);
 
             const [selectedSign, setSelectedSign] = useState(null);
             const [prediction, setPrediction] = useState('');
@@ -740,7 +866,7 @@
 
                         {/* NUEVA VISTA: PARRILLA TV */}
                         {activeView === 'parrilla' && (
-                            <ParrillaTV onBack={resetView} />
+                            <ParrillaTV onBack={resetView} programacion={tvProgramacion} cargando={tvCargando} cargados={tvCargados} recargar={cargarTV} />
                         )}
 
                         {/* VISTA: FRASES CÉLEBRES */}
@@ -1001,26 +1127,6 @@
 
                     <footer className="mt-auto border-t border-white/10 bg-black/80 backdrop-blur-md py-6 px-4 text-center">
                         <div className="flex flex-col justify-center items-center gap-4 mb-6">
-                            {/* Redes sociales */}
-                            <div className="flex flex-wrap justify-center gap-3">
-                                <a href="https://www.instagram.com/pedroguirao" target="_blank" rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-500 hover:to-pink-400 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
-                                    <i className="fa-brands fa-instagram"></i> Instagram
-                                </a>
-                                <a href="https://www.tiktok.com/@pedro.guirao" target="_blank" rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-black border border-white/20 hover:border-white/50 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
-                                    <i className="fa-brands fa-tiktok"></i> TikTok
-                                </a>
-                                <a href="https://www.facebook.com/pedro.guirao" target="_blank" rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-blue-700 hover:bg-blue-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
-                                    <i className="fa-brands fa-facebook"></i> Facebook
-                                </a>
-                                <a href="https://www.youtube.com/@HERNANNEWSTV" target="_blank" rel="noopener noreferrer"
-                                    className="flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition-all">
-                                    <i className="fa-brands fa-youtube"></i> YouTube
-                                </a>
-                            </div>
-                            {/* Contacto y cursos */}
                             <div className="flex flex-col md:flex-row gap-4 md:gap-8">
                                 <a href="mailto:pedro.guirao@gmail.com" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2 text-sm font-mono">
                                     <i className="fa-solid fa-envelope"></i> pedro.guirao@gmail.com
