@@ -17,8 +17,8 @@ jobs:
 
       - name: Instalar dependencias Python
         run: |
-          pip install requests beautifulsoup4 playwright --quiet
-          python -m playwright install chromium --with-deps --quiet
+          pip install requests beautifulsoup4 playwright -q
+          python -m playwright install chromium --with-deps
 
       - name: Scrapear programacion movistarplus.es
         run: |
