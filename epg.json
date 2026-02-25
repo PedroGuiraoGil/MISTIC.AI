@@ -1,1671 +1,1715 @@
 {
-  "actualizado": "2026-02-25T07:02:32.300055+00:00",
+  "actualizado": "2026-02-25T11:11:13Z",
   "canales": {
     "Movistar Plus+": [
       {
-        "inicio": "00:14",
-        "fin": "01:10",
-        "titulo": "Universo Valdano T9 · Carlo Ancelotti"
+        "inicio": "00:20",
+        "fin": "01:16",
+        "titulo": "Universo Valdano T9 · Carlo Ancelotti",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.4/10\n· Repasamos con Ancelotti la agitada actualidad del equipo blanco en lo"
       },
       {
-        "inicio": "02:03",
-        "fin": "03:52",
-        "titulo": "El diputado"
+        "inicio": "06:50",
+        "fin": "07:33",
+        "titulo": "Los setenta: Estados Unidos contra Nixon",
+        "desc": "Documentales,Sociedad | 2015 | +12 | *6.2/10\n· ¿Qué pasó para que Richard Nixon fuera el único presidente de la historia"
       },
       {
-        "inicio": "03:52",
-        "fin": "05:34",
-        "titulo": "Eloy de la Iglesia. Adicto al cine"
+        "inicio": "07:33",
+        "fin": "08:14",
+        "titulo": "Los setenta: Paz con honor",
+        "desc": "Documentales,Sociedad | 2015 | +12 | *6.2/10\n· Este episodio se centra en la Guerra de Vietnam, que comenzó en la década"
       },
       {
-        "inicio": "05:34",
-        "fin": "06:53",
-        "titulo": "Almudena"
+        "inicio": "08:14",
+        "fin": "08:26",
+        "titulo": "Buffet Paraíso",
+        "desc": "Cortometrajes,Corto animación | 2024 | +16 | *6.6/10\n· Un variopinto grupo de personajes unidos por su pasión por la com"
       },
       {
-        "inicio": "06:53",
-        "fin": "07:34",
-        "titulo": "Los setenta: Estados Unidos contra Nixon"
+        "inicio": "08:26",
+        "fin": "08:36",
+        "titulo": "Flores para Antonio. Alba Flores celebra a su padre",
+        "desc": "Cine,Programa de cine | 2025 | +7 | *6.6/10\n· La actriz Alba Flores y sus directores Isaki Lacuesta y Elena Molina nos c"
       },
       {
-        "inicio": "07:34",
-        "fin": "08:15",
-        "titulo": "Los setenta: Paz con honor"
+        "inicio": "08:36",
+        "fin": "09:27",
+        "titulo": "El Imperio romano: más allá del mito · Julio César y el comerciante",
+        "desc": "Documentales,Historia | 2025 | TP | *5.8/10\n· Esta serie documental revela como nunca antes el fascinante mundo del anti"
       },
       {
-        "inicio": "08:15",
-        "fin": "08:25",
-        "titulo": "Buffet Paraíso"
+        "inicio": "09:27",
+        "fin": "10:23",
+        "titulo": "El Imperio romano: más allá del mito · Nerón y el senador",
+        "desc": "Documentales,Historia | 2025 | TP | *6.8/10\n· Esta serie documental revela como nunca antes el fascinante mundo del anti"
       },
       {
-        "inicio": "08:25",
-        "fin": "09:16",
-        "titulo": "El Imperio romano: más allá del mito · Julio César y el comerciante"
+        "inicio": "10:23",
+        "fin": "11:41",
+        "titulo": "¡Ay, Carmen!",
+        "desc": "Documentales,Biografía | 2018 | +7 | *6.6/10\n· Esta es la historia en primera persona de Carmen Maura, una mujer que lo "
       },
       {
-        "inicio": "09:16",
-        "fin": "10:11",
-        "titulo": "El Imperio romano: más allá del mito · Nerón y el senador"
+        "inicio": "11:41",
+        "fin": "13:22",
+        "titulo": "¡Ay, Carmela!",
+        "desc": "Cine,Comedia | 1990 | TP | *6.6/10\n· Los artistas ambulantes Carmela, Paulino y Gustavete, tras divertir a las tropas re"
       },
       {
-        "inicio": "10:11",
-        "fin": "11:29",
-        "titulo": "¡Ay, Carmen!"
+        "inicio": "13:22",
+        "fin": "13:51",
+        "titulo": "Las vueltas que da la vida",
+        "desc": "Cortometrajes,Corto de comedia | 2026 | TP | *6.8/10\n· Per tiene casi 400 años y es inmortal. Cuando lo confiesa sin que"
       },
       {
-        "inicio": "11:29",
-        "fin": "13:10",
-        "titulo": "¡Ay, Carmela!"
+        "inicio": "13:51",
+        "fin": "14:29",
+        "titulo": "Informe Plus+ T20/21 · Irrepetible. La Gesta del TDK Manresa",
+        "desc": "Deportes,Programa deportes | 2021 | TP | *7.4/10\n· Manresa y baloncesto viven entrelazados desde hace casi un siglo. La "
       },
       {
-        "inicio": "13:10",
-        "fin": "13:41",
-        "titulo": "Las vueltas que da la vida"
+        "inicio": "14:29",
+        "fin": "15:37",
+        "titulo": "Noche de Champions T25/26 · 24/02/2026",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.2/10\n· Revive la emoción de cada jornada de Champions con este programa que "
       },
       {
-        "inicio": "13:41",
-        "fin": "14:16",
-        "titulo": "Informe Plus+ T20/21 · Irrepetible. La Gesta del TDK Manresa"
+        "inicio": "15:37",
+        "fin": "17:32",
+        "titulo": "La infiltrada",
+        "desc": "Cine,Thriller | 2024 | +12 | *6.2/10\n· Con 22 años, una agente de policía, bajo el pseudónimo de Aranzazu Berradre Marín"
       },
       {
-        "inicio": "14:16",
-        "fin": "15:30",
-        "titulo": "Noche de Champions T25/26 · 24/02/2026"
+        "inicio": "17:32",
+        "fin": "19:31",
+        "titulo": "La niña de tus ojos",
+        "desc": "Cine,Comedia | 1998 | +16 | *6.4/10\n· En 1938, en plena Guerra Civil española y como parte de la estrecha colaboración e"
       },
       {
-        "inicio": "15:30",
-        "fin": "17:25",
-        "titulo": "La infiltrada"
-      },
-      {
-        "inicio": "17:25",
-        "fin": "19:25",
-        "titulo": "La niña de tus ojos"
-      },
-      {
-        "inicio": "19:25",
+        "inicio": "19:31",
         "fin": "20:00",
-        "titulo": "Ilustres ignorantes T19 · Periodistas"
+        "titulo": "Ilustres ignorantes T19 · Periodistas",
+        "desc": "Entretenimiento,Humor | 2025 | +16 | *6.2/10\n· La actriz Melani Olivares y Raúl Pérez en el papel del diseñador Josie so"
       },
       {
         "inicio": "20:00",
-        "fin": "20:56",
-        "titulo": "La Previa de Champions T25/26 · Previa Real Madrid - Benfica"
+        "fin": "20:53",
+        "titulo": "La Previa de Champions T25/26 · Previa Real Madrid - Benfica",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.0/10\n· Programa que incluye resúmenes de los partidos de la UEFA Champions L"
       },
       {
-        "inicio": "20:56",
-        "fin": "23:00",
-        "titulo": "Play-offs: Real Madrid - Benfica T25/26 · UEFA Champions League"
+        "inicio": "20:53",
+        "fin": "23:02",
+        "titulo": "DIRECTO Play-offs: Real Madrid - Benfica T25/26 · UEFA Champions League",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.8/10\n· Tras el tropiezo liguero el Real Madrid busca certificar su pase a octavos de fi"
       },
       {
-        "inicio": "23:00",
-        "fin": "00:14",
-        "titulo": "Noche de Champions T25/26 · 25/02/2026"
+        "inicio": "23:02",
+        "fin": "00:20",
+        "titulo": "Noche de Champions T25/26 · 25/02/2026",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.8/10\n· Revive la emoción de cada jornada de Champions con este programa que "
       }
     ],
     "Movistar LaLiga": [
       {
-        "inicio": "00:30",
-        "fin": "01:30",
-        "titulo": "Los Otros T3 · Fútbol y racismo"
-      },
-      {
-        "inicio": "01:00",
-        "fin": "02:46",
-        "titulo": "LALIGA HYPERMOTION T25/26 · Jornada 27: Racing - Burgos"
-      },
-      {
-        "inicio": "02:46",
-        "fin": "04:40",
-        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: At. Madrid - Espanyol"
-      },
-      {
-        "inicio": "04:40",
-        "fin": "05:11",
-        "titulo": "Informe Plus+. Ronaldo al Madrid. Historia de un fichaje"
-      },
-      {
-        "inicio": "05:11",
-        "fin": "07:00",
-        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: Villarreal - Valencia"
+        "inicio": "00:33",
+        "fin": "02:28",
+        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: Alavés - Girona",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.0/10\n· Alavés y Girona se miden separados por solo tres puntos y cerca de los puestos d"
       },
       {
         "inicio": "07:00",
         "fin": "08:00",
-        "titulo": "Momentazos de LaLiga T19/20 · Los otros 18"
+        "titulo": "Momentazos de LaLiga T19/20 · Los otros 18",
+        "desc": "Deportes,Programa deportes | 2020 | TP | *6.2/10\n· Más de 120 personajes entre los que se encuentran ex jugadores, entre"
       },
       {
         "inicio": "08:00",
         "fin": "09:00",
-        "titulo": "Momentazos de LaLiga T19/20 · Los 15 nombres de la historia de La Liga"
+        "titulo": "Momentazos de LaLiga T19/20 · Los 15 nombres de la historia de La Liga",
+        "desc": "Deportes,Programa deportes | 2020 | TP | *6.2/10\n· Más de 120 personajes entre los que se encuentran ex jugadores, entre"
       },
       {
         "inicio": "09:00",
-        "fin": "10:50",
-        "titulo": "LALIGA HYPERMOTION T25/26 · Jornada 27: Las Palmas - Castellón"
+        "fin": "10:55",
+        "titulo": "LALIGA HYPERMOTION T25/26 · Jornada 27: Las Palmas - Castellón",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.8/10\n· La igualdad es la nota imperante en LaLiga HyperMotion, la Segunda División de f"
       },
       {
-        "inicio": "10:50",
+        "inicio": "10:55",
         "fin": "12:00",
-        "titulo": "DeportePlus+ con Juanma Castaño T25/26 E20"
+        "titulo": "DeportePlus+ con Juanma Castaño T25/26 E20",
+        "desc": "Deportes,Programa deportes | TP | *6.2/10\n· Un lugar donde cabe todo el deporte que se juega en el planeta. La emoción y"
       },
       {
         "inicio": "12:00",
         "fin": "12:55",
-        "titulo": "Informe Plus+. Puro Djalminha"
+        "titulo": "Informe Plus+. Puro Djalminha",
+        "desc": "Deportes,Programa deportes | 2024 | TP | *6.6/10\n· Djalminha, uno de los futbolistas más creativos y geniales que se rec"
       },
       {
         "inicio": "12:55",
         "fin": "13:00",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Ceuta - Granada"
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Ceuta - Granada",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.4/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
         "inicio": "13:00",
         "fin": "13:05",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Leganés - Cultural"
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Leganés - Cultural",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.0/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
         "inicio": "13:05",
-        "fin": "13:10",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Deportivo - Eibar"
+        "fin": "13:11",
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Deportivo - Eibar",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.0/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
-        "inicio": "13:10",
-        "fin": "13:15",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Huesca - Mirandés"
+        "inicio": "13:11",
+        "fin": "13:16",
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Huesca - Mirandés",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.2/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
-        "inicio": "13:15",
-        "fin": "13:20",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Las Palmas - Castellón"
+        "inicio": "13:16",
+        "fin": "13:21",
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Las Palmas - Castellón",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.0/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
-        "inicio": "13:20",
-        "fin": "13:25",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Sporting - Valladolid"
+        "inicio": "13:21",
+        "fin": "13:26",
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Sporting - Valladolid",
+        "desc": "Deportes,Fútbol | 2026 | TP | *5.8/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
-        "inicio": "13:25",
-        "fin": "13:30",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Andorra - Zaragoza"
-      },
-      {
-        "inicio": "13:30",
+        "inicio": "13:26",
         "fin": "13:35",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Racing - Burgos"
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Andorra - Zaragoza",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.2/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
         "inicio": "13:35",
-        "fin": "13:40",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Málaga - Albacete"
+        "fin": "14:35",
+        "titulo": "Universo Valdano T7 · Dani Carvajal",
+        "desc": "Deportes,Programa deportes | 2023 | TP | *6.0/10\n· Jorge Valdano se sienta frente a Dani Carvajal, el lateral derecho de"
       },
       {
-        "inicio": "13:40",
-        "fin": "13:50",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Cádiz - Real Sociedad B"
+        "inicio": "14:35",
+        "fin": "14:46",
+        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Real Sociedad - Real Oviedo",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.2/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Primera Div"
       },
       {
-        "inicio": "13:50",
-        "fin": "14:50",
-        "titulo": "Universo Valdano T7 · Dani Carvajal"
+        "inicio": "14:46",
+        "fin": "14:58",
+        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: At. Madrid - Espanyol",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.8/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Primera Div"
       },
       {
-        "inicio": "14:50",
-        "fin": "15:02",
-        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Real Sociedad - Real Oviedo"
+        "inicio": "14:58",
+        "fin": "15:10",
+        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Barcelona - Levante",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.2/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Primera Div"
       },
       {
-        "inicio": "15:02",
-        "fin": "15:14",
-        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: At. Madrid - Espanyol"
+        "inicio": "15:10",
+        "fin": "15:21",
+        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Osasuna - Real Madrid",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.4/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Primera Div"
       },
       {
-        "inicio": "15:14",
-        "fin": "15:26",
-        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Barcelona - Levante"
+        "inicio": "15:21",
+        "fin": "15:34",
+        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Athletic - Elche",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.0/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Primera Div"
       },
       {
-        "inicio": "15:26",
-        "fin": "15:38",
-        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Villarreal - Valencia"
+        "inicio": "15:34",
+        "fin": "15:45",
+        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Getafe - Sevilla",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.6/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Primera Div"
       },
       {
-        "inicio": "15:38",
-        "fin": "15:50",
-        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Alavés - Girona"
-      },
-      {
-        "inicio": "15:50",
+        "inicio": "15:45",
         "fin": "16:02",
-        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Osasuna - Real Madrid"
+        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Betis - Rayo",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.0/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Primera Div"
       },
       {
         "inicio": "16:02",
-        "fin": "16:14",
-        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Athletic - Elche"
+        "fin": "17:03",
+        "titulo": "Universo Valdano T5 · Thibaut Courtois",
+        "desc": "Deportes,Programa deportes | 2022 | TP | *6.0/10\n· Jorge Valdano visita a uno de los jugadores básicos en el Real Madrid"
       },
       {
-        "inicio": "16:14",
-        "fin": "16:26",
-        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Getafe - Sevilla"
+        "inicio": "17:03",
+        "fin": "18:08",
+        "titulo": "DeportePlus+ con Juanma Castaño T25/26 E20",
+        "desc": "Deportes,Programa deportes | TP | *6.2/10\n· Un lugar donde cabe todo el deporte que se juega en el planeta. La emoción y"
       },
       {
-        "inicio": "16:26",
-        "fin": "16:38",
-        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Celta - Mallorca"
+        "inicio": "18:08",
+        "fin": "19:54",
+        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: Barcelona - Levante",
+        "desc": "Deportes,Fútbol | 2026 | TP | *7.2/10\n· Los mejores clubes del país protagonizan LaLiga, el campeonato de la regularidad"
       },
       {
-        "inicio": "16:38",
-        "fin": "16:55",
-        "titulo": "Resúmenes LALIGA EA Sports T25/26 · Jornada 25: Betis - Rayo"
+        "inicio": "19:54",
+        "fin": "20:27",
+        "titulo": "Informe Plus+. Ronaldo al Madrid. Historia de un fichaje",
+        "desc": "Deportes,Programa deportes | 2022 | TP | *6.2/10\n· En el verano de 2002 y tras los fichajes de Figo y Zidane, el R. Madr"
       },
       {
-        "inicio": "16:55",
-        "fin": "17:55",
-        "titulo": "Universo Valdano T5 · Thibaut Courtois"
+        "inicio": "20:27",
+        "fin": "22:22",
+        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: At. Madrid - Espanyol",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.6/10\n· Los mejores clubes del país protagonizan LaLiga, el campeonato de la regularidad"
       },
       {
-        "inicio": "17:55",
-        "fin": "19:05",
-        "titulo": "DeportePlus+ con Juanma Castaño T25/26 E20"
+        "inicio": "22:22",
+        "fin": "23:32",
+        "titulo": "Universo Valdano T6 · Scaloni",
+        "desc": "Deportes,Programa deportes | 2023 | TP | *6.0/10\n· Una mirada futbolística con los ojos de Jorge Valdano. El argentino e"
       },
       {
-        "inicio": "19:05",
-        "fin": "20:55",
-        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: Barcelona - Levante"
-      },
-      {
-        "inicio": "20:55",
-        "fin": "21:25",
-        "titulo": "Informe Plus+. Ronaldo al Madrid. Historia de un fichaje"
-      },
-      {
-        "inicio": "21:25",
-        "fin": "23:15",
-        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: At. Madrid - Espanyol"
-      },
-      {
-        "inicio": "23:15",
-        "fin": "00:30",
-        "titulo": "Universo Valdano T6 · Scaloni"
+        "inicio": "23:32",
+        "fin": "00:33",
+        "titulo": "Los Otros T3 · Fútbol y racismo",
+        "desc": "Deportes,Programa deportes | 2020 | +12 | *7.6/10\n· En los últimos meses se han multiplicado los episodios racistas en e"
       }
     ],
     "DAZN LaLiga": [
       {
         "inicio": "00:00",
         "fin": "00:15",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Ceuta - Granada"
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Ceuta - Granada",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.4/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
         "inicio": "00:15",
         "fin": "00:30",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Las Palmas - Castellón"
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Las Palmas - Castellón",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.0/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
         "inicio": "00:30",
         "fin": "00:45",
-        "titulo": "LALIGA HYPERMOTION T25/26 · Jornada 27: Málaga - Albacete"
+        "titulo": "LALIGA HYPERMOTION T25/26 · Jornada 27: Málaga - Albacete",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.4/10\n· La igualdad es la nota imperante en LaLiga HyperMotion, la Segunda División de f"
       },
       {
         "inicio": "00:45",
         "fin": "01:00",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Racing - Burgos"
-      },
-      {
-        "inicio": "01:00",
-        "fin": "06:00",
-        "titulo": "DAZN LALIGA"
-      },
-      {
-        "inicio": "06:00",
-        "fin": "12:00",
-        "titulo": "DAZN LALIGA"
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Racing - Burgos",
+        "desc": "Deportes,Fútbol | 2026 | TP | *5.8/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
         "inicio": "12:00",
         "fin": "14:00",
-        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: Athletic - Elche"
+        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: Athletic - Elche",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.8/10\n· Los mejores clubes del país protagonizan LaLiga, el campeonato de la regularidad"
       },
       {
         "inicio": "14:00",
         "fin": "14:15",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Leganés - Cultural"
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Leganés - Cultural",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.0/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
         "inicio": "14:15",
         "fin": "14:30",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Deportivo - Eibar"
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Deportivo - Eibar",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.0/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
         "inicio": "14:30",
         "fin": "14:45",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Huesca - Mirandés"
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Huesca - Mirandés",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.2/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
         "inicio": "14:45",
         "fin": "15:00",
-        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Almería - Córdoba"
+        "titulo": "Resúmenes LALIGA HyperMotion T25/26 · Jornada 27: Almería - Córdoba",
+        "desc": "Deportes,Fútbol | 2025 | TP | *5.8/10\n· El mejor resumen con lo más destacado de cada uno de los partidos de Segunda Div"
       },
       {
         "inicio": "15:00",
         "fin": "17:00",
-        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: Getafe - Sevilla"
+        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: Getafe - Sevilla",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.0/10\n· Los mejores clubes del país protagonizan LaLiga, el campeonato de la regularidad"
       },
       {
         "inicio": "17:00",
         "fin": "18:00",
-        "titulo": "¡Sueña, Leganés! T1 · Un líder inesperado"
+        "titulo": "¡Sueña, Leganés! T1 · Un líder inesperado",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.4/10\n· El Club Deportivo Leganés logró en 2024 colarse por segunda vez en su"
       },
       {
         "inicio": "18:00",
         "fin": "19:00",
-        "titulo": "El Post de DAZN T25/26 · Análisis de la jornada 25"
+        "titulo": "El Post de DAZN T25/26 · Análisis de la jornada 25",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· La jornada de LALIGA no termina con el pitido final del último partid"
       },
       {
         "inicio": "19:00",
         "fin": "21:00",
-        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: Osasuna - Real Madrid"
+        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 25: Osasuna - Real Madrid",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.4/10\n· Los mejores clubes del país protagonizan LaLiga, el campeonato de la regularidad"
       },
       {
         "inicio": "21:00",
         "fin": "21:45",
-        "titulo": "Póker FC T25/26 E19"
+        "titulo": "Póker FC T25/26 E19",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Un repaso a lo más destacado de LaLiga, la Premier League, la Serie A"
       },
       {
         "inicio": "21:45",
         "fin": "22:00",
-        "titulo": "Resúmenes DAZN LaLiga EA Sports T25/26 · Jornada 25: Barcelona - Levante"
+        "titulo": "Resúmenes DAZN LaLiga EA Sports T25/26 · Jornada 25: Barcelona - Levante",
+        "desc": "Deportes,Fútbol | 2026 | TP | *5.8/10\n· Resumen con lo más destacado de cada uno de los partidos de Primera División.\n· "
       },
       {
         "inicio": "22:00",
         "fin": "00:00",
-        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 24: Girona - Barcelona"
+        "titulo": "LALIGA EA SPORTS T25/26 · Jornada 24: Girona - Barcelona",
+        "desc": "Deportes,Fútbol | 2026 | TP | *7.0/10\n· Los mejores clubes del país protagonizan LaLiga, el campeonato de la regularidad"
       }
     ],
     "Liga de Campeones": [
       {
         "inicio": "00:00",
         "fin": "01:50",
-        "titulo": "Play-offs: Atalanta - Borussia Dortmund T25/26 · UEFA Champions League"
-      },
-      {
-        "inicio": "01:50",
-        "fin": "03:40",
-        "titulo": "Play-offs: Newcastle - Qarabag T25/26 · UEFA Champions League"
-      },
-      {
-        "inicio": "03:40",
-        "fin": "05:30",
-        "titulo": "Play-offs: Inter - Bodo/Glimt T25/26 · UEFA Champions League"
-      },
-      {
-        "inicio": "05:30",
-        "fin": "06:30",
-        "titulo": "Noche de Champions T25/26 · 24/02/2026"
+        "titulo": "Play-offs: Atalanta - Borussia Dortmund T25/26 · UEFA Champions League",
+        "desc": "Deportes,Fútbol | 2026 | TP | *5.8/10\n· La máxima competición del deporte europeo garantiza emoción y buen fútbol. 36 eq"
       },
       {
         "inicio": "06:30",
         "fin": "08:20",
-        "titulo": "Play-offs: At. Madrid - Brujas T25/26 · UEFA Champions League"
+        "titulo": "UEFA Champions League T25/26 · Play-offs: At. Madrid - Brujas",
+        "desc": "Deportes,Fútbol | 2026 | TP | *7.4/10\n· Su contundencia en el Metropolitano debe ser uno de los argumentos del At.Madrid"
       },
       {
         "inicio": "08:20",
         "fin": "10:10",
-        "titulo": "Play-offs: Newcastle - Qarabag T25/26 · UEFA Champions League"
+        "titulo": "UEFA Champions League T25/26 · Play-offs: Newcastle - Qarabag",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.0/10\n· La máxima competición del deporte europeo garantiza emoción y buen fútbol. 36 eq"
       },
       {
         "inicio": "10:10",
         "fin": "11:10",
-        "titulo": "Magazine Europa League T25/26 E13"
+        "titulo": "Magazine Europa League T25/26 E13",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *5.6/10\n· La Europa League es la sucesora de la Copa UEFA. Se trata de una comp"
       },
       {
         "inicio": "11:10",
         "fin": "12:10",
-        "titulo": "Noche de Champions T25/26 · 24/02/2026"
+        "titulo": "Noche de Champions T25/26 · 24/02/2026",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.2/10\n· Revive la emoción de cada jornada de Champions con este programa que "
       },
       {
         "inicio": "12:10",
         "fin": "14:00",
-        "titulo": "Play-offs: Inter - Bodo/Glimt T25/26 · UEFA Champions League"
+        "titulo": "UEFA Champions League T25/26 · Play-offs: Inter - Bodo/Glimt",
+        "desc": "Deportes,Fútbol | 2026 | TP | *7.6/10\n· La máxima competición del deporte europeo garantiza emoción y buen fútbol. 36 eq"
       },
       {
         "inicio": "14:00",
         "fin": "15:55",
-        "titulo": "Play-offs: Bayer Leverkusen - Olympiacos T25/26 · UEFA Champions League"
+        "titulo": "UEFA Champions League T25/26 · Play-offs: Bayer Leverkusen - Olympiacos",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.4/10\n· La máxima competición del deporte europeo garantiza emoción y buen fútbol. 36 eq"
       },
       {
         "inicio": "15:55",
         "fin": "18:05",
-        "titulo": "DIRECTO Octavos de Final: At. Madrid - Maccabi Haifa T25/26 · UEFA Youth League"
+        "titulo": "DIRECTO Octavos de Final: At. Madrid - Maccabi Haifa T25/26 · UEFA Youth League",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.2/10\n· Las futuras estrellas del fútbol continental protagonizan la Youth League. El to"
       },
       {
         "inicio": "18:05",
         "fin": "20:00",
-        "titulo": "Play-offs: At. Madrid - Brujas T25/26 · UEFA Champions League"
+        "titulo": "UEFA Champions League T25/26 · Play-offs: At. Madrid - Brujas",
+        "desc": "Deportes,Fútbol | 2026 | TP | *7.4/10\n· Su contundencia en el Metropolitano debe ser uno de los argumentos del At.Madrid"
       },
       {
         "inicio": "20:00",
         "fin": "20:53",
-        "titulo": "La Previa de Champions T25/26 · Previa Real Madrid - Benfica"
+        "titulo": "La Previa de Champions T25/26 · Previa Real Madrid - Benfica",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.0/10\n· Programa que incluye resúmenes de los partidos de la UEFA Champions L"
       },
       {
         "inicio": "20:53",
         "fin": "23:00",
-        "titulo": "DIRECTO Play-offs: Real Madrid - Benfica T25/26 · UEFA Champions League"
+        "titulo": "DIRECTO Play-offs: Real Madrid - Benfica T25/26 · UEFA Champions League",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.8/10\n· Tras el tropiezo liguero el Real Madrid busca certificar su pase a octavos de fi"
       },
       {
         "inicio": "23:00",
         "fin": "00:00",
-        "titulo": "Noche de Champions T25/26 · 25/02/2026"
+        "titulo": "Noche de Champions T25/26 · 25/02/2026",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.8/10\n· Revive la emoción de cada jornada de Champions con este programa que "
       }
     ],
-    "Movistar Deportes": [
-      {
-        "inicio": "01:00",
-        "fin": "02:00",
-        "titulo": "Unrivaled T2026 · Temporada Regular: Phantom - Hive"
-      },
-      {
-        "inicio": "02:00",
-        "fin": "04:00",
-        "titulo": "Torneo 6 Naciones T2026 · Jornada 3: Gales - Escocia"
-      },
-      {
-        "inicio": "04:00",
-        "fin": "05:00",
-        "titulo": "Unrivaled T2026 · Temporada Regular: Laces - Rose"
-      },
-      {
-        "inicio": "05:00",
-        "fin": "06:45",
-        "titulo": "Liga Iberdrola de Rugby T25/26 · Jornada 12: San Cugat - Cocos Sevilla"
-      },
+    "Movistar Deportes": [],
+    "Movistar Deportes 2": [
       {
         "inicio": "06:45",
         "fin": "07:00",
-        "titulo": "#ÚneteALaMelé 6N T2026 · Jornada 3"
+        "titulo": "#ÚneteALaMelé 6N T2026 · Jornada 3",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Programa que repasa lo ocurrido en la jornada del torneo 6 Naciones d"
       },
       {
         "inicio": "07:00",
         "fin": "08:00",
-        "titulo": "Highlights ATP T2026 · Río de Janeiro"
+        "titulo": "Highlights ATP T2026 · Río de Janeiro",
+        "desc": "Deportes,Programa deportes | 2026 | *5.8/10\n· Repaso de los mejores puntos, todas las imágenes y los grandes momentos de"
       },
       {
         "inicio": "08:00",
+        "fin": "09:18",
+        "titulo": "Torneo de Dubai T2026 · 1ª Ronda: Struff - Bublik",
+        "desc": "Deportes,Tenis | 2026 | TP | *6.0/10\n· Los mejores tenistas recorren las pistas de todo el mundo luchando por ir sumando"
+      },
+      {
+        "inicio": "09:18",
         "fin": "10:00",
-        "titulo": "TBC T2026 · Torneo de Dubai"
+        "titulo": "Informe Plus+. Bruno Macho. Yo tengo un ángel",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.4/10\n· Bruno tiene 22 años y es boxeador profesional. En menos de un año ha "
       },
       {
         "inicio": "10:00",
         "fin": "10:30",
-        "titulo": "Planeta Tenis T2026 E3"
+        "titulo": "Planeta Tenis T2026 E3",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.6/10\n· Espacio dedicado al mundo del tenis, donde sus principales protagonis"
       },
       {
         "inicio": "10:30",
         "fin": "11:30",
-        "titulo": "Highlights ATP T2026 · Doha"
+        "titulo": "Highlights ATP T2026 · Doha",
+        "desc": "Deportes,Programa deportes | 2026 | *5.6/10\n· Repaso de los mejores puntos, todas las imágenes y los grandes momentos de"
       },
       {
         "inicio": "11:30",
         "fin": "12:00",
-        "titulo": "World of free sports T2026 E7"
+        "titulo": "World of free sports T2026 E7",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *5.8/10\n· El apasionante mundo de los deportes al aire libre llega a nuestro ca"
       },
       {
         "inicio": "12:00",
         "fin": "13:00",
-        "titulo": "Unrivaled T2026 · Temporada Regular: Phantom - Hive"
+        "titulo": "Unrivaled T2026 · Temporada Regular: Phantom - Hive",
+        "desc": "Deportes,Baloncesto 3x3 | 2026 | TP | *6.0/10\n· Unrivaled."
       },
       {
         "inicio": "13:00",
         "fin": "14:00",
-        "titulo": "Highlights ATP T2026 · Río de Janeiro"
+        "titulo": "Highlights ATP T2026 · Río de Janeiro",
+        "desc": "Deportes,Programa deportes | 2026 | *5.8/10\n· Repaso de los mejores puntos, todas las imágenes y los grandes momentos de"
       },
       {
         "inicio": "14:00",
         "fin": "15:45",
-        "titulo": "Super Rugby Pacific T2026 · Temporada Regular: Crusaders - Brumbies"
+        "titulo": "Super Rugby Pacific T2026 · Temporada Regular: Crusaders - Brumbies",
+        "desc": "Deportes,Rugby | 2026 | TP | *4.8/10\n· Crusaders y Brumbies, dos de los colosos en la historia del torneo, chocan en un "
       },
       {
         "inicio": "15:45",
         "fin": "16:00",
-        "titulo": "Snow Running Sierra Nevada"
+        "titulo": "Snow Running Sierra Nevada",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.0/10\n· Snow Running Sierra Nevada."
       },
       {
         "inicio": "16:00",
         "fin": "17:00",
-        "titulo": "Unrivaled T2026 · Temporada Regular: Laces - Rose"
+        "titulo": "Unrivaled T2026 · Temporada Regular: Laces - Rose",
+        "desc": "Deportes,Baloncesto 3x3 | 2026 | TP | *6.0/10\n· Unrivaled."
       },
       {
         "inicio": "17:00",
         "fin": "18:00",
-        "titulo": "Highlights ATP T2026 · Doha"
+        "titulo": "Highlights ATP T2026 · Doha",
+        "desc": "Deportes,Programa deportes | 2026 | *5.6/10\n· Repaso de los mejores puntos, todas las imágenes y los grandes momentos de"
       },
       {
         "inicio": "18:00",
         "fin": "18:15",
-        "titulo": "#ÚneteALaMelé 6N T2026 · Jornada 3"
+        "titulo": "#ÚneteALaMelé 6N T2026 · Jornada 3",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Programa que repasa lo ocurrido en la jornada del torneo 6 Naciones d"
       },
       {
         "inicio": "18:15",
         "fin": "18:46",
-        "titulo": "ATP Tour This Week T2026 E7"
+        "titulo": "ATP Tour This Week T2026 E7",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· ATP Tour This Week."
       },
       {
         "inicio": "18:46",
         "fin": "19:00",
-        "titulo": "Previa Euroliga de baloncesto T25/26 · Jornada 29: Zalgiris - Olympiacos"
+        "titulo": "Previa Euroliga de baloncesto T25/26 · Jornada 29: Zalgiris - Olympiacos",
+        "desc": "Deportes,Programa deportes | TP | *6.0/10\n· Previa Euroliga de baloncesto."
       },
       {
         "inicio": "19:00",
         "fin": "21:15",
-        "titulo": "DIRECTO Jornada 29: Zalgiris - Olympiacos T25/26 · Euroliga de baloncesto"
+        "titulo": "DIRECTO Jornada 29: Zalgiris - Olympiacos T25/26 · Euroliga de baloncesto",
+        "desc": "Deportes,Baloncesto | 2026 | TP | *5.8/10\n· Jornada 29 de la mejor competición de baloncesto de Europa, con más equipos "
       },
       {
         "inicio": "21:15",
         "fin": "21:45",
-        "titulo": "Planeta Tenis T2026 E3"
+        "titulo": "Planeta Tenis T2026 E3",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.6/10\n· Espacio dedicado al mundo del tenis, donde sus principales protagonis"
       },
       {
         "inicio": "21:45",
         "fin": "23:15",
-        "titulo": "NCAA T25/26 · Temporada Regular: Duke - Notre Dame"
+        "titulo": "NCAA T25/26 · Temporada Regular: Duke - Notre Dame",
+        "desc": "Deportes,Baloncesto | 2025 | TP | *6.6/10\n· Arranca la NCAA, la competición que nos hace disfrutar del mejor baloncesto "
       },
       {
         "inicio": "23:15",
         "fin": "23:45",
-        "titulo": "World of free sports T2026 E7"
+        "titulo": "World of free sports T2026 E7",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *5.8/10\n· El apasionante mundo de los deportes al aire libre llega a nuestro ca"
       },
       {
         "inicio": "23:45",
         "fin": "01:45",
-        "titulo": "Jornada 29: Virtus - Barcelona T25/26 · Euroliga de baloncesto"
-      }
-    ],
-    "Movistar Deportes 2": [
-      {
-        "inicio": "01:05",
-        "fin": "03:00",
-        "titulo": "DIRECTO 1ª Ronda: Atmane - Dimitrov T2026 · Torneo de Acapulco"
-      },
-      {
-        "inicio": "03:00",
-        "fin": "05:00",
-        "titulo": "DIRECTO 1ª Ronda: Zverev - Moutet T2026 · Torneo de Acapulco"
-      },
-      {
-        "inicio": "05:00",
-        "fin": "08:00",
-        "titulo": "DIRECTO 1ª Ronda: Ruud - Wu (VO) T2026 · Torneo de Acapulco"
-      },
-      {
-        "inicio": "08:00",
-        "fin": "11:05",
-        "titulo": "M+ Deportes 2"
-      },
-      {
-        "inicio": "11:05",
-        "fin": "13:00",
-        "titulo": "TBC T2026 · Torneo de Dubai"
-      },
-      {
-        "inicio": "13:00",
-        "fin": "16:00",
-        "titulo": "TBC T2026 · Torneo de Dubai"
-      },
-      {
-        "inicio": "16:00",
-        "fin": "19:00",
-        "titulo": "TBC T2026 · Torneo de Dubai"
-      },
-      {
-        "inicio": "19:00",
-        "fin": "22:00",
-        "titulo": "TBC T2026 · Torneo de Dubai"
-      },
-      {
-        "inicio": "22:00",
-        "fin": "01:05",
-        "titulo": "M+ Deportes 2"
+        "titulo": "Jornada 29: Virtus - Barcelona T25/26 · Euroliga de baloncesto",
+        "desc": "Deportes,Baloncesto | 2026 | TP | *6.2/10\n· Jornada 29 de la mejor competición de baloncesto de Europa, con más equipos "
       }
     ],
     "Vamos": [
       {
-        "inicio": "01:00",
-        "fin": "02:00",
-        "titulo": "Noche de Champions T25/26 · 24/02/2026"
+        "inicio": "06:47",
+        "fin": "08:13",
+        "titulo": "Torneo de Dubai T2026 · 1ª Ronda: Carreño - Shapovalov",
+        "desc": "Deportes,Tenis | 2026 | TP | *5.4/10\n· Los mejores tenistas recorren las pistas de todo el mundo luchando por ir sumando"
       },
       {
-        "inicio": "02:00",
-        "fin": "03:48",
-        "titulo": "Jornada 10: Al Taawoun - Al Hilal T25/26 · Liga Saudí"
+        "inicio": "08:13",
+        "fin": "08:43",
+        "titulo": "Bakalá T25/26 E25",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.2/10\n· Un programa que combina el deporte actual con lo mejor del archivo de"
       },
       {
-        "inicio": "03:48",
-        "fin": "05:40",
-        "titulo": "Torneo 6 Naciones T2026 · Jornada 3: Gales - Escocia"
+        "inicio": "08:43",
+        "fin": "09:13",
+        "titulo": "Planeta Tenis T2026 E3",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.6/10\n· Espacio dedicado al mundo del tenis, donde sus principales protagonis"
       },
       {
-        "inicio": "05:40",
-        "fin": "06:40",
-        "titulo": "Cazorla"
+        "inicio": "09:13",
+        "fin": "10:21",
+        "titulo": "Noche de Champions T25/26 · 24/02/2026",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.2/10\n· Revive la emoción de cada jornada de Champions con este programa que "
       },
       {
-        "inicio": "06:40",
-        "fin": "08:30",
-        "titulo": "1ª Ronda: Carreño - Shapovalov T2026 · Torneo de Dubai"
+        "inicio": "10:21",
+        "fin": "11:57",
+        "titulo": "Mondo Duplantis. Nacido para volar",
+        "desc": "Documentales,Deportes | 2022 | TP | *6.2/10\n· Con tan solo 21 años, Mondo Duplantis ganó el oro olímpico y batió el réco"
       },
       {
-        "inicio": "08:30",
-        "fin": "09:00",
-        "titulo": "Bakalá T25/26 E25"
+        "inicio": "11:57",
+        "fin": "12:56",
+        "titulo": "Informe Robinson T10 · Maradona: los años felices",
+        "desc": "Deportes,Programa deportes | 2016 | TP | *6.8/10\n· Maradona debutó en la 1ª división argentina hace más de cuarenta años"
       },
       {
-        "inicio": "09:00",
-        "fin": "09:30",
-        "titulo": "Planeta Tenis T2026 E3"
+        "inicio": "12:56",
+        "fin": "13:47",
+        "titulo": "Informe Plus+. Mourinho en el Barça",
+        "desc": "Deportes,Programa deportes | 2022 | TP | *6.8/10\n· José Mourinho, en primera persona, se abre ante las cámaras de Inform"
       },
       {
-        "inicio": "09:30",
-        "fin": "10:30",
-        "titulo": "Noche de Champions T25/26 · 24/02/2026"
-      },
-      {
-        "inicio": "10:30",
-        "fin": "12:05",
-        "titulo": "Mondo Duplantis. Nacido para volar"
-      },
-      {
-        "inicio": "12:05",
-        "fin": "13:05",
-        "titulo": "Informe Robinson T10 · Maradona: los años felices"
-      },
-      {
-        "inicio": "13:05",
-        "fin": "13:55",
-        "titulo": "Informe Plus+. Mourinho en el Barça"
-      },
-      {
-        "inicio": "13:55",
+        "inicio": "13:47",
         "fin": "14:55",
-        "titulo": "Noche de Champions T25/26 · 24/02/2026"
+        "titulo": "Noche de Champions T25/26 · 24/02/2026",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.2/10\n· Revive la emoción de cada jornada de Champions con este programa que "
       },
       {
         "inicio": "14:55",
         "fin": "15:25",
-        "titulo": "Bakalá T25/26 E25"
+        "titulo": "Bakalá T25/26 E25",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.2/10\n· Un programa que combina el deporte actual con lo mejor del archivo de"
       },
       {
         "inicio": "15:25",
         "fin": "15:55",
-        "titulo": "Planeta Tenis T2026 E3"
+        "titulo": "Planeta Tenis T2026 E3",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.6/10\n· Espacio dedicado al mundo del tenis, donde sus principales protagonis"
       },
       {
         "inicio": "15:55",
         "fin": "18:05",
-        "titulo": "DIRECTO Octavos de Final: Real Madrid - Chelsea T25/26 · UEFA Youth League"
+        "titulo": "DIRECTO Octavos de Final: Real Madrid - Chelsea T25/26 · UEFA Youth League",
+        "desc": "Deportes,Fútbol | 2025 | TP | *6.2/10\n· Las futuras estrellas del fútbol continental protagonizan la Youth League. El to"
       },
       {
         "inicio": "18:05",
         "fin": "19:05",
-        "titulo": "Informe Plus+. Álvaro Benito. Cicatrices"
+        "titulo": "Informe Plus+. Álvaro Benito. Cicatrices",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *7.0/10\n· Álvaro Benito, músico y analista de fútbol, tenía 14 años cuando dejó"
       },
       {
         "inicio": "19:05",
         "fin": "20:10",
-        "titulo": "Universo Valdano T9 · Carlo Ancelotti"
+        "titulo": "Universo Valdano T9 · Carlo Ancelotti",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.4/10\n· Repasamos con Ancelotti la agitada actualidad del equipo blanco en lo"
       },
       {
         "inicio": "20:10",
         "fin": "20:30",
-        "titulo": "Previa Euroliga de baloncesto T25/26 · Jornada 29: Virtus - Barcelona"
+        "titulo": "Previa Euroliga de baloncesto T25/26 · Jornada 29: Virtus - Barcelona",
+        "desc": "Deportes,Programa deportes | TP | *6.6/10\n· Previa Euroliga de baloncesto."
       },
       {
         "inicio": "20:30",
         "fin": "22:30",
-        "titulo": "DIRECTO Jornada 29: Virtus - Barcelona T25/26 · Euroliga de baloncesto"
+        "titulo": "DIRECTO Jornada 29: Virtus - Barcelona T25/26 · Euroliga de baloncesto",
+        "desc": "Deportes,Baloncesto | 2026 | TP | *6.2/10\n· Jornada 29 de la mejor competición de baloncesto de Europa, con más equipos "
       },
       {
         "inicio": "22:30",
-        "fin": "23:40",
-        "titulo": "¡Qué suerte hemos tenido!"
+        "fin": "23:38",
+        "titulo": "¡Qué suerte hemos tenido!",
+        "desc": "Deportes,Programa deportes | 2024 | TP | *6.2/10\n· Un reportaje especial que, de la mano de las personas que más cerca h"
       },
       {
-        "inicio": "23:40",
+        "inicio": "23:38",
         "fin": "23:55",
-        "titulo": "Lo mejor del día después T25/26 E24"
+        "titulo": "Lo mejor del día después T25/26 E24",
+        "desc": "Deportes,Programa deportes | TP | *6.0/10\n· 'El Día Después', uno de nuestros grandes clásicos, que una temporada más of"
       },
       {
         "inicio": "23:55",
         "fin": "02:00",
-        "titulo": "DIRECTO Jornada 4: Cruzeiro - Corinthians T2026 · Brasileirao"
+        "titulo": "DIRECTO Jornada 4: Cruzeiro - Corinthians T2026 · Brasileirao",
+        "desc": "Deportes,Fútbol | 2026 | TP | *6.2/10\n· El fútbol en Brasil es una religión. Su liga es una factoría inagotable de jugad"
       }
     ],
     "Teledeporte": [
       {
-        "inicio": "02:40",
-        "fin": "05:35",
-        "titulo": "Esquí de fondo - JJ OO Cortina Milán 2026 T2026 · 50km Clásico Salida en masa F"
+        "inicio": "00:00",
+        "fin": "00:30",
+        "titulo": "Estudio Estadio Champions Tiempo Extra T25/26 · Miércoles 25 febrero",
+        "desc": "Deportes,Programa deportes | 2026 | TP\n· Tras las jornadas de Champions League, el espacio ofrece toda la información qu"
       },
       {
-        "inicio": "05:35",
-        "fin": "06:30",
-        "titulo": "Hexagon Cup T2026 · Resumen"
+        "inicio": "00:30",
+        "fin": "00:35",
+        "titulo": "Resúmenes UEFA Champions League T25/26 · Atlético de Madrid - Brujas",
+        "desc": "Deportes,Programa deportes | 2026 | TP\n· La Champions League corona cada año al rey del fútbol continental. Este espacio"
+      },
+      {
+        "inicio": "00:35",
+        "fin": "00:40",
+        "titulo": "Resúmenes UEFA Champions League T25/26 · Inter - Bodo/Glimt",
+        "desc": "Deportes,Programa deportes | 2026 | TP\n· La Champions League corona cada año al rey del fútbol continental. Este espacio"
+      },
+      {
+        "inicio": "00:40",
+        "fin": "00:45",
+        "titulo": "Resúmenes UEFA Champions League T25/26 · Bayer Leverkusen - Olympiacos",
+        "desc": "Deportes,Programa deportes | 2026 | TP\n· La Champions League corona cada año al rey del fútbol continental. Este espacio"
+      },
+      {
+        "inicio": "00:45",
+        "fin": "00:50",
+        "titulo": "Resúmenes UEFA Champions League T25/26 · Newcastle - Qarabag",
+        "desc": "Deportes,Programa deportes | 2026 | TP\n· La Champions League corona cada año al rey del fútbol continental. Este espacio"
+      },
+      {
+        "inicio": "00:50",
+        "fin": "02:30",
+        "titulo": "Salto de esquí - JJ OO Cortina Milán 2026 T2026 · Súper equipo M - Ronda final",
+        "desc": "Deportes,Saltos de esquí | 2026 | TP | *6.2/10\n· Los espectaculares vuelos de los saltadores son siempre una de las imág"
       },
       {
         "inicio": "06:30",
-        "fin": "10:00",
-        "titulo": "Teledeporte"
+        "fin": "09:15",
+        "titulo": "Copa de la Reina de tenis de mesa",
+        "desc": "Deportes,Otros deportes | 2026 | TP\n· El Palau d’Esports Catalunya de Tarragona acoge la disputa de la Copa de la Reina "
       },
       {
-        "inicio": "10:00",
-        "fin": "14:00",
-        "titulo": "Teledeporte"
+        "inicio": "09:15",
+        "fin": "09:20",
+        "titulo": "Telediario Matinal",
+        "desc": "Información,Informativo | 2023 | *6.2/10\n· Lorena Baeza y Álex Barreiro conducen este rápido y exhaustivo repaso de toda"
       },
       {
-        "inicio": "14:00",
-        "fin": "18:00",
-        "titulo": "Teledeporte"
+        "inicio": "09:20",
+        "fin": "09:30",
+        "titulo": "Copa del Rey de baloncesto en silla de ruedas T2026 · Resumen",
+        "desc": "Deportes,Baloncesto | 2026 | TP\n· Los ocho mejores clasificados de la liga al acabar la primera vuelta disputan la Copa "
       },
       {
-        "inicio": "18:00",
-        "fin": "22:00",
-        "titulo": "Teledeporte"
+        "inicio": "09:30",
+        "fin": "09:55",
+        "titulo": "Guerreras DHF T25/26 · Martes 24 febrero",
+        "desc": "Deportes,Programa deportes | 2026 | TP\n· Un repaso a lo mejor de cada jornada en la División de Honor del balonmano feme"
       },
       {
-        "inicio": "22:00",
-        "fin": "02:00",
-        "titulo": "Teledeporte"
+        "inicio": "09:55",
+        "fin": "11:45",
+        "titulo": "Hockey sobre hielo M - JJ OO Cortina Milán 2026 T2026 · Finales: Final de consolación",
+        "desc": "Deportes,Hockey hielo | 2026 | TP | *5.8/10\n· El gran deporte por equipos de los Juegos Olímpicos de Invierno. La compet"
+      },
+      {
+        "inicio": "11:45",
+        "fin": "13:00",
+        "titulo": "Patinaje de velocidad - JJ OO Cortina Milán 2026 T2026 · 1500m M",
+        "desc": "Deportes,Patinaje | 2026 | *6.0/10\n· El patinaje de velocidad en pista de 400 metros cuenta con pruebas contrarreloj, de"
+      },
+      {
+        "inicio": "13:00",
+        "fin": "14:10",
+        "titulo": "Estudio Estadio Champions Resúmenes T25/26 · Martes 24 febrero",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Tras las jornadas de Champions League, el espacio ofrece toda la info"
+      },
+      {
+        "inicio": "14:10",
+        "fin": "15:55",
+        "titulo": "Curling F - JJ OO Cortina Milán 2026 T2026 · Finales: Final de consolación",
+        "desc": "Deportes,Curling | 2026 | TP | *5.6/10\n· El Cortina Curling Olympic Stadium acoge la competición femenina de este deport"
+      },
+      {
+        "inicio": "15:55",
+        "fin": "16:00",
+        "titulo": "Deportes 1",
+        "desc": "Deportes,Programa deportes | 2025 | *6.0/10\n· Actualidad deportiva diaria nacional e internacional.\n· País: España\n· Pre"
+      },
+      {
+        "inicio": "16:00",
+        "fin": "19:30",
+        "titulo": "Patinaje artístico - JJ OO Cortina Milán 2026 T2026 · Individual M - Programa libre",
+        "desc": "Deportes,Patinaje artístico | 2026 | TP | *6.2/10\n· La cita con la elegancia, la precisión y la habilidad en los Juegos "
+      },
+      {
+        "inicio": "19:30",
+        "fin": "20:40",
+        "titulo": "Estudio Estadio Champions Resúmenes T25/26 · Martes 24 febrero",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Tras las jornadas de Champions League, el espacio ofrece toda la info"
+      },
+      {
+        "inicio": "20:40",
+        "fin": "21:45",
+        "titulo": "Esquí de montaña - JJ OO Cortina Milán 2026 T2026 · Esprint - Final",
+        "desc": "Deportes,Deporte invierno | 2026 | *6.2/10\n· El esquí de montaña se estrena en el programa olímpico y es una de las disc"
+      },
+      {
+        "inicio": "21:45",
+        "fin": "23:00",
+        "titulo": "Estudio Estadio Champions La Previa T25/26 · Miércoles 25 febrero",
+        "desc": "Deportes,Programa deportes | 2026 | TP\n· Tras las jornadas de Champions League, el espacio ofrece toda la información qu"
+      },
+      {
+        "inicio": "23:00",
+        "fin": "00:00",
+        "titulo": "Estudio Estadio Champions Resúmenes T25/26 · Miércoles 25 febrero",
+        "desc": "Deportes,Programa deportes | 2025 | TP\n· Tras las jornadas de Champions League, el espacio ofrece toda la información qu"
       }
     ],
     "Eurosport 1": [
       {
         "inicio": "00:00",
         "fin": "01:30",
-        "titulo": "Esquí alpino - JJ OO Cortina Milán 2026 T2026 · Supergigante F"
-      },
-      {
-        "inicio": "01:30",
-        "fin": "02:30",
-        "titulo": "Esquí acrobático - JJ OO Cortina Milán 2026 T2026 · Slopestyle M - Final"
-      },
-      {
-        "inicio": "02:30",
-        "fin": "03:30",
-        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 20 km M"
-      },
-      {
-        "inicio": "03:30",
-        "fin": "04:30",
-        "titulo": "Esquí alpino - JJ OO Cortina Milán 2026 T2026 · Supergigante M"
-      },
-      {
-        "inicio": "04:30",
-        "fin": "06:30",
-        "titulo": "Primera ronda - Sesión 6 T25/26 · Abierto de Gales de snooker"
+        "titulo": "Esquí alpino - JJ OO Cortina Milán 2026 T2026 · Supergigante F",
+        "desc": "Deportes,Esquí alpino | 2026 | *6.0/10\n· El deporte rey del programa olímpico de invierno. Los espectaculares eslálones,"
       },
       {
         "inicio": "06:30",
         "fin": "07:30",
-        "titulo": "Esquí alpino - JJ OO Cortina Milán 2026 T2026 · Supergigante M"
+        "titulo": "Esquí alpino - JJ OO Cortina Milán 2026 T2026 · Supergigante M",
+        "desc": "Deportes,Esquí alpino | 2026 | *6.6/10\n· El deporte rey del programa olímpico de invierno. Los espectaculares eslálones,"
       },
       {
         "inicio": "07:30",
         "fin": "08:30",
-        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 20 km M"
+        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 20 km M",
+        "desc": "Deportes,Deporte invierno | 2026 | *6.2/10\n· La competición de biatlón de los Juegos de Cortina Milán se celebra en la e"
       },
       {
         "inicio": "08:30",
         "fin": "10:00",
-        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Esprint 10 km M"
+        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Esprint 10 km M",
+        "desc": "Deportes,Deporte invierno | 2026 | *6.2/10\n· La competición de biatlón de los Juegos de Cortina Milán se celebra en la e"
       },
       {
         "inicio": "10:00",
         "fin": "12:00",
-        "titulo": "Fórmula E - ePrix de Yeda T25/26 · Resumen"
+        "titulo": "Fórmula E - ePrix de Yeda T25/26 · Resumen",
+        "desc": "Deportes,Fórmula E | 2026 | TP | *6.0/10\n· El Mundial de Fórmula E amplía su calendario en la campaña 2025/2026. El cert"
       },
       {
         "inicio": "12:00",
         "fin": "13:00",
-        "titulo": "Copa del mundo de salto ecuestre T25/26 · Ocala"
+        "titulo": "Copa del mundo de salto ecuestre T25/26 · Ocala",
+        "desc": "Deportes,Hípica | 2026 | TP | *6.0/10\n· La Copa del mundo de salto ecuestre es una competición organizada por la FEI."
       },
       {
         "inicio": "13:00",
         "fin": "14:00",
-        "titulo": "Copa del mundo de salto ecuestre T25/26 · Gotemburgo"
+        "titulo": "Copa del mundo de salto ecuestre T25/26 · Gotemburgo",
+        "desc": "Deportes,Hípica | 2026 | TP | *6.0/10\n· La Copa del mundo de salto ecuestre es una competición organizada por la FEI.\n· "
       },
       {
         "inicio": "14:00",
         "fin": "18:00",
-        "titulo": "DIRECTO Segunda ronda - Sesión 1 T25/26 · Abierto de Gales de snooker"
+        "titulo": "DIRECTO Segunda ronda - Sesión 1 T25/26 · Abierto de Gales de snooker",
+        "desc": "Deportes,Snooker | 2026 | TP | *6.0/10\n· El Venue Cymru de Llandudno alberga la disputa del Abierto de Gales del 23 de f"
       },
       {
         "inicio": "18:00",
         "fin": "19:00",
-        "titulo": "Esquí alpino - JJ OO Cortina Milán 2026 T2026 · Supergigante M"
+        "titulo": "Esquí alpino - JJ OO Cortina Milán 2026 T2026 · Supergigante M",
+        "desc": "Deportes,Esquí alpino | 2026 | *6.6/10\n· El deporte rey del programa olímpico de invierno. Los espectaculares eslálones,"
       },
       {
         "inicio": "19:00",
         "fin": "20:00",
-        "titulo": "Segunda ronda - Sesión 1 T25/26 · Abierto de Gales de snooker"
+        "titulo": "Segunda ronda - Sesión 1 T25/26 · Abierto de Gales de snooker",
+        "desc": "Deportes,Snooker | 2026 | TP | *6.0/10\n· El Venue Cymru de Llandudno alberga la disputa del Abierto de Gales del 23 de f"
       },
       {
         "inicio": "20:00",
         "fin": "00:00",
-        "titulo": "DIRECTO Segunda ronda - Sesión 3 T25/26 · Abierto de Gales de snooker"
+        "titulo": "DIRECTO Segunda ronda - Sesión 3 T25/26 · Abierto de Gales de snooker",
+        "desc": "Deportes,Snooker | 2026 | TP | *5.6/10\n· El Venue Cymru de Llandudno alberga la disputa del Abierto de Gales del 23 de f"
       }
     ],
     "Eurosport 2": [
       {
         "inicio": "00:00",
         "fin": "01:00",
-        "titulo": "Snowboard - JJ OO Cortina Milán 2026 T2026 · Halfpipe F - Final"
-      },
-      {
-        "inicio": "01:00",
-        "fin": "02:30",
-        "titulo": "Esquí alpino - JJ OO Cortina Milán 2026 T2026 · Supergigante M"
-      },
-      {
-        "inicio": "02:30",
-        "fin": "04:30",
-        "titulo": "Primera ronda - Sesión 6 T25/26 · Abierto de Gales de snooker"
-      },
-      {
-        "inicio": "04:30",
-        "fin": "06:00",
-        "titulo": "Esquí de fondo - JJ OO Cortina Milán 2026 T2026 · Esprint clásico - Final"
-      },
-      {
-        "inicio": "06:00",
-        "fin": "07:00",
-        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 20 km M"
+        "titulo": "Snowboard - JJ OO Cortina Milán 2026 T2026 · Halfpipe F - Final",
+        "desc": "Deportes,Snowboard | 2026 | *5.6/10\n· El snowboard es uno de los deportes más populares del programa olímpico. Cuenta co"
       },
       {
         "inicio": "07:00",
         "fin": "08:00",
-        "titulo": "Hall Of Fame Cortina Milán 2026 T2026 · 23/02/2026"
+        "titulo": "Hall Of Fame Cortina Milán 2026 T2026 · 23/02/2026",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *4.8/10\n· Los Juegos Olímpicos de Cortina Milán han dejado escenas inolvidables"
       },
       {
         "inicio": "08:00",
         "fin": "10:00",
-        "titulo": "Primera ronda - Sesión 6 T25/26 · Abierto de Gales de snooker"
+        "titulo": "Abierto de Gales de snooker T25/26 · Primera ronda - Sesión 6",
+        "desc": "Deportes,Snooker | 2026 | TP | *6.0/10\n· El Venue Cymru de Llandudno alberga la disputa del Abierto de Gales del 23 de f"
       },
       {
         "inicio": "10:00",
         "fin": "11:00",
-        "titulo": "Esquí acrobático - JJ OO Cortina Milán 2026 T2026 · Slopestyle M - Final"
+        "titulo": "Esquí acrobático - JJ OO Cortina Milán 2026 T2026 · Slopestyle M - Final",
+        "desc": "Deportes,Deporte invierno | *5.8/10\n· El esquí acrobático es uno de los deportes más visuales del programa olímpico. Cue"
       },
       {
         "inicio": "11:00",
         "fin": "12:30",
-        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 15 km F"
+        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 15 km F",
+        "desc": "Deportes,Deporte invierno | 2026 | *5.8/10\n· La competición de biatlón de los Juegos de Cortina Milán se celebra en la e"
       },
       {
         "inicio": "12:30",
         "fin": "13:30",
-        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 20 km M"
+        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 20 km M",
+        "desc": "Deportes,Deporte invierno | 2026 | *6.2/10\n· La competición de biatlón de los Juegos de Cortina Milán se celebra en la e"
       },
       {
         "inicio": "13:30",
         "fin": "15:30",
-        "titulo": "Patinaje artístico - JJ OO Cortina Milán 2026 T2026 · Individual M - Programa libre"
+        "titulo": "Patinaje artístico - JJ OO Cortina Milán 2026 T2026 · Individual M - Programa libre",
+        "desc": "Deportes,Patinaje artístico | 2026 | TP | *6.2/10\n· La cita con la elegancia, la precisión y la habilidad en los Juegos "
       },
       {
         "inicio": "15:30",
         "fin": "17:00",
-        "titulo": "Esquí alpino - JJ OO Cortina Milán 2026 T2026 · Supergigante M"
+        "titulo": "Esquí alpino - JJ OO Cortina Milán 2026 T2026 · Supergigante M",
+        "desc": "Deportes,Esquí alpino | 2026 | *6.6/10\n· El deporte rey del programa olímpico de invierno. Los espectaculares eslálones,"
       },
       {
         "inicio": "17:00",
         "fin": "18:30",
-        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 20 km M"
+        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 20 km M",
+        "desc": "Deportes,Deporte invierno | 2026 | *6.2/10\n· La competición de biatlón de los Juegos de Cortina Milán se celebra en la e"
       },
       {
         "inicio": "18:30",
         "fin": "20:00",
-        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 15 km F"
+        "titulo": "Biatlón - JJ OO Cortina Milán 2026 T2026 · Individual 15 km F",
+        "desc": "Deportes,Deporte invierno | 2026 | *5.8/10\n· La competición de biatlón de los Juegos de Cortina Milán se celebra en la e"
       },
       {
         "inicio": "20:00",
         "fin": "21:00",
-        "titulo": "Copa del mundo de salto ecuestre T25/26 · Oslo"
+        "titulo": "Copa del mundo de salto ecuestre T25/26 · Oslo",
+        "desc": "Deportes,Hípica | 2026 | TP | *6.0/10\n· La Copa del mundo de salto ecuestre es una competición organizada por la FEI."
       },
       {
         "inicio": "21:00",
         "fin": "22:00",
-        "titulo": "Copa del mundo de salto ecuestre T25/26 · Gotemburgo"
+        "titulo": "Copa del mundo de salto ecuestre T25/26 · Gotemburgo",
+        "desc": "Deportes,Hípica | 2026 | TP | *6.0/10\n· La Copa del mundo de salto ecuestre es una competición organizada por la FEI.\n· "
       },
       {
         "inicio": "22:00",
         "fin": "22:30",
-        "titulo": "Discovery Golf T2026 · 25/02/2026"
+        "titulo": "Discovery Golf T2026 · 25/02/2026",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Un repaso a toda la actualidad del golf, con especial hincapié a lo o"
       },
       {
         "inicio": "22:30",
         "fin": "00:00",
-        "titulo": "Esquí de fondo - JJ OO Cortina Milán 2026 T2026 · Esprint clásico - Final"
+        "titulo": "Esquí de fondo - JJ OO Cortina Milán 2026 T2026 · Esprint clásico - Final",
+        "desc": "Deportes,Esquí de fondo | 2026 | *6.2/10\n· La modalidad más antigua del esquí se mantiene como una de las citas impresci"
       }
     ],
     "DAZN 1": [
       {
         "inicio": "00:28",
         "fin": "01:28",
-        "titulo": "Boxeo: velada Wood vs Warrington II T2026 · Velada completa"
-      },
-      {
-        "inicio": "01:00",
-        "fin": "01:38",
-        "titulo": "Póker FC T25/26 E18"
-      },
-      {
-        "inicio": "01:38",
-        "fin": "06:00",
-        "titulo": "Disfruta de DAZN en Movistar Plus+"
-      },
-      {
-        "inicio": "06:00",
-        "fin": "13:00",
-        "titulo": "Disfruta de DAZN en Movistar Plus+"
+        "titulo": "Boxeo: velada Wood vs Warrington II T2026 · Velada completa",
+        "desc": "Deportes,Boxeo | 2026 | +18 | *6.4/10\n· El Motorpoint Arena de Nottingham, en Inglaterra, recibe la revancha de peso plu"
       },
       {
         "inicio": "13:00",
         "fin": "17:03",
-        "titulo": "Celebración de los hermanos Márquez en Cervera"
+        "titulo": "Celebración de los hermanos Márquez en Cervera",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.2/10\n· Los hermanos Márquez celebran en su pueblo natal, Cervera, celebran e"
       },
       {
         "inicio": "17:03",
         "fin": "17:31",
-        "titulo": "Presentaciones MotoGP T2025 · Marc Márquez: todo al rojo Ducati"
+        "titulo": "Presentaciones MotoGP T2025 · Marc Márquez: todo al rojo Ducati",
+        "desc": "Deportes,Motociclismo | 2025 | TP | *6.2/10\n· Los equipos de MotoGP presentan sus novedades de cara a la nueva temporada"
       },
       {
         "inicio": "17:31",
         "fin": "17:56",
-        "titulo": "Rookies T1 · Uniéndose a la élite"
+        "titulo": "Rookies T1 · Uniéndose a la élite",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.2/10\n· Historias de los debutantes del Campeonato del Mundo de MotoGP, cada "
       },
       {
         "inicio": "17:56",
         "fin": "18:31",
-        "titulo": "MotoGP Test T25/26 · Día 1 - Test de Sepang"
+        "titulo": "MotoGP Test T25/26 · Día 1 - Test de Sepang",
+        "desc": "Deportes,Motociclismo | 2026 | TP | *6.6/10\n· La pretemporada de MotoGP 2026 comienza en Valencia y termina en Buriram d"
       },
       {
         "inicio": "18:31",
         "fin": "19:15",
-        "titulo": "MotoGP Test T25/26 · Día 2 - Test de Sepang"
+        "titulo": "MotoGP Test T25/26 · Día 2 - Test de Sepang",
+        "desc": "Deportes,Motociclismo | 2026 | TP | *6.0/10\n· La pretemporada de MotoGP 2026 comienza en Valencia y termina en Buriram d"
       },
       {
         "inicio": "19:15",
         "fin": "20:07",
-        "titulo": "MotoGP Test T25/26 · Día 3 - Test de Sepang"
+        "titulo": "MotoGP Test T25/26 · Día 3 - Test de Sepang",
+        "desc": "Deportes,Motociclismo | 2026 | TP | *6.0/10\n· La pretemporada de MotoGP 2026 comienza en Valencia y termina en Buriram d"
       },
       {
         "inicio": "20:07",
         "fin": "20:50",
-        "titulo": "MotoGP Test T25/26 · Buriram - Día 1"
+        "titulo": "MotoGP Test T25/26 · Buriram - Día 1",
+        "desc": "Deportes,Motociclismo | 2026 | TP | *6.0/10\n· El próximo 27 de febrero arranca en Tailandia el mundial de motociclismo. "
       },
       {
         "inicio": "20:50",
         "fin": "21:32",
-        "titulo": "MotoGP Test T25/26 · Buriram - Día 2"
+        "titulo": "MotoGP Test T25/26 · Buriram - Día 2",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.0/10\n· El próximo 27 de febrero arranca en Tailandia el mundial de motocicli"
       },
       {
         "inicio": "21:32",
         "fin": "22:34",
-        "titulo": "MotoGP - GP de Austria T2025 · Carrera MotoGP"
+        "titulo": "MotoGP - GP de Austria T2025 · Carrera MotoGP",
+        "desc": "Deportes,Motociclismo | 2025 | TP | *6.0/10\n· Situado en el paisaje alpino de Estiria, el Red Bull Ring cuenta con una d"
       },
       {
         "inicio": "22:34",
         "fin": "22:49",
-        "titulo": "Inside Ducati T1 · GP Austria"
+        "titulo": "Inside Ducati T1 · GP Austria",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *5.8/10\n· Allí, en la tierra de los grandes compositores, Marc Márquez interpre"
       },
       {
         "inicio": "22:49",
         "fin": "23:15",
-        "titulo": "Código MotoGP T2025 · Austria"
+        "titulo": "Código MotoGP T2025 · Austria",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *5.8/10\n· Código MotoGP es un programa en el que Natacha Alfageme descubre todo"
       },
       {
         "inicio": "23:15",
         "fin": "23:50",
-        "titulo": "Volver T1 · Ganar"
+        "titulo": "Volver T1 · Ganar",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.2/10\n· Rafa Nadal, Fernando Alonso, Pau Gasol, Andrés Iniesta y Alexia Putel"
       },
       {
         "inicio": "23:50",
         "fin": "00:28",
-        "titulo": "Volver T1 E4"
+        "titulo": "Volver T1 E4",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *5.6/10\n· Rafa Nadal, Fernando Alonso, Pau Gasol, Andrés Iniesta y Alexia Putel"
       }
     ],
     "DAZN 2": [
       {
-        "inicio": "02:00",
-        "fin": "06:00",
-        "titulo": "Disfruta de DAZN en Movistar Plus+"
-      },
-      {
-        "inicio": "06:00",
-        "fin": "10:00",
-        "titulo": "Disfruta de DAZN en Movistar Plus+"
-      },
-      {
         "inicio": "10:00",
         "fin": "14:00",
-        "titulo": "Disfruta de DAZN en Movistar Plus+"
+        "titulo": "Disfruta de DAZN en Movistar Plus+",
+        "desc": "· Programa por determinar..."
       },
       {
         "inicio": "14:00",
         "fin": "18:00",
-        "titulo": "Disfruta de DAZN en Movistar Plus+"
+        "titulo": "Disfruta de DAZN en Movistar Plus+",
+        "desc": "· Programa por determinar..."
       },
       {
         "inicio": "18:00",
         "fin": "22:00",
-        "titulo": "Disfruta de DAZN en Movistar Plus+"
+        "titulo": "Disfruta de DAZN en Movistar Plus+",
+        "desc": "· Programa por determinar..."
       },
       {
         "inicio": "22:00",
         "fin": "02:00",
-        "titulo": "Disfruta de DAZN en Movistar Plus+"
+        "titulo": "Disfruta de DAZN en Movistar Plus+",
+        "desc": "· Programa por determinar..."
       }
     ],
     "Esport3": [
       {
         "inicio": "00:32",
         "fin": "00:48",
-        "titulo": "3CatInfo Esports"
+        "titulo": "3CatInfo Esports",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.0/10\n· Cada mitjanit, \"3CatInfo Esports\" repassa l'actualitat esportiva del "
       },
       {
         "inicio": "00:48",
         "fin": "02:20",
-        "titulo": "Onze T2026 · Episodi 1109"
-      },
-      {
-        "inicio": "02:19",
-        "fin": "02:35",
-        "titulo": "3CatInfo Esports"
-      },
-      {
-        "inicio": "02:35",
-        "fin": "03:58",
-        "titulo": "DIRECTO Main Round: Granollers - Oporto T25/26 · Liga Europea de la EHF"
-      },
-      {
-        "inicio": "03:58",
-        "fin": "04:14",
-        "titulo": "3CatInfo Esports"
-      },
-      {
-        "inicio": "04:14",
-        "fin": "04:42",
-        "titulo": "Top gols"
-      },
-      {
-        "inicio": "04:42",
-        "fin": "05:07",
-        "titulo": "E3 Noticies"
-      },
-      {
-        "inicio": "05:07",
-        "fin": "05:32",
-        "titulo": "E3 Noticies"
-      },
-      {
-        "inicio": "05:32",
-        "fin": "06:01",
-        "titulo": "E3 Noticies"
+        "titulo": "Onze T2026 · Episodi 1109",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Programa d'esports que repassa l'actualitat del futbol i la lliga. Al"
       },
       {
         "inicio": "06:01",
         "fin": "06:14",
-        "titulo": "Pitch&Cat T2026 · El pitch&putt com a eina de recuperació"
+        "titulo": "Pitch&Cat T2026 · El pitch&putt com a eina de recuperació",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.4/10\n· En aquest programa, coneixem la història d'en Marino Gómez, que amb n"
       },
       {
         "inicio": "06:14",
         "fin": "06:43",
-        "titulo": "Top gols"
+        "titulo": "Top gols",
+        "desc": "Deportes,Programa deportes | 2017 | TP | *6.2/10\n· Espai que ofereix un resum dels millors gols de la jornada de la Llig"
       },
       {
         "inicio": "06:43",
         "fin": "07:03",
-        "titulo": "3CatInfo Esports"
+        "titulo": "3CatInfo Esports",
+        "desc": "Deportes,Programa deportes | 2025 | TP | *6.0/10\n· Cada mitjanit, \"3CatInfo Esports\" repassa l'actualitat esportiva del "
       },
       {
         "inicio": "07:03",
         "fin": "08:34",
-        "titulo": "Onze T2026 · Episodi 1108"
+        "titulo": "Onze T2026 · Episodi 1108",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Programa d'esports que repassa l'actualitat del futbol i la lliga. Al"
       },
       {
         "inicio": "08:34",
         "fin": "09:58",
-        "titulo": "DIRECTO Main Round: Granollers - Oporto T25/26 · Liga Europea de la EHF"
+        "titulo": "Liga Europea de la EHF T25/26 · Main Round: Granollers - Oporto",
+        "desc": "Deportes,Balonmano | 2026 | TP | *6.2/10\n· La Liga Europea ocupa el segundo lugar en el escalafón de las competiciones c"
       },
       {
         "inicio": "09:58",
         "fin": "10:33",
-        "titulo": "Karakia: Patricia (Asunción) / Oguz (Ankara)"
+        "titulo": "Karakia: Patricia (Asunción) / Oguz (Ankara)",
+        "desc": "Documentales,Documental | 2010 | TP | *5.8/10\n· La Patricia és lingüista i ha fet un màster sobre llengües i moviment de"
       },
       {
         "inicio": "10:33",
         "fin": "11:10",
-        "titulo": "Karakia: Greg (Indiana) / Lilia (Orhei)"
+        "titulo": "Karakia: Greg (Indiana) / Lilia (Orhei)",
+        "desc": "Documentales,Gastronomía | 2010 | TP | *5.8/10\n· El programa del 33 \"Karakia\" presenta un nou capítol. La Lilia d'Orhei,"
       },
       {
         "inicio": "11:10",
         "fin": "11:28",
-        "titulo": "Pastors i ramats: un món que se'n va · Enric Gibert"
+        "titulo": "Pastors i ramats: un món que se'n va · Enric Gibert",
+        "desc": "Documentales,Naturaleza | 2022 | TP | *5.6/10\n· Aquesta exposició, que ofereix l'Associació Camí Ramader de Marina, sorg"
       },
       {
         "inicio": "11:28",
         "fin": "13:00",
-        "titulo": "Onze T2026 · Episodi 1108"
+        "titulo": "Onze T2026 · Episodi 1108",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Programa d'esports que repassa l'actualitat del futbol i la lliga. Al"
       },
       {
         "inicio": "13:00",
         "fin": "15:02",
-        "titulo": "Esport Club"
+        "titulo": "Esport Club",
+        "desc": "Deportes,Programa deportes | 2009 | TP | *6.2/10\n· Magazín que fa un repàs de l'actualitat esportiva del dia.\n· País: Es"
       },
       {
         "inicio": "15:02",
         "fin": "15:27",
-        "titulo": "Volcanes y hombres · Volcans i homes: Tresors per als homes"
+        "titulo": "Volcanes y hombres · Volcans i homes: Tresors per als homes",
+        "desc": "Documentales,Naturaleza | 2018 | TP | *6.4/10\n· Arnaud Guérin ens porta a Nova Zelanda.\n· País: Francia\n· Dirección: Guy"
       },
       {
         "inicio": "15:27",
         "fin": "15:52",
-        "titulo": "Volcanes y hombres · Volcans i homes: L'Alvèrnia: Els misteris dels gegants adormits"
+        "titulo": "Volcanes y hombres · Volcans i homes: L'Alvèrnia: Els misteris dels gegants adormits",
+        "desc": "Documentales,Naturaleza | 2018 | TP | *6.2/10\n· En aquest episodi, Arnaud Guérin, geòleg i fotògraf professional, ens po"
       },
       {
         "inicio": "15:52",
         "fin": "16:17",
-        "titulo": "Volcanes y hombres · Volcans i homes: Les Açores. L'energia dels volcans"
+        "titulo": "Volcanes y hombres · Volcans i homes: Les Açores. L'energia dels volcans",
+        "desc": "Documentales,Naturaleza | 2020 | TP | *6.2/10\n· Els homes han creat vincles únics amb els gegants de foc. El geòleg Arna"
       },
       {
         "inicio": "16:17",
         "fin": "16:42",
-        "titulo": "Volcanes y hombres · Volcans i homes: Santorini. Un cataclisme llegendari"
+        "titulo": "Volcanes y hombres · Volcans i homes: Santorini. Un cataclisme llegendari",
+        "desc": "Documentales,Naturaleza | 2020 | TP | *6.0/10\n· Els homes han creat vincles únics amb els gegants de foc. El geòleg Arna"
       },
       {
         "inicio": "16:42",
         "fin": "17:10",
-        "titulo": "Volcanes y hombres · Volcans i homes: L'illa de Pantel·leria. La perla negra del Mediterrani"
+        "titulo": "Volcanes y hombres · Volcans i homes: L'illa de Pantel·leria. La perla negra del Mediterrani",
+        "desc": "Documentales,Naturaleza | 2020 | TP | *5.8/10\n· Els homes han creat vincles únics amb els gegants de foc. El geòleg Arna"
       },
       {
         "inicio": "17:10",
         "fin": "17:25",
-        "titulo": "Thalassa: Els guardians de la llum"
+        "titulo": "Thalassa: Els guardians de la llum",
+        "desc": "Documentales,Naturaleza | 1998 | *6.0/10\n· El mar, les persones que viuen en contacte amb ell i els animals i les plante"
       },
       {
         "inicio": "17:25",
         "fin": "17:59",
-        "titulo": "La frontal T6 · Els grans valors del CE Premià"
+        "titulo": "La frontal T6 · Els grans valors del CE Premià",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Referència al Maresme, el CE Premià treballa amb la mirada posada a l"
       },
       {
         "inicio": "17:59",
         "fin": "19:00",
-        "titulo": "Esport Club"
+        "titulo": "Esport Club",
+        "desc": "Deportes,Programa deportes | 2009 | TP | *6.2/10\n· Magazín que fa un repàs de l'actualitat esportiva del dia.\n· País: Es"
       },
       {
         "inicio": "19:00",
         "fin": "19:25",
-        "titulo": "Tot Costa T25/26 · Episodi 896"
+        "titulo": "Tot Costa T25/26 · Episodi 896",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Jordi Costa i Sònia Gelmà analitzen de manera rigorosa, però també am"
       },
       {
         "inicio": "19:25",
         "fin": "21:10",
-        "titulo": "DIRECTO Play-In: Spar Girona - Fenerbahce (Partido 2) T25/26 · Euroliga femenina"
+        "titulo": "DIRECTO Play-In: Spar Girona - Fenerbahce (Partido 2) T25/26 · Euroliga femenina",
+        "desc": "Deportes,Baloncesto | TP | *5.8/10\n· Los 16 mejores equipos de Europa luchan por el título más codiciado. Valencia, Giro"
       },
       {
         "inicio": "21:10",
         "fin": "23:00",
-        "titulo": "Un dia de partit T25/26 · Champions play - offs"
+        "titulo": "Un dia de partit T25/26 · Champions play - offs",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Seguiment d'un partit d'una manera original, des de la casa d'un pers"
       },
       {
         "inicio": "23:00",
         "fin": "00:32",
-        "titulo": "Onze T2026 · Episodi 1109"
+        "titulo": "Onze T2026 · Episodi 1109",
+        "desc": "Deportes,Programa deportes | 2026 | TP | *6.0/10\n· Programa d'esports que repassa l'actualitat del futbol i la lliga. Al"
       }
     ],
     "Canal Historia": [
       {
         "inicio": "00:37",
         "fin": "01:27",
-        "titulo": "Alienígenas T10 E14"
+        "titulo": "Alienígenas T10 E14",
+        "desc": "Otros,Series | 2017 | +7\n· La búsqueda de evidencia de intervención extraterrestre en la Tierra continúa. Desde artefact"
       },
       {
         "inicio": "01:31",
         "fin": "02:11",
-        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E6 · Reina asesina"
+        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E6 · Reina asesina",
+        "desc": "Documental,Histórico | 2023 | +12\n· El equipo investiga lo que podrían ser los restos del Marine Sulphur Queen, un barco"
       },
       {
         "inicio": "02:11",
         "fin": "02:52",
-        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E11 · El ojo del cíclope"
+        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E11 · El ojo del cíclope",
+        "desc": "Documental,Histórico | 2023 | +12\n· El equipo tiene la oportunidad de resolver por fin el caso del USS Cyclops. Desapare"
       },
       {
         "inicio": "02:52",
         "fin": "03:47",
-        "titulo": "Enemigos de Egipto T1 E1 · Tutmosis III, la batalla de Megido"
+        "titulo": "Enemigos de Egipto T1 E1 · Tutmosis III, la batalla de Megido",
+        "desc": "Documental,Otros,Histórico | 2025 | +12\n· La batalla de Megido dio origen a la leyenda del faraón más guerrero, Tutmosis"
       },
       {
         "inicio": "03:47",
         "fin": "04:44",
-        "titulo": "Enemigos de Egipto T1 E2 · Ramsés II, la batalla de Qadesh"
+        "titulo": "Enemigos de Egipto T1 E2 · Ramsés II, la batalla de Qadesh",
+        "desc": "Documental,Otros,Histórico | 2025 | +12\n· Este episodio descubre la apasionante historia de una batalla digna de Hollywo"
       },
       {
         "inicio": "04:44",
         "fin": "05:41",
-        "titulo": "Enemigos de Egipto T1 E3 · Ptolomeo IV, la batalla de Rafia"
+        "titulo": "Enemigos de Egipto T1 E3 · Ptolomeo IV, la batalla de Rafia",
+        "desc": "Documental,Otros,Histórico | 2025 | +12\n· Cuando el faraón Ptolomeo IV se enfrenta a Antíoco el Grande en Rafia, más de "
       },
       {
         "inicio": "05:41",
         "fin": "06:40",
-        "titulo": "Enemigos de Egipto T1 E4 · Cleopatra, la batalla de Accio"
+        "titulo": "Enemigos de Egipto T1 E4 · Cleopatra, la batalla de Accio",
+        "desc": "Documental,Otros,Histórico | 2025 | +12\n· Para recuperar la gloria de los faraones, Cleopatra desafía a Octavio en una d"
       },
       {
         "inicio": "06:40",
         "fin": "07:27",
-        "titulo": "Ramsés, el Grande T1 E1 · El nacimiento de una dinastía"
+        "titulo": "Ramsés, el Grande T1 E1 · El nacimiento de una dinastía",
+        "desc": "Documental,Otros,Histórico | 2024 | +12 | *8.3/10\n· En 1323 a. C., mientras Egipto seguía sumido en el caos a raíz del i"
       },
       {
         "inicio": "07:27",
         "fin": "08:14",
-        "titulo": "Ramsés, el Grande T1 E2 · Una infancia faraónica"
+        "titulo": "Ramsés, el Grande T1 E2 · Una infancia faraónica",
+        "desc": "Documental,Otros,Histórico | 2024 | +12 | *8.3/10\n· A la muerte de Horemheb, Paramesu subió al trono de Egipto bautizado"
       },
       {
         "inicio": "08:14",
         "fin": "09:02",
-        "titulo": "Ramsés, el Grande T1 E3 · El inicio de un gran reinado"
+        "titulo": "Ramsés, el Grande T1 E3 · El inicio de un gran reinado",
+        "desc": "Documental,Otros,Histórico | 2024 | +12 | *8.3/10\n· Seti I murió inesperadamente en 1279 a. C. Aunque breve, su reinado "
       },
       {
         "inicio": "09:02",
         "fin": "10:31",
-        "titulo": "Incas, nuevas evidencias"
+        "titulo": "Incas, nuevas evidencias",
+        "desc": "Programa,Otros | 2023 | +7\n· Los conquistadores escribieron la historia de los incas tal y como la conocemos. Diez años "
       },
       {
         "inicio": "10:31",
         "fin": "11:12",
-        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E4 · El Triángulo De La Locura"
+        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E4 · El Triángulo De La Locura",
+        "desc": "Documental,Histórico | 2023 | +12\n· El equipo cree que un barco de 90 metros de eslora naufragado frente a la punta sur "
       },
       {
         "inicio": "11:12",
         "fin": "11:52",
-        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E6 · Reina asesina"
+        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E6 · Reina asesina",
+        "desc": "Documental,Histórico | 2023 | +12\n· El equipo investiga lo que podrían ser los restos del Marine Sulphur Queen, un barco"
       },
       {
         "inicio": "11:52",
         "fin": "12:37",
-        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E11 · El ojo del cíclope"
+        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E11 · El ojo del cíclope",
+        "desc": "Documental,Histórico | 2023 | +12\n· El equipo tiene la oportunidad de resolver por fin el caso del USS Cyclops. Desapare"
       },
       {
         "inicio": "12:37",
         "fin": "13:35",
-        "titulo": "La noche de los cuchillos largos, el ascenso de Hitler T1 E1"
+        "titulo": "La noche de los cuchillos largos, el ascenso de Hitler T1 E1",
+        "desc": "Documental,Otros,Histórico | 2020 | +12\n· La Noche de los Cuchillos Largos está catalogada como el primer acto de terror"
       },
       {
         "inicio": "13:35",
         "fin": "14:31",
-        "titulo": "La noche de los cuchillos largos, el ascenso de Hitler T1 E2"
+        "titulo": "La noche de los cuchillos largos, el ascenso de Hitler T1 E2",
+        "desc": "Documental,Otros,Histórico | 2020 | +12\n· Durante tres noches, del 30 de junio al 2 de julio de 1934, Hitler demostró ha"
       },
       {
         "inicio": "14:31",
         "fin": "15:22",
-        "titulo": "Arqueología en el hielo T4 E7 · La Tène"
+        "titulo": "Arqueología en el hielo T4 E7",
+        "desc": "Documental,Otros | 2024 | +12 | *7.1/10\n· Un pescador suizo descubre unos objetos celtas en el lago de Neuchâtel. Mientr"
       },
       {
         "inicio": "15:22",
         "fin": "16:12",
-        "titulo": "Arqueología en el hielo T3 E10 · Naufragio de un buque de la Segunda Guerra Mundial"
+        "titulo": "Arqueología en el hielo T3 E10 · Naufragio de un buque de la Segunda Guerra Mundial",
+        "desc": "Documental,Otros | 2023 | +12 | *7.1/10\n· Se localiza un gigantesco buque en Noruega; en el Ártico canadiense hallan un "
       },
       {
         "inicio": "16:12",
         "fin": "17:04",
-        "titulo": "Arqueología en el hielo T4 E3 · Las mujeres de Oseberg"
+        "titulo": "Arqueología en el hielo T4 E3 · Las mujeres de Oseberg",
+        "desc": "Documental,Otros | 2024 | +12 | *7.1/10\n· Revelan nuevos datos sobre la identidad de dos mujeres vikingas enterradas en "
       },
       {
         "inicio": "17:04",
         "fin": "17:54",
-        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E9 · El Cementerio Del Atlántico"
+        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E9 · El Cementerio Del Atlántico",
+        "desc": "Documental,Histórico | 2023 | +12\n· El equipo tiene información secreta sobre un naufragio, que podría ser una desaparic"
       },
       {
         "inicio": "17:54",
         "fin": "18:44",
-        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E7 · La primera víctima"
+        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E7 · La primera víctima",
+        "desc": "Documental,Histórico | 2023 | +12\n· El equipo examina un gran pecio de madera que pudo ser una de las primeras víctimas "
       },
       {
         "inicio": "18:44",
         "fin": "19:32",
-        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E12 · Los mayores misterios"
+        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E12 · Los mayores misterios",
+        "desc": "Documental,Histórico | 2023 | +12\n· El equipo desvela los mayores misterios del Triángulo de las Bermudas: las desaparic"
       },
       {
         "inicio": "19:32",
         "fin": "20:22",
-        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E3 · Tormenta geomagnética"
+        "titulo": "El Triángulo de las Bermudas: En aguas malditas T2 E3 · Tormenta geomagnética",
+        "desc": "Documental,Histórico | 2023 | +12\n· El equipo busca un yate de carreras desaparecido en 1958. Sarah Conover intenta reso"
       },
       {
         "inicio": "20:22",
         "fin": "21:13",
-        "titulo": "Lo inexplicable T4 E7 · Códigos Inquebrantables"
+        "titulo": "Lo inexplicable T4 E7 · Códigos Inquebrantables",
+        "desc": "Documental,Otros | 2023 | +7 | *7.3/10\n· Si se pudieran interpretar los códigos indescifrables de la Historia, ¿tendríam"
       },
       {
         "inicio": "21:13",
         "fin": "22:04",
-        "titulo": "Lo inexplicable T2 E5 · Extrañas desapariciones"
+        "titulo": "Lo inexplicable T2 E5 · Extrañas desapariciones",
+        "desc": "Documental,Otros | 2021 | +7 | *7.3/10\n· Las historias sobre desapariciones misteriosas son tan llamativas como desconce"
       },
       {
         "inicio": "22:04",
         "fin": "22:55",
-        "titulo": "Lo inexplicable T3 E38 · Construcciones extraordinarias"
+        "titulo": "Lo inexplicable T3 E38 · Construcciones extraordinarias",
+        "desc": "Documental,Otros | 2021 | +7 | *7.3/10\n· Por todo el mundo hay construcciones antiguas que escapan a cualquier explicaci"
       },
       {
         "inicio": "22:55",
         "fin": "00:37",
-        "titulo": "Alienígenas T11 E13 · Regreso a Marte"
+        "titulo": "Alienígenas T11 E13 · Regreso a Marte",
+        "desc": "Otros,Series | 2018 | +7\n· Al prepararnos para establecer colonias más allá de la Tierra, ¿estamos avanzando hacia el fu"
       }
     ],
     "DMAX": [
       {
         "inicio": "00:24",
         "fin": "01:21",
-        "titulo": "Alienígenas: Destino: Chile"
-      },
-      {
-        "inicio": "01:44",
-        "fin": "02:34",
-        "titulo": "Ingeniería antigua E7"
-      },
-      {
-        "inicio": "02:34",
-        "fin": "03:23",
-        "titulo": "Ingeniería antigua E8"
-      },
-      {
-        "inicio": "03:23",
-        "fin": "04:09",
-        "titulo": "Secretos en la arena E8"
-      },
-      {
-        "inicio": "04:09",
-        "fin": "04:54",
-        "titulo": "Secretos en la arena E8"
-      },
-      {
-        "inicio": "04:54",
-        "fin": "05:16",
-        "titulo": "Seprona en acción E5"
-      },
-      {
-        "inicio": "05:16",
-        "fin": "05:38",
-        "titulo": "Seprona en acción E6"
-      },
-      {
-        "inicio": "05:38",
-        "fin": "06:00",
-        "titulo": "Seprona en acción E7"
-      },
-      {
-        "inicio": "06:00",
-        "fin": "06:45",
-        "titulo": "Ingeniería abandonada E1"
+        "titulo": "Alienígenas: Destino: Chile",
+        "desc": "Documentales,Historia | 2019 | +7 | *6.4/10\n· Chile es el país con el mayor número de avistamientos anuales de ovnis.\n· "
       },
       {
         "inicio": "06:45",
         "fin": "07:30",
-        "titulo": "Ingeniería abandonada E2"
+        "titulo": "Ingeniería abandonada E2",
+        "desc": "Documentales,Ciencia tecnología | 2023 | +7 | *6.0/10\n· Algunos de los proyectos de ingeniería más impresionantes del mu"
       },
       {
         "inicio": "07:30",
         "fin": "07:52",
-        "titulo": "Seprona en acción E13"
+        "titulo": "Seprona en acción E13",
+        "desc": "Documentales,Actualidad | 2024 | +12 | *6.0/10\n· La Guardia Civil protege la fauna de España, el medio ambiente y el pat"
       },
       {
         "inicio": "07:52",
         "fin": "08:14",
-        "titulo": "Seprona en acción E14"
+        "titulo": "Seprona en acción E14",
+        "desc": "Documentales,Actualidad | 2024 | +12 | *5.8/10\n· La Guardia Civil protege la fauna de España, el medio ambiente y el pat"
       },
       {
         "inicio": "08:14",
         "fin": "08:36",
-        "titulo": "Seprona en acción E1"
+        "titulo": "Seprona en acción E1",
+        "desc": "Documentales,Actualidad | 2025 | TP | *6.0/10\n· La Guardia Civil protege la fauna de España, el medio ambiente y el patr"
       },
       {
         "inicio": "08:36",
         "fin": "08:58",
-        "titulo": "Seprona en acción E2"
+        "titulo": "Seprona en acción E2",
+        "desc": "Documentales,Actualidad | 2025 | TP | *5.8/10\n· La Guardia Civil protege la fauna de España, el medio ambiente y el patr"
       },
       {
         "inicio": "08:58",
         "fin": "09:46",
-        "titulo": "Aventura en pelotas: Temor a lo desconocido"
+        "titulo": "Aventura en pelotas: Temor a lo desconocido",
+        "desc": "Entretenimiento,Viajes | 2015 | +12 | *5.8/10\n· Dos personas que no se conocen en absoluto son abandonadas, literalmente"
       },
       {
         "inicio": "09:46",
         "fin": "10:36",
-        "titulo": "Aventura en pelotas: La Plaga"
+        "titulo": "Aventura en pelotas: La Plaga",
+        "desc": "Entretenimiento,Viajes | 2015 | +12 | *6.0/10\n· Una madre de la montaña, llena de conocimientos sobre la naturaleza, int"
       },
       {
         "inicio": "10:36",
         "fin": "11:26",
-        "titulo": "Secretos en la arena E1"
+        "titulo": "Secretos en la arena E1",
+        "desc": "Documentales,Ciencia tecnología | 2023 | +12 | *6.2/10\n· La nueva tecnología descubre historias destacadas que se han pe"
       },
       {
         "inicio": "11:26",
         "fin": "12:16",
-        "titulo": "Secretos en la arena E2"
+        "titulo": "Secretos en la arena E2",
+        "desc": "Documentales,Ciencia tecnología | 2023 | +12 | *6.0/10\n· La nueva tecnología descubre historias destacadas que se han pe"
       },
       {
         "inicio": "12:16",
         "fin": "13:11",
-        "titulo": "Alienígenas: El top 10 de desastres alienígenas"
+        "titulo": "Alienígenas: El top 10 de desastres alienígenas",
+        "desc": "Documentales,Historia | 2023 | +7 | *6.4/10\n· Este episodio repasa el top 10 de acontecimientos devastadores que podrían"
       },
       {
         "inicio": "13:11",
         "fin": "14:06",
-        "titulo": "Alienígenas: El top 10 de bases ocultas alienígenas"
+        "titulo": "Alienígenas: El top 10 de bases ocultas alienígenas",
+        "desc": "Documentales,Historia | 2023 | +7 | *6.4/10\n· Una caverna bajo el hielo, un lago o una pirámide oculata bajo un monte,¿s"
       },
       {
         "inicio": "14:06",
         "fin": "15:02",
-        "titulo": "Expedición al pasado: El Arca de la Alianza"
+        "titulo": "Expedición al pasado: El Arca de la Alianza",
+        "desc": "Documentales,Viajes | 2017 | +12 | *6.0/10\n· Josh viaja a Israel y Etiopía para buscar el Arca de la Alianza, una reliqu"
       },
       {
         "inicio": "15:02",
         "fin": "15:57",
-        "titulo": "Expedición al pasado: La ciudad perdida de los góspeles"
+        "titulo": "Expedición al pasado: La ciudad perdida de los góspeles",
+        "desc": "Documentales,Viajes | 2023 | TP | *6.0/10\n· Josh busca una ciudad perdida en Tierra Santa donde Jesús realizó muchos de "
       },
       {
         "inicio": "15:57",
         "fin": "16:52",
-        "titulo": "La fiebre del oro T14 · La llamada Indian River"
+        "titulo": "La fiebre del oro T14 · La llamada Indian River",
+        "desc": "Entretenimiento,Telerrealidad | 2022 | TP | *5.8/10\n· Tony tiene la vista puesta en Indian River y valora si debe despla"
       },
       {
         "inicio": "16:52",
         "fin": "17:47",
-        "titulo": "La fiebre del oro T14 · Hola, Parker, soy Rick"
+        "titulo": "La fiebre del oro T14 · Hola, Parker, soy Rick",
+        "desc": "Entretenimiento,Telerrealidad | 2022 | TP | *6.2/10\n· Años de silencio llegan a su fin cuando Rick visita a Parker para "
       },
       {
         "inicio": "17:47",
         "fin": "18:43",
-        "titulo": "Pesca radical T13 · Hombre caído"
+        "titulo": "Pesca radical T13 · Hombre caído",
+        "desc": "Entretenimiento,Telerrealidad | 2016 | TP | *6.0/10\n· Sean está a punto de chocar con otro barco, dos marineros caen en "
       },
       {
         "inicio": "18:43",
         "fin": "19:38",
-        "titulo": "Pesca radical T13 · La última captura de Hillstrand"
+        "titulo": "Pesca radical T13 · La última captura de Hillstrand",
+        "desc": "Entretenimiento,Telerrealidad | 2016 | TP | *6.0/10\n· Johnathan Hillstrand quiere despedirse por todo lo alto, pero el m"
       },
       {
         "inicio": "19:38",
         "fin": "20:34",
-        "titulo": "Joyas sobre ruedas T15 · Land Rover IIA de 1965"
+        "titulo": "Joyas sobre ruedas T15 · Land Rover IIA de 1965",
+        "desc": "Entretenimiento,Telerrealidad | 2016 | TP | *6.0/10\n· Edd y Mike se fijan el reto de encontrar el vehículo definitivo qu"
       },
       {
         "inicio": "20:34",
         "fin": "21:30",
-        "titulo": "Joyas sobre ruedas T15 · Chevy Corvette de 1968"
+        "titulo": "Joyas sobre ruedas T15 · Chevy Corvette de 1968",
+        "desc": "Entretenimiento,Telerrealidad | 2016 | TP | *6.2/10\n· Mike y Edd discuten sobre la definición de un verdadero coche depo"
       },
       {
         "inicio": "21:30",
         "fin": "22:00",
-        "titulo": "¿Cómo lo hacen?: Muñecas rusas y aloe vera"
+        "titulo": "¿Cómo lo hacen?: Muñecas rusas y aloe vera",
+        "desc": "Documentales,Ciencia tecnología | 2013 | TP | *6.0/10\n· Esta serie fascinante nos revela los secretos de fabricación de "
       },
       {
         "inicio": "22:00",
         "fin": "22:30",
-        "titulo": "¿Cómo lo hacen?: Buques Chinamax / Russian Standard / Orejas de mar · ¿Cómo lo hacen?: Buques Chinamax/Russian Standard/Orejas de mar"
+        "titulo": "¿Cómo lo hacen?: Buques Chinamax / Russian Standard / Orejas de mar · ¿Cómo lo hacen?: Buques Chinamax/Russian Standard/Orejas de mar",
+        "desc": "Documentales,Ciencia tecnología | 2013 | TP | *6.0/10\n· Descubra los secretos de fabricación de una amplia gama de produ"
       },
       {
         "inicio": "22:30",
         "fin": "23:27",
-        "titulo": "Alienígenas: En busca de inteligencia extraterrestre"
+        "titulo": "Alienígenas: En busca de inteligencia extraterrestre",
+        "desc": "Documentales,Historia | 2023 | +7 | *6.0/10\n· Desde hace miles de años, la humanidad trata de contactar con seres de más"
       },
       {
         "inicio": "23:27",
         "fin": "00:24",
-        "titulo": "Alienígenas: El poder de los obeliscos"
+        "titulo": "Alienígenas: El poder de los obeliscos",
+        "desc": "Documentales,Historia | 2022 | +7 | *5.8/10\n· Algunos creen que los obeliscos pudieron haber servido para alimentar una "
       }
     ],
     "Odisea": [
       {
-        "inicio": "00:04",
-        "fin": "00:30",
-        "titulo": "Así se recicla T1 E9"
+        "inicio": "00:05",
+        "fin": "00:31",
+        "titulo": "Así se recicla T1 E9",
+        "desc": "Documental,Otros | 2016 | TP | *7.3/10\n· En este episodio, los muelles de los colchones viejos se transforman en cuchill"
       },
       {
-        "inicio": "00:30",
-        "fin": "00:56",
-        "titulo": "Así se recicla T1 E10"
+        "inicio": "00:31",
+        "fin": "00:59",
+        "titulo": "Así se recicla T1 E10",
+        "desc": "Documental,Otros | 2016 | TP | *7.3/10\n· En este episodio, los carritos de los supermercados se funden para fabricar tap"
       },
       {
-        "inicio": "00:56",
-        "fin": "01:23",
-        "titulo": "Así se recicla T1 E11"
+        "inicio": "00:59",
+        "fin": "01:25",
+        "titulo": "Así se recicla T1 E11",
+        "desc": "Documental,Otros | 2016 | TP | *7.3/10\n· En este episodio, las sartenes viejas se funden para fabricar piezas para estuf"
       },
       {
         "inicio": "01:07",
         "fin": "02:03",
-        "titulo": "Ciencia letal T2 E6 · Persiguiendo partículas"
+        "titulo": "Ciencia letal T2 E6 · Persiguiendo partículas",
+        "desc": "Documental,Científico | 2024 | +7\n· Jugar con lo invisible puede tener consecuencias peligrosas. Para el científico del "
       },
       {
         "inicio": "02:03",
         "fin": "02:54",
-        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E3"
+        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E3",
+        "desc": "Documental,Otros,Tecnología | 2022 | TP\n· Este episodio revela cómo descubrimientos accidentales dieron lugar al teflón,"
       },
       {
         "inicio": "02:54",
         "fin": "03:46",
-        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E4"
+        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E4",
+        "desc": "Documental,Otros,Tecnología | 2022 | TP\n· En este episodio veremos cómo errores y coincidencias dieron origen al cine mo"
       },
       {
         "inicio": "03:46",
-        "fin": "04:35",
-        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E5"
+        "fin": "04:37",
+        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E5",
+        "desc": "Documental,Otros,Tecnología | 2022 | TP\n· Acompáñanos mientras exploramos cómo un laboratorio sucio y unas vacaciones di"
       },
       {
-        "inicio": "04:35",
-        "fin": "05:35",
-        "titulo": "Archipiélago de Chagos"
+        "inicio": "04:37",
+        "fin": "05:29",
+        "titulo": "Archipiélago de Chagos",
+        "desc": "Documental,Viajes y aventuras,Naturaleza,Otros | 2023 | TP\n· En medio del océano Índico hallamos Chagos, un archipiélago"
       },
       {
-        "inicio": "05:35",
-        "fin": "06:31",
-        "titulo": "Islas: laboratorios de la naturaleza T1 E1 · Isla de Vancouver"
+        "inicio": "05:29",
+        "fin": "06:18",
+        "titulo": "Islas: laboratorios de la naturaleza T1 E1 · Isla de Vancouver",
+        "desc": "Documental,Otros | 2023 | TP\n· Cada centímetro de la isla de Vancouver está profundamente conectado con el mar, y cada a"
       },
       {
-        "inicio": "06:31",
-        "fin": "07:20",
-        "titulo": "Islas: laboratorios de la naturaleza T1 E2 · K'Gari"
+        "inicio": "06:18",
+        "fin": "07:07",
+        "titulo": "Islas: laboratorios de la naturaleza T1 E2 · K'Gari",
+        "desc": "Documental,Otros | 2023 | TP\n· Frente a la costa oriental de Australia se encuentra K'Gari, también conocida como Fraser"
       },
       {
-        "inicio": "07:20",
-        "fin": "08:10",
-        "titulo": "Islas: laboratorios de la naturaleza T1 E3 · Isla de Baffin"
+        "inicio": "07:07",
+        "fin": "07:57",
+        "titulo": "Islas: laboratorios de la naturaleza T1 E3 · Isla de Baffin",
+        "desc": "Documental,Otros | 2023 | TP\n· Baffin es un lugar de extremos impensables. Es la isla más grande del Ártico canadiense, "
       },
       {
-        "inicio": "08:10",
-        "fin": "08:38",
-        "titulo": "Dinosaurios letales T1 E5 · El rey de los cielos"
+        "inicio": "07:57",
+        "fin": "08:25",
+        "titulo": "Dinosaurios letales T1 E5 · El rey de los cielos",
+        "desc": "Documental,Naturaleza | 2018 | TP | *7.1/10\n· En este episodio, Steve descubre lo que hace falta para ser el terror de l"
       },
       {
-        "inicio": "08:38",
-        "fin": "09:05",
-        "titulo": "Dinosaurios letales T1 E6 · El rey acuático"
+        "inicio": "08:25",
+        "fin": "08:52",
+        "titulo": "Dinosaurios letales T1 E6 · El rey acuático",
+        "desc": "Documental,Naturaleza | 2018 | TP | *7.1/10\n· En este episodio, Steve viaja a nuevas profundidades y descubre lo que hac"
       },
       {
-        "inicio": "09:05",
-        "fin": "09:35",
-        "titulo": "Dinosaurios letales T1 E7 · Supersentidos"
+        "inicio": "08:52",
+        "fin": "09:22",
+        "titulo": "Dinosaurios letales T1 E7 · Supersentidos",
+        "desc": "Documental,Naturaleza | 2018 | TP | *7.1/10\n· Steve emprende la misión de encontrar dinosaurios que tengan algo un poco "
       },
       {
-        "inicio": "09:35",
-        "fin": "10:43",
-        "titulo": "Dinosaurios: la cuenta atrás"
+        "inicio": "09:22",
+        "fin": "10:30",
+        "titulo": "Dinosaurios: la cuenta atrás",
+        "desc": "Cine,Documentales | 2010 | TP\n· Toma asiento para asistir a la recreación del evento más dramático en la historia de la "
       },
       {
-        "inicio": "10:43",
-        "fin": "11:30",
-        "titulo": "La vida sin nosotros T3 E7 · Construcciones indestructibles"
+        "inicio": "10:30",
+        "fin": "11:18",
+        "titulo": "La vida sin nosotros T3 E7 · Construcciones indestructibles",
+        "desc": "Documental,Otros,Científico | 2025 | +7\n· Desde rascacielos imponentes como el One World Trade Center hasta bóvedas impe"
       },
       {
-        "inicio": "11:30",
-        "fin": "12:16",
-        "titulo": "La vida sin nosotros T3 E8 · Bombas de relojería"
+        "inicio": "11:18",
+        "fin": "12:04",
+        "titulo": "La vida sin nosotros T3 E8 · Bombas de relojería",
+        "desc": "Documental,Otros,Científico | 2025 | +7\n· Peligros ocultos que antes eran mantenidos a raya por la humanidad estallan co"
       },
       {
-        "inicio": "12:16",
-        "fin": "13:06",
-        "titulo": "Desmontando el cosmos T2 E4 · Júpiter: el gemelo secreto del Sol"
+        "inicio": "12:04",
+        "fin": "12:55",
+        "titulo": "Desmontando el cosmos T2 E4 · Júpiter: el gemelo secreto del Sol",
+        "desc": "Documental,Otros,Científico | 2017 | TP\n· ¿Podría Júpiter, compuesto casi por completo de hidrógeno como el Sol, ser la "
       },
       {
-        "inicio": "13:06",
-        "fin": "13:57",
-        "titulo": "Desmontando el cosmos T2 E5 · El misterio del universo oculto"
+        "inicio": "12:55",
+        "fin": "13:47",
+        "titulo": "Desmontando el cosmos T2 E5 · El misterio del universo oculto",
+        "desc": "Documental,Otros,Científico | 2017 | TP\n· En este episodio, nos unimos a los científicos que buscan nuestro cosmos ocult"
       },
       {
-        "inicio": "13:57",
-        "fin": "14:47",
-        "titulo": "Desmontando el cosmos T2 E6 · Sistema solar: en busca del planeta perdido"
+        "inicio": "13:47",
+        "fin": "14:39",
+        "titulo": "Desmontando el cosmos T2 E6 · Sistema solar: en busca del planeta perdido",
+        "desc": "Documental,Otros,Científico | 2017 | TP\n· El sistema solar y sus planetas parecen un lugar familiar. Sin embargo, los ci"
       },
       {
-        "inicio": "14:47",
-        "fin": "15:52",
-        "titulo": "Un año en el planeta Tierra T1 E4 · Otoño"
+        "inicio": "14:39",
+        "fin": "15:45",
+        "titulo": "Un año en el planeta Tierra T1 E4 · Otoño",
+        "desc": "Series,Documentales,Otros | 2022 | TP | *8.0/10\n· El otoño es una estación de cambio, lo que para muchos trae consigo op"
       },
       {
-        "inicio": "15:52",
-        "fin": "16:57",
-        "titulo": "Un año en el planeta Tierra T1 E5 · Círculo completo"
+        "inicio": "15:45",
+        "fin": "16:50",
+        "titulo": "Un año en el planeta Tierra T1 E5 · Círculo completo",
+        "desc": "Series,Documentales,Otros | 2022 | TP | *8.0/10\n· En el tiempo que tardamos en completar nuestra órbita alrededor del So"
       },
       {
-        "inicio": "16:57",
-        "fin": "18:01",
-        "titulo": "Un año en el planeta Tierra T1 E6 · Así se hizo"
+        "inicio": "16:50",
+        "fin": "17:56",
+        "titulo": "Un año en el planeta Tierra T1 E6 · Así se hizo",
+        "desc": "Series,Documentales,Otros | 2022 | TP | *8.0/10\n· Rodada a lo largo de tres años en más de 60 localizaciones de todo el "
       },
       {
-        "inicio": "18:01",
-        "fin": "18:58",
-        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E3"
+        "inicio": "17:56",
+        "fin": "18:54",
+        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E3",
+        "desc": "Documental,Otros,Tecnología | 2022 | TP\n· Este episodio revela cómo descubrimientos accidentales dieron lugar al teflón,"
       },
       {
-        "inicio": "18:58",
-        "fin": "19:58",
-        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E4"
+        "inicio": "18:54",
+        "fin": "19:55",
+        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E4",
+        "desc": "Documental,Otros,Tecnología | 2022 | TP\n· En este episodio veremos cómo errores y coincidencias dieron origen al cine mo"
       },
       {
-        "inicio": "19:58",
-        "fin": "20:59",
-        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E15"
+        "inicio": "19:55",
+        "fin": "20:57",
+        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E15",
+        "desc": "Documental,Otros,Tecnología | 2022 | TP\n· Este episodio revela cómo errores y curiosidades dieron origen al detector de "
       },
       {
-        "inicio": "20:59",
-        "fin": "22:00",
-        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E1"
+        "inicio": "20:57",
+        "fin": "21:58",
+        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E1",
+        "desc": "Documental,Otros,Tecnología | 2022 | TP\n· En este episodio repasamos los accidentes y coincidencias que dieron lugar a l"
       },
       {
-        "inicio": "22:00",
+        "inicio": "21:58",
         "fin": "23:00",
-        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E2"
+        "titulo": "Ciencia y azar: inventos que cambiaron el mundo T1 E2",
+        "desc": "Documental,Otros,Tecnología | 2022 | TP\n· Repasamos los accidentes que dieron lugar al caucho vulcanizado, las cerillas "
       },
       {
         "inicio": "23:00",
-        "fin": "00:04",
-        "titulo": "Desafíos de la ingeniería T1 E3 · ¡Cámbialo!"
+        "fin": "00:05",
+        "titulo": "Desafíos de la ingeniería T1 E3 · ¡Cámbialo!",
+        "desc": "Documental,Otros | 2024 | TP\n· Miles de años de innovación humana nos han permitido moldear el medio ambiente para mejor"
       }
     ]
   }
