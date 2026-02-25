@@ -1,0 +1,166 @@
+name: Actualizar EPG
+
+on:
+  schedule:
+    - cron: '0 8,12,16,20 * * *'   # 4x/día UTC → 9h,13h,17h,21h hora España (invierno)
+  workflow_dispatch:
+
+jobs:
+  update-epg:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Descargar XML del EPG_dobleM
+        run: |
+          curl -L --max-time 90 --retry 3 \
+            "https://raw.githubusercontent.com/davidmuma/EPG_dobleM/master/guiatv.xml" \
+            -o guiatv.xml
+          echo "Tamaño XML: $(wc -c < guiatv.xml) bytes"
+          echo "Primeros canales del XML:"
+          grep -o 'id="[^"]*"' guiatv.xml | head -40 | sort -u
+
+      - name: Convertir XML a JSON con Python
+        run: |
+          python3 << 'PYEOF'
+          import xml.etree.ElementTree as ET
+          import json, re
+          from datetime import datetime, timezone, timedelta
+
+          # ── Canales objetivo ─────────────────────────────────────────────────
+          # Clave = nombre mostrado en la web
+          # Valor = lista de posibles strings a buscar en id o display-name del XML
+          CANALES = {
+              'Movistar Plus+':      ['movistar plus', 'M+ Plus', 'Movistar+'],
+              'Movistar LaLiga':     ['movistar laliga', 'M+ LaLiga', 'LaLiga 1'],
+              'DAZN LaLiga':         ['dazn laliga', 'DAZN LaLiga'],
+              'Liga de Campeones':   ['liga campeones', 'Liga de Campeones', 'Champions'],
+              'Movistar Deportes':   ['movistar deportes', 'M+ Deportes', 'Deportes 1'],
+              'Movistar Deportes 2': ['movistar deportes 2', 'M+ Deportes 2', 'Deportes 2'],
+              'Vamos':               ['vamos', 'M+ Vamos'],
+              'Teledeporte':         ['teledeporte'],
+              'Eurosport 1':         ['eurosport 1', 'eurosport1'],
+              'Eurosport 2':         ['eurosport 2', 'eurosport2'],
+              'DAZN 1':              ['dazn 1', 'dazn1'],
+              'DAZN 2':              ['dazn 2', 'dazn2'],
+              'Esport3':             ['esport3', 'esport 3'],
+              'Canal Historia':      ['historia', 'history channel', 'canal historia'],
+              'DMAX':                ['dmax'],
+              'Odisea':              ['odisea'],
+          }
+
+          def norm(s):
+              """Normaliza string para comparación insensible a mayúsculas/símbolos."""
+              return re.sub(r'[^a-z0-9]', '', s.lower())
+
+          def ts_to_utc(ts):
+              m = re.match(r'^(\d{14})\s*([+-]\d{4})?', ts)
+              if not m: return None
+              dt_str, tz_str = m.group(1), m.group(2) or '+0000'
+              dt = datetime.strptime(dt_str, '%Y%m%d%H%M%S')
+              sign = 1 if tz_str[0]=='+' else -1
+              off  = timedelta(hours=int(tz_str[1:3]), minutes=int(tz_str[3:5])) * sign
+              return dt - off  # UTC naive
+
+          def to_local(dt_utc):
+              """UTC → hora España (UTC+1 invierno, UTC+2 verano DST)."""
+              # DST: último domingo de marzo a último domingo de octubre
+              year = dt_utc.year
+              # Último domingo de marzo
+              dst_start = datetime(year, 3, 31) - timedelta(days=datetime(year, 3, 31).weekday()+1)
+              # Último domingo de octubre
+              dst_end   = datetime(year,10, 31) - timedelta(days=datetime(year,10, 31).weekday()+1)
+              offset = 2 if dst_start <= dt_utc < dst_end else 1
+              return dt_utc + timedelta(hours=offset)
+
+          tree = ET.parse('guiatv.xml')
+          root = tree.getroot()
+
+          # ── Construir mapa id_xml → label ────────────────────────────────────
+          # Primero recopilar todos los ids y nombres del XML
+          xml_channels = {}  # cid → [nombres]
+          for ch in root.findall('channel'):
+              cid   = ch.get('id', '')
+              names = [n.text.strip() for n in ch.findall('display-name') if n.text]
+              xml_channels[cid] = names
+
+          print(f"Total canales en XML: {len(xml_channels)}")
+
+          # Buscar coincidencias por fuzzy matching
+          id_map = {}
+          for label, busquedas in CANALES.items():
+              found = False
+              norm_busquedas = [norm(b) for b in busquedas]
+              for cid, names in xml_channels.items():
+                  norm_cid   = norm(cid)
+                  norm_names = [norm(n) for n in names]
+                  all_strs   = [norm_cid] + norm_names
+                  for nb in norm_busquedas:
+                      if any(nb in s or s in nb for s in all_strs):
+                          id_map[cid] = label
+                          print(f"  ✅ '{label}' → id='{cid}' nombres={names}")
+                          found = True
+                          break
+                  if found:
+                      break
+              if not found:
+                  print(f"  ❌ '{label}' — NO ENCONTRADO en XML")
+
+          print(f"\nCanales mapeados: {len(id_map)}/{len(CANALES)}")
+
+          # ── Extraer programas de hoy ─────────────────────────────────────────
+          today_utc = datetime.utcnow().date()
+          result = {label: [] for label in CANALES}
+
+          for prog in root.findall('programme'):
+              cid   = prog.get('channel', '')
+              label = id_map.get(cid)
+              if not label: continue
+
+              dt_start = ts_to_utc(prog.get('start', ''))
+              dt_stop  = ts_to_utc(prog.get('stop',  ''))
+              if not dt_start: continue
+              if dt_start.date() != today_utc: continue
+
+              title = prog.findtext('title', '').strip()
+              desc  = prog.findtext('desc',  '').strip()
+
+              local_start = to_local(dt_start)
+              local_stop  = to_local(dt_stop) if dt_stop else None
+
+              result[label].append({
+                  'inicio': local_start.strftime('%H:%M'),
+                  'fin':    local_stop.strftime('%H:%M') if local_stop else None,
+                  'titulo': title,
+                  'desc':   desc[:120] if desc else '',
+              })
+
+          for label in result:
+              result[label].sort(key=lambda x: x['inicio'])
+              n = len(result[label])
+              if n: print(f"  {label}: {n} programas, primero: {result[label][0]}")
+              else: print(f"  {label}: 0 programas ← VACÍO")
+
+          output = {
+              'actualizado': datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
+              'canales': result,
+          }
+
+          with open('epg.json', 'w', encoding='utf-8') as f:
+              json.dump(output, f, ensure_ascii=False, indent=2)
+
+          total = sum(len(v) for v in result.values())
+          print(f"\n✅ epg.json generado: {total} programas en total")
+          PYEOF
+
+      - name: Commit y push del JSON
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add epg.json
+          git diff --staged --quiet || git commit -m "EPG $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git push
