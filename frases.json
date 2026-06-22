@@ -1,26 +1,11 @@
 {
-  "actualizado": "2026-06-15T08:49:18.376493",
-  "total": 99,
+  "actualizado": "2026-06-22T08:50:38.090694",
+  "total": 100,
   "frases": [
     {
-      "q": "La sabiduría empieza en la admiración.",
-      "a": "Sócrates",
-      "cat": "sabiduria"
-    },
-    {
-      "q": "El poder corrompe; el poder absoluto corrompe absolutamente.",
-      "a": "Lord Acton",
-      "cat": "liderazgo"
-    },
-    {
-      "q": "The only way to do great work is to love what you do.",
-      "a": "Steve Jobs",
-      "cat": "general"
-    },
-    {
-      "q": "La vida sin música sería un error.",
-      "a": "Friedrich Nietzsche",
-      "cat": "arte"
+      "q": "No es que sea tan listo, es que me quedo con los problemas más tiempo.",
+      "a": "Albert Einstein",
+      "cat": "perseverancia"
     },
     {
       "q": "The best way to predict the future is to invent it.",
@@ -28,184 +13,14 @@
       "cat": "general"
     },
     {
-      "q": "Lo que no te mata te hace más fuerte.",
-      "a": "Friedrich Nietzsche",
-      "cat": "motivacion"
-    },
-    {
-      "q": "Act as if what you do makes a difference. It does.",
-      "a": "William James",
-      "cat": "general"
-    },
-    {
-      "q": "La ciencia no tiene patria, pero el científico sí debe tenerla.",
-      "a": "Louis Pasteur",
-      "cat": "ciencia"
-    },
-    {
-      "q": "The only place where success comes before work is in the dictionary.",
-      "a": "Vidal Sassoon",
-      "cat": "general"
-    },
-    {
-      "q": "Dios no juega a los dados.",
-      "a": "Albert Einstein",
-      "cat": "ciencia"
-    },
-    {
       "q": "El tiempo es oro.",
       "a": "Benjamin Franklin",
       "cat": "tiempo"
     },
     {
-      "q": "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
-      "a": "Ralph Waldo Emerson",
-      "cat": "general"
-    },
-    {
-      "q": "What you do today can improve all your tomorrows.",
-      "a": "Ralph Marston",
-      "cat": "general"
-    },
-    {
-      "q": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
-      "a": "Winston Churchill",
-      "cat": "general"
-    },
-    {
-      "q": "El amor todo lo puede.",
-      "a": "William Shakespeare",
-      "cat": "amor"
-    },
-    {
-      "q": "You have within you right now, everything you need to deal with whatever the world can throw at you.",
-      "a": "Brian Tracy",
-      "cat": "general"
-    },
-    {
-      "q": "El que no sabe lo que busca no reconoce lo que encuentra.",
-      "a": "Claude Bernard",
-      "cat": "sabiduria"
-    },
-    {
-      "q": "The only limit to our realization of tomorrow is our doubts of today.",
-      "a": "Franklin D. Roosevelt",
-      "cat": "general"
-    },
-    {
-      "q": "Saber que no sabemos nada es la forma más alta de inteligencia.",
-      "a": "Jiddu Krishnamurti",
-      "cat": "ciencia"
-    },
-    {
-      "q": "Do not wait to strike till the iron is hot; but make it hot by striking.",
-      "a": "William Butler Yeats",
-      "cat": "general"
-    },
-    {
-      "q": "The purpose of our lives is to be happy.",
-      "a": "Dalai Lama",
-      "cat": "general"
-    },
-    {
-      "q": "La educación es el arma más poderosa para cambiar el mundo.",
-      "a": "Nelson Mandela",
-      "cat": "ciencia"
-    },
-    {
-      "q": "Keep your face always toward the sunshine—and shadows will fall behind you.",
-      "a": "Walt Whitman",
-      "cat": "general"
-    },
-    {
-      "q": "La vida debe vivirse hacia adelante, pero solo puede entenderse mirando hacia atrás.",
-      "a": "Søren Kierkegaard",
-      "cat": "sabiduria"
-    },
-    {
-      "q": "Donde hay amor hay vida.",
-      "a": "Mahatma Gandhi",
-      "cat": "amor"
-    },
-    {
-      "q": "Pinto lo que no puedo fotografiar, fotografío lo que no puedo pintar.",
-      "a": "Man Ray",
-      "cat": "arte"
-    },
-    {
-      "q": "Get busy living or get busy dying.",
-      "a": "Stephen King",
-      "cat": "general"
-    },
-    {
-      "q": "Success is not the key to happiness. Happiness is the key to success.",
-      "a": "Albert Schweitzer",
-      "cat": "general"
-    },
-    {
-      "q": "The secret of success is to do the common thing uncommonly well.",
-      "a": "John D. Rockefeller Jr.",
-      "cat": "general"
-    },
-    {
-      "q": "Memento mori.",
-      "a": "Epicteto",
-      "cat": "tiempo"
-    },
-    {
-      "q": "It always seems impossible until it's done.",
-      "a": "Nelson Mandela",
-      "cat": "general"
-    },
-    {
-      "q": "The biggest risk is not taking any risk.",
-      "a": "Mark Zuckerberg",
-      "cat": "general"
-    },
-    {
-      "q": "El éxito es aprender a ir de fracaso en fracaso sin desesperarse.",
-      "a": "Winston Churchill",
-      "cat": "perseverancia"
-    },
-    {
-      "q": "The best revenge is massive success.",
-      "a": "Frank Sinatra",
-      "cat": "general"
-    },
-    {
-      "q": "La calidad nunca es un accidente; siempre es el resultado del esfuerzo inteligente.",
-      "a": "John Ruskin",
+      "q": "Un líder es aquel que conoce el camino, lo recorre y lo muestra.",
+      "a": "John C. Maxwell",
       "cat": "liderazgo"
-    },
-    {
-      "q": "Si he podido ver más lejos, es porque he subido a hombros de gigantes.",
-      "a": "Isaac Newton",
-      "cat": "ciencia"
-    },
-    {
-      "q": "Si quieres ir rápido, ve solo. Si quieres llegar lejos, ve acompañado.",
-      "a": "Proverbio africano",
-      "cat": "liderazgo"
-    },
-    {
-      "q": "El arte es la mentira que nos permite conocer la verdad.",
-      "a": "Pablo Picasso",
-      "cat": "arte"
-    },
-    {
-      "q": "Si está pasando por el infierno, siga adelante.",
-      "a": "Winston Churchill",
-      "cat": "liderazgo"
-    },
-    {
-      "q": "Si puedes soñarlo, puedes hacerlo.",
-      "a": "Walt Disney",
-      "cat": "motivacion"
-    },
-    {
-      "q": "La vida es breve, el arte es largo.",
-      "a": "Hipócrates",
-      "cat": "tiempo"
     },
     {
       "q": "El liderazgo no es una posición o un título, es acción e influencia.",
@@ -213,18 +28,18 @@
       "cat": "liderazgo"
     },
     {
-      "q": "El único modo de hacer un gran trabajo es amar lo que haces.",
-      "a": "Steve Jobs",
-      "cat": "motivacion"
+      "q": "El tiempo que disfrutas perdiendo no es tiempo perdido.",
+      "a": "Bertrand Russell",
+      "cat": "tiempo"
     },
     {
-      "q": "Lo que sabemos es una gota, lo que ignoramos es un océano.",
-      "a": "Isaac Newton",
-      "cat": "sabiduria"
+      "q": "La ciencia no tiene patria, pero el científico sí debe tenerla.",
+      "a": "Louis Pasteur",
+      "cat": "ciencia"
     },
     {
-      "q": "El futuro pertenece a quienes creen en la belleza de sus sueños.",
-      "a": "Eleanor Roosevelt",
+      "q": "Todo parece imposible hasta que se hace.",
+      "a": "Nelson Mandela",
       "cat": "motivacion"
     },
     {
@@ -233,74 +48,14 @@
       "cat": "sabiduria"
     },
     {
-      "q": "Vive como si fueras a morir mañana. Aprende como si fueras a vivir siempre.",
-      "a": "Mahatma Gandhi",
-      "cat": "motivacion"
-    },
-    {
-      "q": "Carpe diem.",
-      "a": "Horacio",
-      "cat": "tiempo"
-    },
-    {
-      "q": "No preguntes lo que tu país puede hacer por ti, sino lo que tú puedes hacer por tu país.",
-      "a": "John F. Kennedy",
-      "cat": "liderazgo"
-    },
-    {
-      "q": "Pienso, luego existo.",
-      "a": "René Descartes",
-      "cat": "sabiduria"
-    },
-    {
-      "q": "La inteligencia es la capacidad de adaptarse al cambio.",
-      "a": "Stephen Hawking",
-      "cat": "ciencia"
-    },
-    {
-      "q": "If you can dream it, you can do it.",
-      "a": "Walt Disney",
-      "cat": "general"
-    },
-    {
-      "q": "Ser o no ser, esa es la cuestión.",
-      "a": "William Shakespeare",
-      "cat": "sabiduria"
-    },
-    {
       "q": "Un artista que no puede soñar no es un artista.",
       "a": "Salvador Dalí",
       "cat": "arte"
     },
     {
-      "q": "El amor es ciego, pero el matrimonio le devuelve la vista.",
-      "a": "Georg C. Lichtenberg",
-      "cat": "amor"
-    },
-    {
-      "q": "Solo sé que no sé nada.",
-      "a": "Sócrates",
-      "cat": "sabiduria"
-    },
-    {
-      "q": "Life is 10% what happens to us and 90% how we react to it.",
-      "a": "Charles R. Swindoll",
+      "q": "Keep your face always toward the sunshine—and shadows will fall behind you.",
+      "a": "Walt Whitman",
       "cat": "general"
-    },
-    {
-      "q": "Conócete a ti mismo.",
-      "a": "Sócrates",
-      "cat": "sabiduria"
-    },
-    {
-      "q": "To succeed in life, you need two things: ignorance and confidence.",
-      "a": "Mark Twain",
-      "cat": "general"
-    },
-    {
-      "q": "La música da alma al universo, alas a la mente, vuelo a la imaginación.",
-      "a": "Platón",
-      "cat": "arte"
     },
     {
       "q": "La imaginación es más importante que el conocimiento.",
@@ -308,109 +63,14 @@
       "cat": "motivacion"
     },
     {
-      "q": "Nuestra mayor gloria no está en no caer nunca, sino en levantarnos cada vez que caemos.",
-      "a": "Confucio",
-      "cat": "perseverancia"
-    },
-    {
-      "q": "No cuentes los días, haz que los días cuenten.",
-      "a": "Muhammad Ali",
-      "cat": "motivacion"
-    },
-    {
-      "q": "I attribute my success to this: I never gave or took any excuse.",
-      "a": "Florence Nightingale",
-      "cat": "general"
-    },
-    {
-      "q": "He fallado más de 9000 tiros en mi carrera. He perdido casi 300 partidos. Eso es por qué tengo éxito.",
-      "a": "Michael Jordan",
-      "cat": "perseverancia"
-    },
-    {
-      "q": "No hay camino para la paz; la paz es el camino.",
-      "a": "Mahatma Gandhi",
-      "cat": "tiempo"
-    },
-    {
-      "q": "Believe you can and you're halfway there.",
-      "a": "Theodore Roosevelt",
-      "cat": "general"
-    },
-    {
-      "q": "El universo no está obligado a tener sentido para ti.",
-      "a": "Neil deGrasse Tyson",
-      "cat": "ciencia"
-    },
-    {
-      "q": "Your time is limited, so don't waste it living someone else's life.",
-      "a": "Steve Jobs",
-      "cat": "general"
-    },
-    {
-      "q": "La creatividad es la inteligencia divirtiéndose.",
-      "a": "Albert Einstein",
-      "cat": "arte"
-    },
-    {
-      "q": "El hombre es la medida de todas las cosas.",
-      "a": "Protágoras",
+      "q": "El que no sabe lo que busca no reconoce lo que encuentra.",
+      "a": "Claude Bernard",
       "cat": "sabiduria"
     },
     {
-      "q": "La vida es lo que pasa mientras estás ocupado haciendo otros planes.",
-      "a": "John Lennon",
-      "cat": "motivacion"
-    },
-    {
-      "q": "En medio de la dificultad reside la oportunidad.",
-      "a": "Albert Einstein",
-      "cat": "sabiduria"
-    },
-    {
-      "q": "Sé el cambio que quieres ver en el mundo.",
-      "a": "Mahatma Gandhi",
-      "cat": "motivacion"
-    },
-    {
-      "q": "Un líder es aquel que conoce el camino, lo recorre y lo muestra.",
-      "a": "John C. Maxwell",
-      "cat": "liderazgo"
-    },
-    {
-      "q": "El hoy que descuidas no volverá mañana.",
-      "a": "Proverbio árabe",
-      "cat": "tiempo"
-    },
-    {
-      "q": "El éxito es la suma de pequeños esfuerzos repetidos día tras día.",
-      "a": "Robert Collier",
-      "cat": "motivacion"
-    },
-    {
-      "q": "Cae siete veces, levántate ocho.",
-      "a": "Proverbio japonés",
-      "cat": "motivacion"
-    },
-    {
-      "q": "La vida sin examen no merece la pena ser vivida.",
-      "a": "Sócrates",
-      "cat": "sabiduria"
-    },
-    {
-      "q": "You miss 100% of the shots you don’t take.",
-      "a": "Wayne Gretzky",
+      "q": "Get busy living or get busy dying.",
+      "a": "Stephen King",
       "cat": "general"
-    },
-    {
-      "q": "La imaginación es el principio de la creación.",
-      "a": "George Bernard Shaw",
-      "cat": "arte"
-    },
-    {
-      "q": "Todo parece imposible hasta que se hace.",
-      "a": "Nelson Mandela",
-      "cat": "motivacion"
     },
     {
       "q": "No llores porque terminó, sonríe porque sucedió.",
@@ -418,13 +78,23 @@
       "cat": "amor"
     },
     {
-      "q": "La duda es el principio de la sabiduría.",
-      "a": "Aristóteles",
+      "q": "En medio de la dificultad reside la oportunidad.",
+      "a": "Albert Einstein",
       "cat": "sabiduria"
     },
     {
-      "q": "Primero lo hacen ignorarte, luego se ríen de ti, luego te atacan, luego ganas.",
-      "a": "Mahatma Gandhi",
+      "q": "The secret of success is to do the common thing uncommonly well.",
+      "a": "John D. Rockefeller Jr.",
+      "cat": "general"
+    },
+    {
+      "q": "I attribute my success to this: I never gave or took any excuse.",
+      "a": "Florence Nightingale",
+      "cat": "general"
+    },
+    {
+      "q": "Lo que no te mata te hace más fuerte.",
+      "a": "Friedrich Nietzsche",
       "cat": "motivacion"
     },
     {
@@ -433,19 +103,89 @@
       "cat": "amor"
     },
     {
-      "q": "En el principio era el amor, y el amor era con Dios.",
-      "a": "San Juan",
-      "cat": "amor"
+      "q": "Lo que sabemos es una gota, lo que ignoramos es un océano.",
+      "a": "Isaac Newton",
+      "cat": "sabiduria"
     },
     {
-      "q": "El secreto para salir adelante es empezar.",
-      "a": "Mark Twain",
+      "q": "Cae siete veces, levántate ocho.",
+      "a": "Proverbio japonés",
       "cat": "motivacion"
     },
     {
-      "q": "El tiempo que disfrutas perdiendo no es tiempo perdido.",
-      "a": "Bertrand Russell",
-      "cat": "tiempo"
+      "q": "Solo sé que no sé nada.",
+      "a": "Sócrates",
+      "cat": "sabiduria"
+    },
+    {
+      "q": "La vida es lo que pasa mientras estás ocupado haciendo otros planes.",
+      "a": "John Lennon",
+      "cat": "motivacion"
+    },
+    {
+      "q": "The only limit to our realization of tomorrow is our doubts of today.",
+      "a": "Franklin D. Roosevelt",
+      "cat": "general"
+    },
+    {
+      "q": "Donde hay amor hay vida.",
+      "a": "Mahatma Gandhi",
+      "cat": "amor"
+    },
+    {
+      "q": "La música da alma al universo, alas a la mente, vuelo a la imaginación.",
+      "a": "Platón",
+      "cat": "arte"
+    },
+    {
+      "q": "Pinto lo que no puedo fotografiar, fotografío lo que no puedo pintar.",
+      "a": "Man Ray",
+      "cat": "arte"
+    },
+    {
+      "q": "The purpose of our lives is to be happy.",
+      "a": "Dalai Lama",
+      "cat": "general"
+    },
+    {
+      "q": "La imaginación es el principio de la creación.",
+      "a": "George Bernard Shaw",
+      "cat": "arte"
+    },
+    {
+      "q": "La vida sin examen no merece la pena ser vivida.",
+      "a": "Sócrates",
+      "cat": "sabiduria"
+    },
+    {
+      "q": "Si está pasando por el infierno, siga adelante.",
+      "a": "Winston Churchill",
+      "cat": "liderazgo"
+    },
+    {
+      "q": "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+      "a": "Winston Churchill",
+      "cat": "general"
+    },
+    {
+      "q": "La duda es el principio de la sabiduría.",
+      "a": "Aristóteles",
+      "cat": "sabiduria"
+    },
+    {
+      "q": "El genio es un uno por ciento de inspiración y un noventa y nueve por ciento de transpiración.",
+      "a": "Thomas Edison",
+      "cat": "perseverancia"
+    },
+    {
+      "q": "El hombre es la medida de todas las cosas.",
+      "a": "Protágoras",
+      "cat": "sabiduria"
+    },
+    {
+      "q": "La vida sin música sería un error.",
+      "a": "Friedrich Nietzsche",
+      "cat": "arte"
     },
     {
       "q": "Una inversión en conocimiento siempre paga los mejores intereses.",
@@ -453,9 +193,74 @@
       "cat": "ciencia"
     },
     {
-      "q": "Don’t watch the clock; do what it does. Keep going.",
-      "a": "Sam Levenson",
+      "q": "Pienso, luego existo.",
+      "a": "René Descartes",
+      "cat": "sabiduria"
+    },
+    {
+      "q": "The future belongs to those who believe in the beauty of their dreams.",
+      "a": "Eleanor Roosevelt",
       "cat": "general"
+    },
+    {
+      "q": "Act as if what you do makes a difference. It does.",
+      "a": "William James",
+      "cat": "general"
+    },
+    {
+      "q": "La calidad nunca es un accidente; siempre es el resultado del esfuerzo inteligente.",
+      "a": "John Ruskin",
+      "cat": "liderazgo"
+    },
+    {
+      "q": "La inteligencia es la capacidad de adaptarse al cambio.",
+      "a": "Stephen Hawking",
+      "cat": "ciencia"
+    },
+    {
+      "q": "Nuestra mayor gloria no está en no caer nunca, sino en levantarnos cada vez que caemos.",
+      "a": "Confucio",
+      "cat": "perseverancia"
+    },
+    {
+      "q": "Do not wait to strike till the iron is hot; but make it hot by striking.",
+      "a": "William Butler Yeats",
+      "cat": "general"
+    },
+    {
+      "q": "El secreto para salir adelante es empezar.",
+      "a": "Mark Twain",
+      "cat": "motivacion"
+    },
+    {
+      "q": "La sabiduría empieza en la admiración.",
+      "a": "Sócrates",
+      "cat": "sabiduria"
+    },
+    {
+      "q": "No cuentes los días, haz que los días cuenten.",
+      "a": "Muhammad Ali",
+      "cat": "motivacion"
+    },
+    {
+      "q": "You miss 100% of the shots you don’t take.",
+      "a": "Wayne Gretzky",
+      "cat": "general"
+    },
+    {
+      "q": "El amor todo lo puede.",
+      "a": "William Shakespeare",
+      "cat": "amor"
+    },
+    {
+      "q": "He fallado más de 9000 tiros en mi carrera. He perdido casi 300 partidos. Eso es por qué tengo éxito.",
+      "a": "Michael Jordan",
+      "cat": "perseverancia"
+    },
+    {
+      "q": "Si puedes soñarlo, puedes hacerlo.",
+      "a": "Walt Disney",
+      "cat": "motivacion"
     },
     {
       "q": "The harder I work, the luckier I get.",
@@ -463,13 +268,98 @@
       "cat": "general"
     },
     {
-      "q": "Amar y ser amado es sentir el sol por ambos lados.",
-      "a": "David Viscott",
-      "cat": "amor"
+      "q": "La vida debe vivirse hacia adelante, pero solo puede entenderse mirando hacia atrás.",
+      "a": "Søren Kierkegaard",
+      "cat": "sabiduria"
     },
     {
-      "q": "The future belongs to those who believe in the beauty of their dreams.",
+      "q": "El único modo de hacer un gran trabajo es amar lo que haces.",
+      "a": "Steve Jobs",
+      "cat": "motivacion"
+    },
+    {
+      "q": "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+      "a": "Ralph Waldo Emerson",
+      "cat": "general"
+    },
+    {
+      "q": "Si he podido ver más lejos, es porque he subido a hombros de gigantes.",
+      "a": "Isaac Newton",
+      "cat": "ciencia"
+    },
+    {
+      "q": "El futuro pertenece a quienes creen en la belleza de sus sueños.",
       "a": "Eleanor Roosevelt",
+      "cat": "motivacion"
+    },
+    {
+      "q": "La vida es breve, el arte es largo.",
+      "a": "Hipócrates",
+      "cat": "tiempo"
+    },
+    {
+      "q": "Saber que no sabemos nada es la forma más alta de inteligencia.",
+      "a": "Jiddu Krishnamurti",
+      "cat": "ciencia"
+    },
+    {
+      "q": "Si quieres ir rápido, ve solo. Si quieres llegar lejos, ve acompañado.",
+      "a": "Proverbio africano",
+      "cat": "liderazgo"
+    },
+    {
+      "q": "El universo no está obligado a tener sentido para ti.",
+      "a": "Neil deGrasse Tyson",
+      "cat": "ciencia"
+    },
+    {
+      "q": "It always seems impossible until it's done.",
+      "a": "Nelson Mandela",
+      "cat": "general"
+    },
+    {
+      "q": "Sé el cambio que quieres ver en el mundo.",
+      "a": "Mahatma Gandhi",
+      "cat": "motivacion"
+    },
+    {
+      "q": "La educación es el arma más poderosa para cambiar el mundo.",
+      "a": "Nelson Mandela",
+      "cat": "ciencia"
+    },
+    {
+      "q": "You have within you right now, everything you need to deal with whatever the world can throw at you.",
+      "a": "Brian Tracy",
+      "cat": "general"
+    },
+    {
+      "q": "Dios no juega a los dados.",
+      "a": "Albert Einstein",
+      "cat": "ciencia"
+    },
+    {
+      "q": "Primero lo hacen ignorarte, luego se ríen de ti, luego te atacan, luego ganas.",
+      "a": "Mahatma Gandhi",
+      "cat": "motivacion"
+    },
+    {
+      "q": "Memento mori.",
+      "a": "Epicteto",
+      "cat": "tiempo"
+    },
+    {
+      "q": "Don’t watch the clock; do what it does. Keep going.",
+      "a": "Sam Levenson",
+      "cat": "general"
+    },
+    {
+      "q": "El éxito es la suma de pequeños esfuerzos repetidos día tras día.",
+      "a": "Robert Collier",
+      "cat": "motivacion"
+    },
+    {
+      "q": "You must be the change you wish to see in the world.",
+      "a": "Mahatma Gandhi",
       "cat": "general"
     },
     {
@@ -478,14 +368,19 @@
       "cat": "amor"
     },
     {
-      "q": "No es que sea tan listo, es que me quedo con los problemas más tiempo.",
-      "a": "Albert Einstein",
+      "q": "El éxito es aprender a ir de fracaso en fracaso sin desesperarse.",
+      "a": "Winston Churchill",
       "cat": "perseverancia"
     },
     {
-      "q": "El genio es un uno por ciento de inspiración y un noventa y nueve por ciento de transpiración.",
-      "a": "Thomas Edison",
-      "cat": "perseverancia"
+      "q": "Carpe diem.",
+      "a": "Horacio",
+      "cat": "tiempo"
+    },
+    {
+      "q": "No hay camino para la paz; la paz es el camino.",
+      "a": "Mahatma Gandhi",
+      "cat": "tiempo"
     },
     {
       "q": "No importa lo despacio que vayas, siempre que no te detengas.",
@@ -493,95 +388,206 @@
       "cat": "motivacion"
     },
     {
-      "q": "You must be the change you wish to see in the world.",
-      "a": "Mahatma Gandhi",
+      "q": "No preguntes lo que tu país puede hacer por ti, sino lo que tú puedes hacer por tu país.",
+      "a": "John F. Kennedy",
+      "cat": "liderazgo"
+    },
+    {
+      "q": "Your time is limited, so don't waste it living someone else's life.",
+      "a": "Steve Jobs",
       "cat": "general"
+    },
+    {
+      "q": "Believe you can and you're halfway there.",
+      "a": "Theodore Roosevelt",
+      "cat": "general"
+    },
+    {
+      "q": "El hoy que descuidas no volverá mañana.",
+      "a": "Proverbio árabe",
+      "cat": "tiempo"
+    },
+    {
+      "q": "El amor es ciego, pero el matrimonio le devuelve la vista.",
+      "a": "Georg C. Lichtenberg",
+      "cat": "amor"
+    },
+    {
+      "q": "If you can dream it, you can do it.",
+      "a": "Walt Disney",
+      "cat": "general"
+    },
+    {
+      "q": "To succeed in life, you need two things: ignorance and confidence.",
+      "a": "Mark Twain",
+      "cat": "general"
+    },
+    {
+      "q": "Vive como si fueras a morir mañana. Aprende como si fueras a vivir siempre.",
+      "a": "Mahatma Gandhi",
+      "cat": "motivacion"
+    },
+    {
+      "q": "Life is 10% what happens to us and 90% how we react to it.",
+      "a": "Charles R. Swindoll",
+      "cat": "general"
+    },
+    {
+      "q": "La creatividad es la inteligencia divirtiéndose.",
+      "a": "Albert Einstein",
+      "cat": "arte"
+    },
+    {
+      "q": "El poder corrompe; el poder absoluto corrompe absolutamente.",
+      "a": "Lord Acton",
+      "cat": "liderazgo"
+    },
+    {
+      "q": "Amar y ser amado es sentir el sol por ambos lados.",
+      "a": "David Viscott",
+      "cat": "amor"
+    },
+    {
+      "q": "The only way to achieve the impossible is to believe it is possible.",
+      "a": "Charles Kingsleigh",
+      "cat": "general"
+    },
+    {
+      "q": "El arte es la mentira que nos permite conocer la verdad.",
+      "a": "Pablo Picasso",
+      "cat": "arte"
+    },
+    {
+      "q": "The only place where success comes before work is in the dictionary.",
+      "a": "Vidal Sassoon",
+      "cat": "general"
+    },
+    {
+      "q": "The best revenge is massive success.",
+      "a": "Frank Sinatra",
+      "cat": "general"
+    },
+    {
+      "q": "What you do today can improve all your tomorrows.",
+      "a": "Ralph Marston",
+      "cat": "general"
+    },
+    {
+      "q": "Success is not the key to happiness. Happiness is the key to success.",
+      "a": "Albert Schweitzer",
+      "cat": "general"
+    },
+    {
+      "q": "En el principio era el amor, y el amor era con Dios.",
+      "a": "San Juan",
+      "cat": "amor"
+    },
+    {
+      "q": "The only way to do great work is to love what you do.",
+      "a": "Steve Jobs",
+      "cat": "general"
+    },
+    {
+      "q": "Ser o no ser, esa es la cuestión.",
+      "a": "William Shakespeare",
+      "cat": "sabiduria"
+    },
+    {
+      "q": "The biggest risk is not taking any risk.",
+      "a": "Mark Zuckerberg",
+      "cat": "general"
+    },
+    {
+      "q": "Conócete a ti mismo.",
+      "a": "Sócrates",
+      "cat": "sabiduria"
     }
   ],
   "autores": [
-    "sócrates",
-    "lord acton",
-    "steve jobs",
-    "friedrich nietzsche",
-    "alan kay",
-    "william james",
-    "louis pasteur",
-    "vidal sassoon",
     "albert einstein",
+    "alan kay",
     "benjamin franklin",
-    "ralph waldo emerson",
-    "ralph marston",
-    "winston churchill",
-    "william shakespeare",
-    "brian tracy",
-    "claude bernard",
-    "franklin d. roosevelt",
-    "jiddu krishnamurti",
-    "william butler yeats",
-    "dalai lama",
-    "nelson mandela",
-    "walt whitman",
-    "søren kierkegaard",
-    "mahatma gandhi",
-    "man ray",
-    "stephen king",
-    "albert schweitzer",
-    "john d. rockefeller jr.",
-    "epicteto",
-    "mark zuckerberg",
-    "frank sinatra",
-    "john ruskin",
-    "isaac newton",
-    "proverbio africano",
-    "pablo picasso",
-    "walt disney",
-    "hipócrates",
+    "john c. maxwell",
     "donald mcgannon",
-    "eleanor roosevelt",
+    "bertrand russell",
+    "louis pasteur",
+    "nelson mandela",
     "lao tse",
+    "salvador dalí",
+    "walt whitman",
+    "claude bernard",
+    "stephen king",
+    "gabriel garcía márquez",
+    "john d. rockefeller jr.",
+    "florence nightingale",
+    "friedrich nietzsche",
+    "proverbio turco",
+    "isaac newton",
+    "proverbio japonés",
+    "sócrates",
+    "john lennon",
+    "franklin d. roosevelt",
+    "mahatma gandhi",
+    "platón",
+    "man ray",
+    "dalai lama",
+    "george bernard shaw",
+    "winston churchill",
+    "aristóteles",
+    "thomas edison",
+    "protágoras",
+    "rené descartes",
+    "eleanor roosevelt",
+    "william james",
+    "john ruskin",
+    "stephen hawking",
+    "confucio",
+    "william butler yeats",
+    "mark twain",
+    "muhammad ali",
+    "wayne gretzky",
+    "william shakespeare",
+    "michael jordan",
+    "walt disney",
+    "gary player",
+    "søren kierkegaard",
+    "steve jobs",
+    "ralph waldo emerson",
+    "hipócrates",
+    "jiddu krishnamurti",
+    "proverbio africano",
+    "neil degrasse tyson",
+    "brian tracy",
+    "epicteto",
+    "sam levenson",
+    "robert collier",
+    "antoine de saint-exupéry",
     "horacio",
     "john f. kennedy",
-    "rené descartes",
-    "stephen hawking",
-    "salvador dalí",
+    "theodore roosevelt",
+    "proverbio árabe",
     "georg c. lichtenberg",
     "charles r. swindoll",
-    "mark twain",
-    "platón",
-    "confucio",
-    "muhammad ali",
-    "florence nightingale",
-    "michael jordan",
-    "theodore roosevelt",
-    "neil degrasse tyson",
-    "protágoras",
-    "john lennon",
-    "john c. maxwell",
-    "proverbio árabe",
-    "robert collier",
-    "proverbio japonés",
-    "wayne gretzky",
-    "george bernard shaw",
-    "gabriel garcía márquez",
-    "aristóteles",
-    "proverbio turco",
-    "san juan",
-    "bertrand russell",
-    "sam levenson",
-    "gary player",
+    "lord acton",
     "david viscott",
-    "antoine de saint-exupéry",
-    "thomas edison"
+    "charles kingsleigh",
+    "pablo picasso",
+    "vidal sassoon",
+    "frank sinatra",
+    "ralph marston",
+    "albert schweitzer",
+    "san juan",
+    "mark zuckerberg"
   ],
   "categorias": [
-    "sabiduria",
-    "liderazgo",
+    "perseverancia",
     "general",
-    "arte",
-    "motivacion",
-    "ciencia",
     "tiempo",
-    "amor",
-    "perseverancia"
+    "liderazgo",
+    "ciencia",
+    "motivacion",
+    "sabiduria",
+    "arte",
+    "amor"
   ]
 }
